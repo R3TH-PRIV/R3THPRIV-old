@@ -5,6 +5,8 @@
         pethicial
 ]]
 
+assert(getgenv, "Exploit unsupported")
+
 local StarterGui = game:GetService("StarterGui")
 StarterGui:SetCore("SendNotification", {
     Title = "R3TH PRIV";
@@ -59,11 +61,9 @@ print("[ R3TH PRIV ]: " ..device .." detected")
 sendnotification("Script loading, this may take awhile depending on your device.")
 
 function getexploit()
-    local exploit =
-        (KRNL_LOADED and "Krnl") or
-        (IsElectron and "Electron") or
-        (Fluxus and "Fluxus") or
-        ("Unsupported")
+    if identifyexecutor == nil then return "Unsupported" end
+    local exploit = identifyexecutor()
+    if not exploit:find("Krampus") then return "Unsupported" end
   
     return exploit
 end
@@ -71,7 +71,7 @@ end
 print("[ R3TH PRIV ]: " ..getexploit() .." detected")
 if getexploit() == "Unsupported" then
     print("[ R3TH PRIV ]: Unsupported executor detected, some scripts may not work.")
-    sendnotification("Unsupported executor detected, some scripts may not work.")
+    sendnotification(`{getexploit()} isn't fully supported right now, you may experience some bugs.`)
 end
 
 request({
