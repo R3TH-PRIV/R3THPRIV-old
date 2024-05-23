@@ -81,6 +81,9 @@ elseif game.PlaceId == 2693739238 then
 elseif game.PlaceId == 3891618314 then
     print("[ R3TH PRIV ]: Game Supported!")
     loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/Harbor%20Havoc.lua'))()
+elseif game.PlaceId == 16281300371 then
+    print("[ R3TH PRIV ]: Game Supported!")
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/Blade%20Ball.lua'))()
 elseif game.PlaceId == 13772394625 then
     print("[ R3TH PRIV ]: Game Supported!")
     loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/Blade%20Ball.lua'))()
