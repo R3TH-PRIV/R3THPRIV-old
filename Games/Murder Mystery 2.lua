@@ -443,9 +443,6 @@ for i,v in pairs(game.Players:GetPlayers())do
 end
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(Player)
-    if r3thtoggleui == true then
-        toggleui()
-    end
     if emotesondeath == true then
         SpawnEmotes()
     end
@@ -1946,22 +1943,17 @@ end, function()
 	print("Changed Keybind")
 end)
 
-Settings:addToggle("UI Toggle Button", false, function(uitogglebutton)
-    if uitogglebutton == true then
-        r3thtoggleui = true
-        wait()
+Settings:addToggle("UI Toggle Button", false, function(Value)
+    r3thtoggleui = Value
+    if r3thtoggleui == true then
         toggleui()
-        wait()
-    end
-    if uitogglebutton == false then
-        r3thtoggleui = false
-        wait()
+    elseif r3thtoggleui == false then
         for i,v in pairs (game.CoreGui:GetDescendants()) do
             if v.Name == "R3THTOGGLEBUTTON" then
                 v:Destroy()
+                wait()
             end
         end
-        wait()
     end
 end)
 
