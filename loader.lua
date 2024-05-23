@@ -44,10 +44,10 @@ else
     getgenv().R3THDEVICE = "PC"
 end
 
-if type(hookfunction) == "function" or type(hookf) == "function" then
-    getgenv().R3THEXECUTOR = "Supported"
+if type(hookmetamethod) and type(getnamecallmethod) == "function" then
+    print("Supported")
 else
-    getgenv().R3THEXECUTOR = "Unsupported"
+    print("Unsupported")
 end
 
 if R3THEXECUTOR == "Unsupported" then
