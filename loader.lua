@@ -45,9 +45,9 @@ else
 end
 
 if type(hookmetamethod) and type(getnamecallmethod) == "function" then
-    print("Supported")
+    getgenv().R3THEXECUTOR = "Supported"
 else
-    print("Unsupported")
+    getgenv().R3THEXECUTOR = "Unsupported"
 end
 
 if R3THEXECUTOR == "Unsupported" then
