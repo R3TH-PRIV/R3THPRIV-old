@@ -219,6 +219,12 @@ function setVec(vec)
     return vec * (newflyspeed / vec.Magnitude)
 end
 
+function unsupportedfunc()
+    if R3THEXECUTOR == "Unsupported" then
+        sendnotification("This option will not operate because your executor lacks the necessary functionality.")
+    end
+end
+
 function CreateHighlight()
     for i, v in pairs(Players:GetChildren()) do
         if v ~= LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
@@ -879,6 +885,7 @@ else
 end
 
 Sheriff:addToggle("Gun Silent Aim", false, function(gunsilentaim)
+    unsupportedfunc()
     getgenv().SheriffAim = gunsilentaim
 end)
 
@@ -1116,15 +1123,9 @@ World:addToggle("Loop Interactive", false, function(loopinteractive)
     end
 end)
 
-World:addToggle("Always Alive Chat", false, function(alwaysalive)
-    if alwaysalive == true then
-        alwaysalivechat = true
-        wait()
-    end
-    if alwaysalive == false then
-        alwaysalivechat = false
-        wait()
-    end
+World:addToggle("Always Alive Chat", false, function(Value)
+    unsupportedfunc()
+    alwaysalivechat = Value
 end)
 
 Visual:addToggle("Infinite Ghost", false, function(infiniteghost)
