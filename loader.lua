@@ -10,6 +10,7 @@
 ]]
 
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
+print("[ R3TH PRIV ]: R3TH PRIV Loader executed.")
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
