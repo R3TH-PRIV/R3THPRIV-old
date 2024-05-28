@@ -26,7 +26,7 @@ local Target = Universal:addSection("Target")
 local Server = Universal:addSection("Server")
 
 local Keybinds = R3TH:addPage("Keybinds", 5012542120)
-local Universal0 = Keybinds:addSection("Universal")
+local UniversalKeybind = Keybinds:addSection("Universal")
 
 local Settings0 = R3TH:addPage("Settings", 5012544372)
 local Settings = Settings0:addSection("Settings")
@@ -838,7 +838,7 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------KEYBINDS----------------------------------------------------------------------------------------
-Universal0:addKeybind("Enable WalkSpeed", KeyCode, function()
+UniversalKeybind:addKeybind("Enable WalkSpeed", KeyCode, function()
     if ChangeWalkSpeed then
         ChangeWalkSpeed = false
     else
@@ -849,7 +849,7 @@ end, function()
 	print("[ R3TH PRIV ] Enable WalkSpeed keybind changed.")
 end)
 
-Universal0:addKeybind("Enable JumpPower", KeyCode, function()
+UniversalKeybind:addKeybind("Enable JumpPower", KeyCode, function()
     if ChangeJumpPower then
         ChangeJumpPower = false
     else
@@ -860,7 +860,7 @@ end, function()
 	print("[ R3TH PRIV ] Enable JumpPower keybind changed.")
 end)
 
-Universal0:addKeybind("Noclip", KeyCode, function()
+UniversalKeybind:addKeybind("Noclip", KeyCode, function()
     if ChangeNoclip then
         ChangeNoclip = false
     else
@@ -871,7 +871,7 @@ end, function()
 	print("[ R3TH PRIV ] Enable JumpPower keybind changed.")
 end)
 
-Universal0:addKeybind("Enable Fly", KeyCode, function()
+UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
     if ChangeFly then
         ChangeFly = false
         FlyFunction()
@@ -883,7 +883,7 @@ end, function()
 	print("[ R3TH PRIV ] Enable Fly keybind changed.")
 end)
 
-Universal0:addKeybind("Xray", KeyCode, function()
+UniversalKeybind:addKeybind("Xray", KeyCode, function()
     if ChangeXray then
         ChangeXray = false
         XrayFunction()
@@ -895,13 +895,13 @@ end, function()
 	print("[ R3TH PRIV ] Xray keybind changed.")
 end)
 
-Universal0:addKeybind("Respawn", KeyCode, function()
+UniversalKeybind:addKeybind("Respawn", KeyCode, function()
     Humanoid.Health = 0
 end, function()
 	print("[ R3TH PRIV ] Respawn keybind changed.")
 end)
 
-Universal0:addKeybind("Fling", KeyCode, function()
+UniversalKeybind:addKeybind("Fling", KeyCode, function()
     if ChangeFling then
         ChangeFling = false
         FlingFunction()
