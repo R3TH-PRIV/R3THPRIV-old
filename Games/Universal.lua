@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
-print("[ R3TH PRIV ]: R3TH PRIV UNIVERSAL LOADING...")
+print("[ R3TH PRIV ]: R3TH PRIV Universal loading...")
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
@@ -217,42 +217,33 @@ Players.PlayerRemoving:Connect(function(Value)
     end
 end)
 
-local WSConnect = nil
-function WalkSpeedInit(toggle)
-    if not toggle and WSConnect then
-        WSConnect:Disconnect()
-        WSConnect = nil
-        return
-    end
-    WSConnect = Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-        if Humanoid.WalkSpeed ~= WalkSpeedSlider then
-            Humanoid.WalkSpeed = WalkSpeedSlider
-        end
-    end)
-end
-
-local JPConnect = nil
-function JumpPowerInit(toggle)
-    if not toggle and JPConnect then
-        JPConnect:Disconnect()
-        JPConnect = nil
-        return
-    end
-    JPConnect = Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
-        if Humanoid.JumpPower ~= JumpPowerSlider then
-            Humanoid.JumpPower = JumpPowerSlider
-        end
-    end)
-end
-
 LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     Character = newCharacter
     Humanoid = Character:WaitForChild("Humanoid")
     HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-    WalkSpeedInit(ChangeWalkSpeed)
-    JumpPowerInit(ChangeJumpPower)
 end)
+
 --------------------------------------------------------------------------------------KEYBINDS----------------------------------------------------------------------------------------
+function WalkSpeedFunction()
+    while ChangeWalkSpeed and task.wait() do
+        if ChangeWalkSpeed then
+            Humanoid.Walkspeed = WalkSpeedSlider
+        else
+            Humanoid.WalkSpeed = DefaultWalkSpeed
+        end
+    end
+end
+
+function JumpPowerFunction()
+    while ChangeJumpPower and task.wait() do
+        if ChangeJumpPower then
+            Humanoid.JumpPower = JumpPowerSlider
+        else
+            Humanoid.JumpPower = DefaultJumpPower
+        end
+    end
+end
+
 function FlyFunction()
     if ChangeFly then
         startFly()
@@ -557,14 +548,12 @@ end
 
 Player:addToggle("Enable WalkSpeed", false, function(Value)
     ChangeWalkSpeed = Value
-    Humanoid.WalkSpeed = ChangeWalkSpeed and WalkSpeedSlider or DefaultWalkSpeed
-    WalkSpeedInit(ChangeWalkSpeed)
+    WalkSpeedFunction()
 end)
 
 Player:addToggle("Enable JumpPower", false, function(Value)
     ChangeJumpPower = Value
-    Humanoid.JumpPower = ChangeJumpPower and JumpPowerSlider or DefaultJumpPower
-    JumpPowerInit(ChangeJumpPower)
+    JumpPowerFunction()
 end)
 
 if R3THDEVICE == "Mobile" then
