@@ -1132,7 +1132,7 @@ Murderer:addToggle("Knife Aura", false, function(Value)
 end)
 
 if R3THDEVICE == "Mobile" then
-    Player:addTextbox("Knife Range", 20, function(Value, focusLost)
+    Murderer:addTextbox("Knife Range", 20, function(Value, focusLost)
         KnifeAuraSlider = Value
     end)
 else
