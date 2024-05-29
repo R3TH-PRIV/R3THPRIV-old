@@ -25,7 +25,7 @@ local ESP = Universal:addSection("ESP")
 local Target = Universal:addSection("Target")
 local Server = Universal:addSection("Server")
 
-local Keybinds = R3TH:addPage("Keybinds", 5012542120)
+local Keybinds = R3TH:addPage("Keybinds")
 local UniversalKeybind = Keybinds:addSection("Universal")
 
 local Settings0 = R3TH:addPage("Settings", 5012544372)
@@ -90,7 +90,7 @@ function ToggleUI()
         Toggle = not Toggle
     end)
     
-    while ChangeToggleUI do
+    while ChangeUIToggleButton do
         if Toggle then
             Toggle = false
             R3TH:toggle()
@@ -914,7 +914,8 @@ end, function()
 end)
 
 Settings:addToggle("UI Toggle Button", false, function(Value)
-    if Value then
+    ChangeUIToggleButton = Value
+    if ChangeUIToggleButton then
         ToggleUI()
     else
         for i,v in pairs (CoreGui:GetChildren()) do
