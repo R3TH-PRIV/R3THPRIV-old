@@ -221,10 +221,6 @@ function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
 end
 
-function SprayPaintOwnedCheck()
-    if SprayPaintOwned ~= true then sendnotification("You dont have Spray Paint, You will need it to be able to use this.") return true end
-end
-
 function CreateHighlight() -- outdated af will be improved
     for i, v in pairs(Players:GetChildren()) do
         if v ~= LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
@@ -1420,7 +1416,6 @@ LoopTarget:addDropdown("Select Player", playerlist, function(Value)
 end)
 
 function UseSpray(Target, SprayId, Side, Size, Part, Position, Offset, Repeat)
-    if SprayPaintOwnedCheck() == true then return end
     if Target == "All" then
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
@@ -1565,20 +1560,19 @@ LoopTarget:addToggle("Rain Guns On Player", false, function(raingunsplayer) -- h
 end)
 
 LoopTarget:addToggle("Auto Equip Spray Paint", false, function(Value)
-    if SprayPaintOwnedCheck() == true then return end
-    ChangeAutoEquipSprayPaint = Value
-    while ChangeAutoEquipSprayPaint do
-        function ChangeAutoEquipSprayPaintFix()
-        ReplicateToy:InvokeServer("SprayPaint")
-        for _,v in next, Backpack:GetChildren() do
-            if v.Name == "SprayPaint" then
-                local equip = Backpack.SprayPaint
-                equip.Parent = Character
+    autoequipsprayloop = Value
+    while autoequipsprayloop do
+        function autoequipsprayloopfix()
+        game:GetService("ReplicatedStorage").Remotes.Extras.ReplicateToy:InvokeServer("SprayPaint")
+        for _,obj in next, game.Players.LocalPlayer.Backpack:GetChildren() do
+            if obj.Name == "SprayPaint" then
+                local equip = game.Players.LocalPlayer.Backpack.SprayPaint
+                equip.Parent = game.Players.LocalPlayer.Character
             end
         end
     end
     wait()
-    pcall(ChangeAutoEquipSprayPaintFix)
+    pcall(autoequipsprayloopfix)
     end
 end)
 
@@ -1693,7 +1687,6 @@ FE:addToggle("FE Cum Aura", false, function(fecum)
 end)
 
 Antijoin:addToggle("Anti Join", false, function(Value)
-    if SprayPaintOwnedCheck() == true then return end
     ChangeAntiJoin = Value
     while ChangeAntiJoin do
         function ChangeAntiJoinFix()
@@ -1838,62 +1831,6 @@ end)
 
 Credits:addButton("Pethicial", function()
 end)
-
-
---------------------------------------------------------------------------------------SPRAYPAINT CHECK----------------------------------------------------------------------------------------
-local SprayPaintOwned = false
-local eventConnections = {}
-
-local function checkSprayPaint()
-    local Toys = Backpack:FindFirstChild("Toys")
-
-    if Toys and Toys:FindFirstChild("SprayPaint") then
-        SprayPaintOwned = true
-        return
-    end
-
-    if not SprayPaintOwned then
-        if Backpack:FindFirstChild("SprayPaint") then
-            SprayPaintOwned = true
-            return
-        end
-
-        if Character and Character:FindFirstChild("SprayPaint") then
-            SprayPaintOwned = true
-            return
-        end
-    end
-end
-
-local function onPlayerDeath(Character)
-    print("[ R3TH PRIV ] Player died while checking for SprayPaint.")
-    checkSprayPaint()
-end
-
-local function connectDeathEvent()
-    if Character then
-        table.insert(eventConnections, Humanoid.Died:Connect(function()
-            onPlayerDeath(Character)
-        end))
-    end
-end
-
-connectDeathEvent()
-
-checkSprayPaint()
-
-if SprayPaintOwned then
-    print("[ R3TH PRIV ] SprayPaint is owned.")
-else
-    print("[ R3TH PRIV ] SprayPaint is not owned.")
-end
-
-local function cleanup()
-    for _, connection in ipairs(eventConnections) do
-        connection:Disconnect()
-    end
-    eventConnections = {}
-end
 
 --------------------------------------------------------------------------------------FINISHED----------------------------------------------------------------------------------------
 R3TH:SelectPage(R3TH.pages[1], true)
