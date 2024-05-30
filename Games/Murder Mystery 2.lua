@@ -12,6 +12,8 @@ repeat wait() until game:IsLoaded()
 
 print("[ R3TH PRIV ]: R3TH PRIV Murder Mystery 2 loading...")
 
+local TimeStart = tick()
+
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -57,7 +59,7 @@ local Credits = Settings0:addSection("Credits")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Backpack = LocalPlayer.Backpack
+local Backpack = LocalPlayer:WaitForChild("Backpack")
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
@@ -1837,30 +1839,69 @@ end)
 Credits:addButton("Pethicial", function()
 end)
 
-repeat wait() until Backpack.Toys
 
-for _,v in next, Backpack.Toys:GetChildren() do
-    if v.Name == "SprayPaint" then
+--------------------------------------------------------------------------------------SPRAYPAINT CHECK----------------------------------------------------------------------------------------
+local SprayPaintOwned = false
+local eventConnections = {}
+
+local function checkSprayPaint()
+    local Toys = Backpack:FindFirstChild("Toys")
+
+    if Toys and Toys:FindFirstChild("SprayPaint") then
         SprayPaintOwned = true
-    elseif SprayPaintOwned ~= true then
-        for _,v in next, Backpack:GetChildren() do
-            if v.Name == "SprayPaint" then
-                SprayPaintOwned = true
-            elseif SprayPaintOwned ~= true then
-                if Character:FindFirstChild("SprayPaint") then
-                    SprayPaintOwned = true
-                end
-            end
-        end
-        wait()
+        return
     end
+
+    if not SprayPaintOwned then
+        if Backpack:FindFirstChild("SprayPaint") then
+            SprayPaintOwned = true
+            return
+        end
+
+        if Character and Character:FindFirstChild("SprayPaint") then
+            SprayPaintOwned = true
+            return
+        end
+    end
+end
+
+local function onPlayerDeath(Character)
+    print("[ R3TH PRIV ] Player died while checking for SprayPaint.")
+    checkSprayPaint()
+end
+
+local function connectDeathEvent()
+    if Character then
+        table.insert(eventConnections, Humanoid.Died:Connect(function()
+            onPlayerDeath(Character)
+        end))
+    end
+end
+
+connectDeathEvent()
+
+checkSprayPaint()
+
+if SprayPaintOwned then
+    print("[ R3TH PRIV ] SprayPaint is owned.")
+else
+    print("[ R3TH PRIV ] SprayPaint is not owned.")
+end
+
+local function cleanup()
+    for _, connection in ipairs(eventConnections) do
+        connection:Disconnect()
+    end
+    eventConnections = {}
 end
 
 --------------------------------------------------------------------------------------FINISHED----------------------------------------------------------------------------------------
 R3TH:SelectPage(R3TH.pages[1], true)
 
-print("[ R3TH PRIV ]: Successfully loaded the script!")
-sendnotification("Successfully loaded the script!")
+local TimeEnd = tick()
+local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
+print("[ R3TH PRIV ]: Successfully loaded the script in " .. TotalTime .. "s.")
+sendnotification("Successfully loaded the script in " .. TotalTime .. "s.")
 
 roleupdater = true
 while roleupdater do
