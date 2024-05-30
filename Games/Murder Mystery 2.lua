@@ -235,11 +235,11 @@ function UpdateHighlights()
     for _, v in pairs(Players:GetChildren()) do
         if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
             Highlight = v.Character:FindFirstChild("Highlight")
-            if v.Name == Sheriff and IsAlive(v) and sheriffchams == true then
+            if v.Name == Sheriff and IsAlive(v) and ChangeSheriffCham == true then
                 Highlight.FillColor = Color3.fromRGB(0, 0, 225)
-            elseif v.Name == Murder and IsAlive(v) and murdchams == true then
+            elseif v.Name == Murder and IsAlive(v) and ChangeMurdererCham == true then
                 Highlight.FillColor = Color3.fromRGB(225, 0, 0)
-            elseif v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) and sheriffchams == true then
+            elseif v.Name == Hero and IsAlive(v) and not IsAlive(Players[Sheriff]) and ChangeSheriffCham == true then
                 Highlight.FillColor = Color3.fromRGB(255, 250, 0)
             else
                 Highlight.FillColor = Color3.fromRGB(0, 225, 0)
@@ -261,7 +261,7 @@ function IsAlive(Player)
 end
 
 function refreshchams()
-    for i,v in pairs (workspace:GetDescendants()) do
+    for i,v in pairs (Workspace:GetDescendants()) do
         if v.Name == "Highlight" then
             v:Destroy()
         end
@@ -1116,14 +1116,11 @@ Murderer:addToggle("Knife Aura", false, function(Value)
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and LocalPlayer:DistanceFromCharacter(player.Character.HumanoidRootPart.Position) < KnifeAuraSlider then
                 EquipKnife()
-                wait()
-                local knife = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Knife")
-                wait()
                 local humanoidRootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
                 if humanoidRootPart then
                     Stab()
-                    firetouchinterest(humanoidRootPart, knife.Handle, 1)
-                    firetouchinterest(humanoidRootPart, knife.Handle, 0)
+                    firetouchinterest(humanoidRootPart, knifetool.Handle, 1)
+                    firetouchinterest(humanoidRootPart, knifetool.Handle, 0)
                 end
             end
         end
@@ -1213,7 +1210,7 @@ Teleports:addDropdown("Teleport to Player", playerlist, function(Value)
     end
 end)
 
-Chams:addToggle("Player Chams", false, function(playerchams)
+Chams:addToggle("Player Chams", false, function(playerchams) -- not improved yet
     playerchamsloop = playerchams
     while playerchamsloop do
         function playerchamsloopfix()
@@ -1457,12 +1454,12 @@ end
 LoopTarget:addToggle("Loop Reset", false, function(Value)
     ChangeLoopResetPlayer = Value
     while ChangeLoopResetPlayer and task.wait() do
-        function ChangeLoopResetPlayerFix() -- I will change this just not enough time right now
+        function ChangeLoopResetPlayerFix()
         UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
     end
     wait()
-    pcall(ChangeLoopResetPlayer)
-   end
+    pcall(ChangeLoopResetPlayerFix)
+    end
 end)
 
 LoopTarget:addToggle("Loop Void", false, function(Value)
@@ -1479,13 +1476,9 @@ end)
 LoopTarget:addToggle("Give Noclip", false, function(Value)
     ChangeLoopVoidPlayer = Value
     while ChangeLoopVoidPlayer and task.wait() do
-        function ChangeLoopVoidPlayerFix()
         UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
         UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
         wait(12)
-    end
-    wait()
-    pcall(ChangeLoopVoidPlayerFix)
     end
 end)
 
@@ -1843,6 +1836,8 @@ end)
 
 Credits:addButton("Pethicial", function()
 end)
+
+repeat wait() until Backpack.Toys
 
 for _,v in next, Backpack.Toys:GetChildren() do
     if v.Name == "SprayPaint" then
