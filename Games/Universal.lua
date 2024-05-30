@@ -12,6 +12,8 @@ repeat wait() until game:IsLoaded()
 
 print("[ R3TH PRIV ]: R3TH PRIV Universal loading...")
 
+local TimeStart = tick()
+
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -932,5 +934,7 @@ end)
 --------------------------------------------------------------------------------------FINISHED----------------------------------------------------------------------------------------
 R3TH:SelectPage(R3TH.pages[1], true)
 
-print("[ R3TH PRIV ]: Successfully loaded the script!")
-sendnotification("Successfully loaded the script!")
+local TimeEnd = tick()
+local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
+print("[ R3TH PRIV ]: Successfully loaded the script in " .. TotalTime .. "s.")
+sendnotification("Successfully loaded the script in " .. TotalTime .. "s.")
