@@ -13,13 +13,13 @@ repeat wait() until game:IsLoaded()
 print("[ R3TH PRIV ]: R3TH PRIV Universal loading...")
 
 local TimeStart = tick()
-
+R3THEXECUTOR = "Supported"
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/VenyxUI.lua"))()
-local R3TH = library.new("R3TH PRIV | .gg/pethicial")
+local R3TH = library.new("R3TH PRIV | " .. R3THEXECUTOR .. " | .gg/pethicial")
 
 local Universal = R3TH:addPage("Universal", 10734923549)
 local Player = Universal:addSection("Player")
@@ -198,49 +198,6 @@ end
 
 function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
-end
-
-local function getUserAvatarByUserId(ChangeSniperUserId)
-    wait()
-    local url = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds="..ChangeSniperUserId.."&size=48x48&format=Png&isCircular=false"
-    local response = request({Url = url}).Body
-    return HttpService:JSONDecode(response).data[1].imageUrl
-end
-
-local function getUserAvatarsByTokens(playerTokens)
-    local url = "https://thumbnails.roblox.com/v1/batch"
-    local data = {}
-    for _, token in ipairs(playerTokens) do
-        wait()
-        table.insert(data, {
-            token = token,
-            type = "AvatarHeadShot",
-            size = "48x48",
-            isCircular = false
-        })
-    end
-    data = HttpService:JSONEncode(data)
-    local headers = {
-        ["Content-Type"] = "application/json"
-    }
-    local response = request({
-        Url = url,
-        Method = "POST",
-        Headers = headers,
-        Body = data
-    }).Body
-    local imageUrls = {}
-    for _, item in ipairs(HttpService:JSONDecode(response).data) do
-        wait()
-        table.insert(imageUrls, item.imageUrl)
-    end
-    return imageUrls
-end
-
-local function stopsnipersearch()
-    killsearchbutton = false
-    sendnotification("Search Canceled.")
-    SniperText.Text = "Join a player by just knowing what game their in!"
 end
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
@@ -1322,7 +1279,7 @@ end)
 SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
 
 Sniper:addTextbox("Target User Id", nil, function(Value, focusLost)
-    ChangeSniperUserId = Value
+    ChangeTargetUserId = Value
 end)
 
 Sniper:addTextbox("Target Place Id", nil, function(Value, focusLost)
@@ -1333,69 +1290,8 @@ Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
     ChangeMinPlayerCount = Value
 end)
 
-Sniper:addButton("Search", function()
-    killsearchbutton = false
-    if startsearchbutton then
-        stopsnipersearch()
-        return
-    end
-    startsearchbutton = true
-    SniperText.Text = "Retrieving user info..."
-    wait()
-    
-    local userAvatarUrl = getUserAvatarByUserId(ChangeSniperUserId)
-    
-    local cursor = ""
-    local sniperfound = false
-    
-    local sniperpage = 1
-    
-    repeat
-        if killsearchbutton then
-            stopsnipersearch()
-            return
-        end
-        wait()
-        SniperText.Text = "Retrieving server list... (Page " .. sniperpage .. ")"
-        local url = "https://games.roblox.com/v1/games/"..ChangeTargetPlaceId.."/servers/Public?sortOrder=Asc&limit=100"
-        if cursor then
-            url = url .. "&cursor=" .. cursor
-        end
-        local response = request({ Url = url }).Body
-        local data = HttpService:JSONDecode(response)
-        for i, server in ipairs(data.data) do
-            if killsearchbutton then
-                stopsnipersearch()
-                return
-            end
-            wait()
-            if server.playing < ChangeMinPlayerCount then continue end
-            SniperText.Text = "Scanning servers (Page " .. sniperpage .. " - " .. i .. "/" .. #data.data .. " - " .. server.playing .. " online)"
-            local serverAvatarUrls = getUserAvatarsByTokens(server.playerTokens)
-            for _, serverAvatarUrl in ipairs(serverAvatarUrls) do
-                if killsearchbutton then
-                    stopsnipersearch()
-                    return
-                end
-                wait()
-                if serverAvatarUrl == userAvatarUrl then
-                    SniperText.Text = "Player found, Teleporting..."
-                    TeleportService:TeleportToPlaceInstance(ChangeTargetPlaceId, server.id, LocalPlayer)
-                    wait(0.1)
-                    sniperfound = true
-                    break
-                end
-            end
-            if sniperfound then break end
-        end
-    
-        cursor = data.nextPageCursor or ""
-        sniperpage = sniperpage + 1
-    until sniperfound or cursor == ""
-    
-    if not sniperfound then
-        SniperText.Text = "The player was either not present at the designated game or might be on a private server."
-    end
+Sniper:addToggle("(REMOVED FOR NOW)", false, function(Value)
+
 end)
 
 --------------------------------------------------------------------------------------SCRIPTS----------------------------------------------------------------------------------------
