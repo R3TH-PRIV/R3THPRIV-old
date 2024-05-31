@@ -661,102 +661,7 @@ do
 		end)
 	end
 
-	function section:addMultiDropdown(title, options, callback)
-		local dropdown = utility:Create("Frame", {
-			Name = "MultiDropdown",
-			Parent = self.container,
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 30),
-			ClipsDescendants = true
-		}, {
-			utility:Create("UIListLayout", {
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				Padding = UDim.new(0, 4)
-			}),
-			utility:Create("ImageLabel", {
-				Name = "Header",
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, 0, 0, 30),
-				ZIndex = 2,
-				Image = "rbxassetid://5028857472",
-				ImageColor3 = themes.DarkContrast,
-				ScaleType = Enum.ScaleType.Slice,
-				SliceCenter = Rect.new(2, 2, 298, 298)
-			}, {
-				utility:Create("TextLabel", {
-					Name = "Title",
-					BackgroundTransparency = 1,
-					Position = UDim2.new(0, 10, 0.5, 0),
-					AnchorPoint = Vector2.new(0, 0.5),
-					Size = UDim2.new(1, -30, 1, 0),
-					ZIndex = 3,
-					Font = Enum.Font.Gotham,
-					Text = title,
-					TextColor3 = themes.TextColor,
-					TextSize = 12,
-					TextTransparency = 0.1,
-					TextXAlignment = Enum.TextXAlignment.Left
-				}),
-				utility:Create("ImageButton", {
-					Name = "Button",
-					BackgroundTransparency = 1,
-					Position = UDim2.new(1, -28, 0.5, -9),
-					Size = UDim2.new(0, 18, 0, 18),
-					ZIndex = 3,
-					Image = "rbxassetid://5012539403",
-					ImageColor3 = themes.TextColor,
-					SliceCenter = Rect.new(2, 2, 298, 298)
-				})
-			}),
-			utility:Create("Frame", {
-				Name = "Options",
-				BackgroundTransparency = 1,
-				Size = UDim2.new(1, 0, 0, 0),
-				ClipsDescendants = true
-			}, {
-				utility:Create("UIListLayout", {
-					SortOrder = Enum.SortOrder.LayoutOrder,
-					Padding = UDim.new(0, 4)
-				})
-			})
-		})
-		
-		table.insert(self.modules, dropdown)
-		
-		local header = dropdown.Header
-		local optionsFrame = dropdown.Options
-		local expanded = false
-		
-		for i, option in ipairs(options) do
-			local optionButton = utility:Create("TextButton", {
-				Name = option,
-				Parent = optionsFrame,
-				BackgroundTransparency = 1,
-				BorderSizePixel = 0,
-				Size = UDim2.new(1, 0, 0, 20),
-				ZIndex = 2,
-				Font = Enum.Font.Gotham,
-				Text = option,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextTransparency = 0.1
-			})
-			
-			optionButton.MouseButton1Click:Connect(function()
-				optionButton.TextTransparency = 0.5 - optionButton.TextTransparency
-			end)
-		end
-		
-		header.Button.MouseButton1Click:Connect(function()
-			expanded = not expanded
-			optionsFrame.Size = expanded and UDim2.new(1, 0, 0, #options * 24) or UDim2.new(1, 0, 0, 0)
-			callback(expanded)
-		end)
-		
-		return dropdown
-	end	
-
-	function section:addParagraph(text)
+	function section:addParagraph(title, text)
 		local paragraphContainer = utility:Create("ImageLabel", {
 			Name = "ParagraphContainer",
 			Parent = self.container,
@@ -769,13 +674,28 @@ do
 			SliceCenter = Rect.new(2, 2, 298, 298)
 		})
 	
+		local titleLabel = utility:Create("TextLabel", {
+			Name = "TitleLabel",
+			Parent = paragraphContainer,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 10, 0, 5),
+			Size = UDim2.new(1, -20, 0, 16),
+			ZIndex = 3,
+			Font = Enum.Font.GothamSemibold,
+			Text = title,
+			TextColor3 = themes.TextColor,
+			TextSize = 12,
+			TextWrapped = true,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextYAlignment = Enum.TextYAlignment.Top
+		})
+	
 		local paragraph = utility:Create("TextLabel", {
 			Name = "Paragraph",
 			Parent = paragraphContainer,
 			BackgroundTransparency = 1,
-			Position = UDim2.new(0, 10, 0.5, 0),
-			AnchorPoint = Vector2.new(0, 0.5),
-			Size = UDim2.new(1, -20, 1, 0),
+			Position = UDim2.new(0, 10, 0, 26),
+			Size = UDim2.new(1, -20, 1, -26),
 			ZIndex = 3,
 			Font = Enum.Font.Gotham,
 			Text = text,
@@ -783,17 +703,16 @@ do
 			TextSize = 12,
 			TextWrapped = true,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			TextYAlignment = Enum.TextYAlignment.Center
+			TextYAlignment = Enum.TextYAlignment.Top
 		})
 	
 		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(paragraph.AbsoluteSize.X, math.huge))
-		paragraphContainer.Size = UDim2.new(1, 0, 0, textSize.Y + 20)
+		paragraphContainer.Size = UDim2.new(1, 0, 0, textSize.Y + 36)
 	
 		table.insert(self.modules, paragraphContainer)
 	
 		return paragraphContainer, paragraph
 	end	
-	
 	
 	function section:addButton(title, callback)
 		local button = utility:Create("ImageButton", {
