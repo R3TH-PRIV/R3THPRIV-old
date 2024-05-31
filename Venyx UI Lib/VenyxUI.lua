@@ -674,9 +674,8 @@ do
 			SliceCenter = Rect.new(2, 2, 298, 298)
 		})
 	
-		local titleLabel
 		if title then
-			titleLabel = utility:Create("TextLabel", {
+			local titleLabel = utility:Create("TextLabel", {
 				Name = "TitleLabel",
 				Parent = paragraphContainer,
 				BackgroundTransparency = 1,
