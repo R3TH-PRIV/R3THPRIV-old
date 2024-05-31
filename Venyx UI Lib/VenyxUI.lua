@@ -1,7 +1,8 @@
 -- init
+print("ye")
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
-print("ye")
+
 -- services
 local input = game:GetService("UserInputService")
 local run = game:GetService("RunService")
@@ -1954,7 +1955,6 @@ do
 		return module
 	end
 
-	
 	function section:addParagraph(title, text)
 		local paragraphContainer = utility:Create("ImageLabel", {
 			Name = "ParagraphContainer",
@@ -1968,8 +1968,9 @@ do
 			SliceCenter = Rect.new(2, 2, 298, 298)
 		})
 	
+		local titleLabel
 		if title then
-			local titleLabel = utility:Create("TextLabel", {
+			titleLabel = utility:Create("TextLabel", {
 				Name = "TitleLabel",
 				Parent = paragraphContainer,
 				BackgroundTransparency = 1,
@@ -2005,13 +2006,9 @@ do
 			TextYAlignment = Enum.TextYAlignment.Top
 		})
 	
-		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(paragraph.AbsoluteSize.X, math.huge))
-		paragraphContainer.Size = title and UDim2.new(1, 0, 0, textSize.Y + 36) or UDim2.new(1, 0, 0, textSize.Y + 11)
-	
-		table.insert(self.modules, paragraphContainer)
-	
-		return paragraphContainer, paragraph
-	end
+		local module = { Container = paragraphContainer, TitleLabel = titleLabel, Paragraph = paragraph }
+		return module
+	end	
 
 	-- class functions
 
