@@ -488,7 +488,6 @@ end)
 local Freecam = Instance.new("ScreenGui")
 
 Freecam.Name = "Freecam"
-Freecam.Parent = LocalPlayer.PlayerGui
 Freecam.ResetOnSpawn = false
 
 function FreeCameraWrap()
