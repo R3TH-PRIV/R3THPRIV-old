@@ -2096,58 +2096,62 @@ do
 			Parent = self.container,
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 0, 50),
-		}, {
-			utility:Create("TextLabel", {
-				Name = "Title",
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0, 6),
-				Size = UDim2.new(0.5, 0, 0, 16),
-				Font = Enum.Font.Gotham,
-				Text = title,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextXAlignment = Enum.TextXAlignment.Left
-			}),
-			utility:Create("TextBox", {
-				Name = "TextBox",
-				BackgroundTransparency = 1,
-				BorderSizePixel = 0,
-				Position = UDim2.new(1, -30, 0, 6),
-				Size = UDim2.new(0, 20, 0, 16),
-				Font = Enum.Font.GothamSemibold,
-				Text = default or min,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextXAlignment = Enum.TextXAlignment.Right
-			}),
-			utility:Create("Frame", {
-				Name = "SliderFrame",
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0, 28),
-				Size = UDim2.new(1, -20, 0, 16),
-			}, {
-				utility:Create("TextLabel", {
-					Name = "Bar",
-					BackgroundTransparency = 1,
-					Size = UDim2.new(1, 0, 0, 4),
-					BackgroundColor3 = themes.LightContrast
-				}),
-				utility:Create("TextButton", {
-					Name = "Circle",
-					BackgroundTransparency = 1,
-					Position = UDim2.new(0, 0, 0.5, -5),
-					Size = UDim2.new(0, 10, 0, 10),
-					Text = "",
-					ZIndex = 3,
-					AutoButtonColor = false,
-					BackgroundColor3 = themes.TextColor,
-				})
-			})
 		})
 	
-		local textbox = slider.TextBox
-		local circle = slider.SliderFrame.Circle
-		local bar = slider.SliderFrame.Bar
+		local titleTextLabel = utility:Create("TextLabel", {
+			Name = "Title",
+			Parent = slider,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 10, 0, 6),
+			Size = UDim2.new(0.5, 0, 0, 16),
+			Font = Enum.Font.Gotham,
+			Text = title,
+			TextColor3 = themes.TextColor,
+			TextSize = 12,
+			TextXAlignment = Enum.TextXAlignment.Left
+		})
+	
+		local textBox = utility:Create("TextBox", {
+			Name = "TextBox",
+			Parent = slider,
+			BackgroundTransparency = 1,
+			BorderSizePixel = 0,
+			Position = UDim2.new(1, -30, 0, 6),
+			Size = UDim2.new(0, 20, 0, 16),
+			Font = Enum.Font.GothamSemibold,
+			Text = default or min,
+			TextColor3 = themes.TextColor,
+			TextSize = 12,
+			TextXAlignment = Enum.TextXAlignment.Right
+		})
+	
+		local sliderFrame = utility:Create("Frame", {
+			Name = "SliderFrame",
+			Parent = slider,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 10, 0, 28),
+			Size = UDim2.new(1, -20, 0, 16),
+		})
+	
+		local bar = utility:Create("TextLabel", {
+			Name = "Bar",
+			Parent = sliderFrame,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 4),
+			BackgroundColor3 = themes.LightContrast
+		})
+	
+		local circle = utility:Create("TextButton", {
+			Name = "Circle",
+			Parent = sliderFrame,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 0, 0.5, -5),
+			Size = UDim2.new(0, 10, 0, 10),
+			Text = "",
+			ZIndex = 3,
+			AutoButtonColor = false,
+			BackgroundColor3 = themes.TextColor,
+		})
 	
 		local function updateValue(newValue)
 			callback(newValue)
@@ -2169,20 +2173,20 @@ do
 			game:GetService("UserInputService").TouchMoved:Disconnect()
 		end
 	
-		slider.SliderFrame.MouseButton1Down:Connect(function()
+		circle.MouseButton1Down:Connect(function()
 			game:GetService("UserInputService").TouchMoved:Connect(onTouchMoved)
 			game:GetService("UserInputService").TouchEnded:Connect(onTouchEnded)
 		end)
 	
-		textbox.FocusLost:Connect(function()
-			local newValue = tonumber(textbox.Text) or default or min
+		textBox.FocusLost:Connect(function()
+			local newValue = tonumber(textBox.Text) or default or min
 			newValue = math.clamp(newValue, min, max)
-			textbox.Text = tostring(newValue)
+			textBox.Text = tostring(newValue)
 			updateValue(newValue)
 		end)
 	
 		return slider
-	end	
+	end
 	
 	function section:updateDropdown(dropdown, title, list, callback)
 		dropdown = self:getModule(dropdown)
