@@ -661,6 +661,31 @@ do
 			close()
 		end)
 	end
+
+	function section:addParagraph(text)
+		local paragraph = utility:Create("TextLabel", {
+			Name = "Paragraph",
+			Parent = self.container,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 0),
+			ZIndex = 2,
+			Font = Enum.Font.Gotham,
+			Text = text,
+			TextColor3 = themes.TextColor,
+			TextSize = 12,
+			TextWrapped = true,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextYAlignment = Enum.TextYAlignment.Top
+		})
+	
+		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(self.container.AbsoluteSize.X - 20, math.huge))
+		paragraph.Size = UDim2.new(1, 0, 0, textSize.Y)
+	
+		table.insert(self.modules, paragraph)
+	
+		return paragraph
+	end
+	
 	
 	function section:addButton(title, callback)
 		local button = utility:Create("ImageButton", {
