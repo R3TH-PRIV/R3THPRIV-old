@@ -1,5 +1,5 @@
 -- Fixed and added a few things
-print("YEA")
+print("fixed")
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -1674,58 +1674,71 @@ do
 				})
 			})
 		})
-		
+
 		table.insert(self.modules, slider)
-		
+		--self:Resize()
+
+		local allowed = {
+			[""] = true,
+			["-"] = true
+		}
+
 		local textbox = slider.TextBox
 		local circle = slider.Slider.Bar.Fill.Circle
-		
+
 		local value = default or min
-		local dragging = false
-		
-		local function updateValue(newValue)
-			value = newValue
-			callback(value)
+		local dragging, last
+
+		local callback = function(value)
+			if callback then
+				callback(value, function(...)
+					self:updateSlider(slider, ...)
+				end)
+			end
 		end
-		
-		local function updateSliderPosition(x)
-			local barWidth = slider.Slider.Bar.AbsoluteSize.X
-			local percent = math.clamp((x - slider.Slider.Bar.AbsolutePosition.X) / barWidth, 0, 1)
-			local newValue = min + (max - min) * percent
-			
-			circle.Position = UDim2.new(percent, 0, 0.5, 0)
-			
-			return newValue
-		end
-		
-		slider.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch then
-				dragging = true
-				updateValue(updateSliderPosition(input.Position.X))
-			end
+
+		self:updateSlider(slider, nil, value, min, max)
+
+		utility:DraggingEnded(function()
+			dragging = false
 		end)
-		
-		slider.InputChanged:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch and dragging then
-				updateValue(updateSliderPosition(input.Position.X))
+
+		slider.MouseButton1Down:Connect(function(input)
+			dragging = true
+
+			while dragging do
+				utility:Tween(circle, {ImageTransparency = 0}, 0.1)
+
+				value = self:updateSlider(slider, nil, nil, min, max, value)
+				callback(value)
+
+				utility:Wait()
 			end
+
+			wait(0.5)
+			utility:Tween(circle, {ImageTransparency = 1}, 0.2)
 		end)
-		
-		slider.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.Touch then
-				dragging = false
-			end
-		end)
-		
+
 		textbox.FocusLost:Connect(function()
-			local newValue = tonumber(textbox.Text) or default or min
-			newValue = math.clamp(newValue, min, max)
-			textbox.Text = tostring(newValue)
-			updateValue(newValue)
+			if not tonumber(textbox.Text) then
+				value = self:updateSlider(slider, nil, default or min, min, max)
+				callback(value)
+			end
 		end)
-		
+
+		textbox:GetPropertyChangedSignal("Text"):Connect(function()
+			local text = textbox.Text
+
+			if not allowed[text] and not tonumber(text) then
+				textbox.Text = text:sub(1, #text - 1)
+			elseif not allowed[text] then	
+				value = self:updateSlider(slider, nil, tonumber(text) or value, min, max)
+				callback(value)
+			end
+		end)
+
 		return slider
-	end	
+	end
 	
 	function section:addDropdown(title, list, callback)
 		local dropdown = utility:Create("Frame", {
