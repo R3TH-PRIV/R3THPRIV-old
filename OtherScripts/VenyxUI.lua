@@ -663,11 +663,10 @@ do
 	end
 
 	function section:addParagraph(text)
-		local paragraphContainer = utility:Create("ImageButton", {
+		local paragraphContainer = utility:Create("ImageLabel", {
 			Name = "ParagraphContainer",
 			Parent = self.container,
 			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 30), -- Adjust the size as needed
 			ZIndex = 2,
 			Image = "rbxassetid://5028857472",
@@ -699,7 +698,6 @@ do
 	
 		return paragraphContainer
 	end
-	
 	
 	
 	function section:addButton(title, callback)
