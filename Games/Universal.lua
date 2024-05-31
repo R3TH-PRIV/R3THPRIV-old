@@ -660,7 +660,7 @@ coroutine.resume(coroutine.create(FreeCameraWrap))
 function WalkSpeedFunction()
     while ChangeWalkSpeed and task.wait() do
         if ChangeWalkSpeed then
-            Humanoid.Walkspeed = WalkSpeedSlider
+            Humanoid.WalkSpeed = WalkSpeedSlider
         else
             Humanoid.WalkSpeed = DefaultWalkSpeed
         end
