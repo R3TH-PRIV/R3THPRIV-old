@@ -1,5 +1,5 @@
 -- Fixed and added a few things
-
+print("NEW")
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
