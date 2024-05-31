@@ -693,12 +693,15 @@ do
 			})
 		end
 	
+		local positionOffset = title and UDim2.new(0, 10, 0, 26) or UDim2.new(0, 10, 0, 5)
+		local sizeOffset = title and UDim2.new(1, -20, 1, -26) or UDim2.new(1, -20, 1, -5)
+	
 		local paragraph = utility:Create("TextLabel", {
 			Name = "Paragraph",
 			Parent = paragraphContainer,
 			BackgroundTransparency = 1,
-			Position = title and UDim2.new(0, 10, 0, 26) or UDim2.new(0, 10, 0, 5),
-			Size = title and UDim2.new(1, -20, 1, -26) or UDim2.new(1, -20, 1, -5),
+			Position = positionOffset,
+			Size = sizeOffset,
 			ZIndex = 3,
 			Font = Enum.Font.Gotham,
 			Text = text,
