@@ -1,5 +1,5 @@
 -- init
-print("ye")
+print("yeh")
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
