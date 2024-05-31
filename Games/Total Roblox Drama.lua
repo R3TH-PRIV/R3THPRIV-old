@@ -10,7 +10,6 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
-
 print("[ R3TH PRIV ]: R3TH PRIV Total Roblox Drama loading...")
 
 local TimeStart = tick()
@@ -733,7 +732,7 @@ end
 function WalkSpeedFunction()
     while ChangeWalkSpeed and task.wait() do
         if ChangeWalkSpeed then
-            Humanoid.Walkspeed = WalkSpeedSlider
+            Humanoid.WalkSpeed = WalkSpeedSlider
         else
             Humanoid.WalkSpeed = DefaultWalkSpeed
         end
