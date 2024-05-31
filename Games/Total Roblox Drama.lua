@@ -1453,6 +1453,7 @@ if MapName ~= "Lobby" then
     Farm:addToggle("Auto Math Triva", false, function(Value)
         ChangeAutoMathTriva = Value
         while ChangeAutoMathTriva and task.wait() do
+            function ChangeAutoMathTrivaFix()
             LoopCount = 0
             for i = 1, 10 do
                 if ChangeAutoMathTriva then
@@ -1473,6 +1474,9 @@ if MapName ~= "Lobby" then
                     task.wait(ChangeAnswerDelay)
                 end
             end
+        end
+        wait()
+        pcall(ChangeAutoMathTrivaFix)
         end
     end)
 
