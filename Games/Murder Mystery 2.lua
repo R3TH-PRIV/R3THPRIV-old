@@ -72,14 +72,16 @@ local CoreGui = game:GetService("CoreGui")
 local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local ContextActionService = game:GetService("ContextActionService")
 local Remotes = ReplicatedStorage.Remotes
 local Gameplay = Remotes.Gameplay
 local ReplicateToy = Remotes.Extras.ReplicateToy
 local knifetool = Backpack:FindFirstChild("Knife")
+local TrapSystem = ReplicatedStorage:WaitForChild("TrapSystem")
+local PlaceTrap = TrapSystem:WaitForChild("PlaceTrap")
 local DefaultChatSystemChatEvents = ReplicatedStorage.DefaultChatSystemChatEvents
 local SayMessageRequest = DefaultChatSystemChatEvents.SayMessageRequest
 local Trade = ReplicatedStorage.Trade
-
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
 local DefaultJumpPower = Humanoid.JumpPower
@@ -311,10 +313,6 @@ function TeleportPlayer(Position, Offset)
     HumanoidRootPart.CFrame = Position * Offset
 end
 
-function dropgun()
-    N:SendKeyEvent(true,"Backspace",false,game)
-end
-
 if R3THEXECUTOR == "Supported" then
     local mt = getrawmetatable(game)
     local old = {}
@@ -473,7 +471,7 @@ end)
 
 Players.PlayerRemoving:Connect(function(Value)
     for i,v in pairs(playerlist)do
-        if v == Value.Name then  
+        if v == Value.Name then
             table.remove(playerlist,i)
             if antijoinloop then table.remove(antijoinlist,i) end
         end
@@ -485,6 +483,437 @@ LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     Humanoid = Character:WaitForChild("Humanoid")
     HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 end)
+
+-- Free Camera --
+local Freecam = Instance.new("ScreenGui")
+
+Freecam.Name = "Freecam"
+Freecam.Parent = LocalPlayer.PlayerGui
+Freecam.ResetOnSpawn = false
+
+function FreeCameraWrap()
+    local script = Instance.new("LocalScript")
+    script.Parent = Freecam
+
+    local pi    = math.pi
+    local abs   = math.abs
+    local clamp = math.clamp
+    local exp   = math.exp
+    local rad   = math.rad
+    local sign  = math.sign
+    local sqrt  = math.sqrt
+    local tan   = math.tan
+    if not LocalPlayer then
+        Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+        LocalPlayer = Players.LocalPlayer
+    end
+    
+    local Camera = Workspace.CurrentCamera
+    Workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+        local newCamera = Workspace.CurrentCamera
+        if newCamera then
+            Camera = newCamera
+        end
+    end)
+        
+    local TOGGLE_INPUT_PRIORITY = Enum.ContextActionPriority.Low.Value
+    local INPUT_PRIORITY = Enum.ContextActionPriority.High.Value
+    
+    local NAV_GAIN = Vector3.new(1, 1, 1)*64
+    local PAN_GAIN = Vector2.new(0.75, 1)*8
+    local FOV_GAIN = 300
+    
+    local PITCH_LIMIT = rad(90)
+    
+    local VEL_STIFFNESS = 1.5
+    local PAN_STIFFNESS = 1.0
+    local FOV_STIFFNESS = 4.0
+        
+    local Spring = {} do
+        Spring.__index = Spring
+    
+        function Spring.new(freq, pos)
+            local self = setmetatable({}, Spring)
+            self.f = freq
+            self.p = pos
+            self.v = pos*0
+            return self
+        end
+    
+        function Spring:Update(dt, goal)
+            local f = self.f*2*pi
+            local p0 = self.p
+            local v0 = self.v
+    
+            local offset = goal - p0
+            local decay = exp(-f*dt)
+    
+            local p1 = goal + (v0*dt - offset*(f*dt + 1))*decay
+            local v1 = (f*dt*(offset*f - v0) + v0)*decay
+    
+            self.p = p1
+            self.v = v1
+    
+            return p1
+        end
+    
+        function Spring:Reset(pos)
+            self.p = pos
+            self.v = pos*0
+        end
+    end
+    
+    local cameraPos = Vector3.new()
+    local cameraRot = Vector2.new()
+    local cameraFov = 0
+    
+    local velSpring = Spring.new(VEL_STIFFNESS, Vector3.new())
+    local panSpring = Spring.new(PAN_STIFFNESS, Vector2.new())
+    local fovSpring = Spring.new(FOV_STIFFNESS, 0)
+    
+    local Input = {} do
+        local thumbstickCurve do
+            local K_CURVATURE = 2.0
+            local K_DEADZONE = 0.15
+    
+            local function fCurve(x)
+                return (exp(K_CURVATURE*x) - 1)/(exp(K_CURVATURE) - 1)
+            end
+    
+            local function fDeadzone(x)
+                return fCurve((x - K_DEADZONE)/(1 - K_DEADZONE))
+            end
+    
+            function thumbstickCurve(x)
+                return sign(x)*clamp(fDeadzone(abs(x)), 0, 1)
+            end
+        end
+    
+        local gamepad = {
+            ButtonX = 0,
+            ButtonY = 0,
+            DPadDown = 0,
+            DPadUp = 0,
+            ButtonL2 = 0,
+            ButtonR2 = 0,
+            Thumbstick1 = Vector2.new(),
+            Thumbstick2 = Vector2.new(),
+        }
+    
+        local keyboard = {
+            W = 0,
+            A = 0,
+            S = 0,
+            D = 0,
+            E = 0,
+            Q = 0,
+            U = 0,
+            H = 0,
+            J = 0,
+            K = 0,
+            I = 0,
+            Y = 0,
+            Up = 0,
+            Down = 0,
+            LeftShift = 0,
+            RightShift = 0,
+        }
+    
+        local mouse = {
+            Delta = Vector2.new(),
+            MouseWheel = 0,
+        }
+    
+        local NAV_GAMEPAD_SPEED  = Vector3.new(1, 1, 1)
+        local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
+        local PAN_MOUSE_SPEED    = Vector2.new(1, 1)*(pi/64)
+        local PAN_GAMEPAD_SPEED  = Vector2.new(1, 1)*(pi/8)
+        local FOV_WHEEL_SPEED    = 1.0
+        local FOV_GAMEPAD_SPEED  = 0.25
+        local NAV_ADJ_SPEED      = 0.75
+        local NAV_SHIFT_MUL      = 0.25
+    
+        local navSpeed = 1
+    
+        function Input.Vel(dt)
+            navSpeed = clamp(navSpeed + dt*(keyboard.Up - keyboard.Down)*NAV_ADJ_SPEED, 0.01, 4)
+    
+            local kGamepad = Vector3.new(
+                thumbstickCurve(gamepad.Thumbstick1.x),
+                thumbstickCurve(gamepad.ButtonR2) - thumbstickCurve(gamepad.ButtonL2),
+                thumbstickCurve(-gamepad.Thumbstick1.y)
+            )*NAV_GAMEPAD_SPEED
+    
+            local kKeyboard = Vector3.new(
+                keyboard.D - keyboard.A + keyboard.K - keyboard.H,
+                keyboard.E - keyboard.Q + keyboard.I - keyboard.Y,
+                keyboard.S - keyboard.W + keyboard.J - keyboard.U
+            )*NAV_KEYBOARD_SPEED
+    
+            local shift = UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+    
+            return (kGamepad + kKeyboard)*(navSpeed*(shift and NAV_SHIFT_MUL or 1))
+        end
+    
+        function Input.Pan(dt)
+            local kGamepad = Vector2.new(
+                thumbstickCurve(gamepad.Thumbstick2.y),
+                thumbstickCurve(-gamepad.Thumbstick2.x)
+            )*PAN_GAMEPAD_SPEED
+            local kMouse = mouse.Delta*PAN_MOUSE_SPEED
+            mouse.Delta = Vector2.new()
+            return kGamepad + kMouse
+        end
+    
+        function Input.Fov(dt)
+            local kGamepad = (gamepad.ButtonX - gamepad.ButtonY)*FOV_GAMEPAD_SPEED
+            local kMouse = mouse.MouseWheel*FOV_WHEEL_SPEED
+            mouse.MouseWheel = 0
+            return kGamepad + kMouse
+        end
+    
+        do
+            local function Keypress(action, state, input)
+                keyboard[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+                return Enum.ContextActionResult.Sink
+            end
+    
+            local function GpButton(action, state, input)
+                gamepad[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+                return Enum.ContextActionResult.Sink
+            end
+    
+            local function MousePan(action, state, input)
+                local delta = input.Delta
+                mouse.Delta = Vector2.new(-delta.y, -delta.x)
+                return Enum.ContextActionResult.Sink
+            end
+    
+            local function Thumb(action, state, input)
+                gamepad[input.KeyCode.Name] = input.Position
+                return Enum.ContextActionResult.Sink
+            end
+    
+            local function Trigger(action, state, input)
+                gamepad[input.KeyCode.Name] = input.Position.z
+                return Enum.ContextActionResult.Sink
+            end
+    
+            local function MouseWheel(action, state, input)
+                mouse[input.UserInputType.Name] = -input.Position.z
+                return Enum.ContextActionResult.Sink
+            end
+    
+            local function Zero(t)
+                for k, v in pairs(t) do
+                    t[k] = v*0
+                end
+            end
+    
+            function Input.StartCapture()
+                ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
+                    Enum.KeyCode.W, Enum.KeyCode.U,
+                    Enum.KeyCode.A, Enum.KeyCode.H,
+                    Enum.KeyCode.S, Enum.KeyCode.J,
+                    Enum.KeyCode.D, Enum.KeyCode.K,
+                    Enum.KeyCode.E, Enum.KeyCode.I,
+                    Enum.KeyCode.Q, Enum.KeyCode.Y,
+                    Enum.KeyCode.Up, Enum.KeyCode.Down
+                )
+                ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
+                ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
+                ContextActionService:BindActionAtPriority("FreecamGamepadButton",     GpButton,   false, INPUT_PRIORITY, Enum.KeyCode.ButtonX, Enum.KeyCode.ButtonY)
+                ContextActionService:BindActionAtPriority("FreecamGamepadTrigger",    Trigger,    false, INPUT_PRIORITY, Enum.KeyCode.ButtonR2, Enum.KeyCode.ButtonL2)
+                ContextActionService:BindActionAtPriority("FreecamGamepadThumbstick", Thumb,      false, INPUT_PRIORITY, Enum.KeyCode.Thumbstick1, Enum.KeyCode.Thumbstick2)
+            end
+    
+            function Input.StopCapture()
+                navSpeed = 1
+                Zero(gamepad)
+                Zero(keyboard)
+                Zero(mouse)
+                ContextActionService:UnbindAction("FreecamKeyboard")
+                ContextActionService:UnbindAction("FreecamMousePan")
+                ContextActionService:UnbindAction("FreecamMouseWheel")
+                ContextActionService:UnbindAction("FreecamGamepadButton")
+                ContextActionService:UnbindAction("FreecamGamepadTrigger")
+                ContextActionService:UnbindAction("FreecamGamepadThumbstick")
+            end
+        end
+    end
+    
+    local function GetFocusDistance(cameraFrame)
+        local znear = 0.1
+        local viewport = Camera.ViewportSize
+        local projy = 2*tan(cameraFov/2)
+        local projx = viewport.x/viewport.y*projy
+        local fx = cameraFrame.rightVector
+        local fy = cameraFrame.upVector
+        local fz = cameraFrame.lookVector
+    
+        local minVect = Vector3.new()
+        local minDist = 512
+    
+        for x = 0, 1, 0.5 do
+            for y = 0, 1, 0.5 do
+                local cx = (x - 0.5)*projx
+                local cy = (y - 0.5)*projy
+                local offset = fx*cx - fy*cy + fz
+                local origin = cameraFrame.p + offset*znear
+                local _, hit = Workspace:FindPartOnRay(Ray.new(origin, offset.unit*minDist))
+                local dist = (hit - origin).magnitude
+                if minDist > dist then
+                    minDist = dist
+                    minVect = offset.unit
+                end
+            end
+        end
+    
+        return fz:Dot(minVect)*minDist
+    end
+    
+    local function StepFreecam(dt)
+        local vel = velSpring:Update(dt, Input.Vel(dt))
+        local pan = panSpring:Update(dt, Input.Pan(dt))
+        local fov = fovSpring:Update(dt, Input.Fov(dt))
+    
+        local zoomFactor = sqrt(tan(rad(70/2))/tan(rad(cameraFov/2)))
+    
+        cameraFov = clamp(cameraFov + fov*FOV_GAIN*(dt/zoomFactor), 1, 120)
+        cameraRot = cameraRot + pan*PAN_GAIN*(dt/zoomFactor)
+        cameraRot = Vector2.new(clamp(cameraRot.x, -PITCH_LIMIT, PITCH_LIMIT), cameraRot.y%(2*pi))
+    
+        local cameraCFrame = CFrame.new(cameraPos)*CFrame.fromOrientation(cameraRot.x, cameraRot.y, 0)*CFrame.new(vel*NAV_GAIN*dt)
+        cameraPos = cameraCFrame.p
+    
+        Camera.CFrame = cameraCFrame
+        Camera.Focus = cameraCFrame*CFrame.new(0, 0, -GetFocusDistance(cameraCFrame))
+        Camera.FieldOfView = cameraFov
+    end
+        
+    local PlayerState = {} do
+        local mouseBehavior
+        local mouseIconEnabled
+        local cameraType
+        local cameraFocus
+        local cameraCFrame
+        local cameraFieldOfView
+        local screenGuis = {}
+        local coreGuis = {
+            Backpack = true,
+            Chat = true,
+            Health = true,
+            PlayerList = true,
+        }
+        local setCores = {
+            BadgesNotificationsActive = true,
+            PointsNotificationsActive = true,
+        }
+    
+        function PlayerState.Push()
+            for name in pairs(coreGuis) do
+                coreGuis[name] = StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType[name])
+                StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], false)
+            end
+            for name in pairs(setCores) do
+                setCores[name] = StarterGui:GetCore(name)
+                StarterGui:SetCore(name, false)
+            end
+            local playergui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+            if playergui then
+                for _, gui in pairs(playergui:GetChildren()) do
+                    if gui:IsA("ScreenGui") and gui.Enabled then
+                        screenGuis[#screenGuis + 1] = gui
+                        gui.Enabled = false
+                    end
+                end
+            end
+    
+            cameraFieldOfView = Camera.FieldOfView
+            Camera.FieldOfView = 70
+    
+            cameraType = Camera.CameraType
+            Camera.CameraType = Enum.CameraType.Custom
+    
+            cameraCFrame = Camera.CFrame
+            cameraFocus = Camera.Focus
+    
+            mouseIconEnabled = UserInputService.MouseIconEnabled
+            UserInputService.MouseIconEnabled = false
+    
+            mouseBehavior = UserInputService.MouseBehavior
+            UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+        end
+    
+        function PlayerState.Pop()
+            for name, isEnabled in pairs(coreGuis) do
+                StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], isEnabled)
+            end
+            for name, isEnabled in pairs(setCores) do
+                StarterGui:SetCore(name, isEnabled)
+            end
+            for _, gui in pairs(screenGuis) do
+                if gui.Parent then
+                    gui.Enabled = true
+                end
+            end
+    
+            Camera.FieldOfView = cameraFieldOfView
+            cameraFieldOfView = nil
+    
+            Camera.CameraType = cameraType
+            cameraType = nil
+    
+            Camera.CFrame = cameraCFrame
+            cameraCFrame = nil
+    
+            Camera.Focus = cameraFocus
+            cameraFocus = nil
+    
+            UserInputService.MouseIconEnabled = mouseIconEnabled
+            mouseIconEnabled = nil
+    
+            UserInputService.MouseBehavior = mouseBehavior
+            mouseBehavior = nil
+        end
+    end
+    
+    local function StartFreecam()
+        local cameraCFrame = Camera.CFrame
+        cameraRot = Vector2.new(cameraCFrame:toEulerAnglesYXZ())
+        cameraPos = cameraCFrame.p
+        cameraFov = Camera.FieldOfView
+    
+        velSpring:Reset(Vector3.new())
+        panSpring:Reset(Vector2.new())
+        fovSpring:Reset(0)
+    
+        PlayerState.Push()
+        RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, StepFreecam)
+        Input.StartCapture()
+    end
+    
+    local function StopFreecam()
+        Input.StopCapture()
+        RunService:UnbindFromRenderStep("Freecam")
+        PlayerState.Pop()
+    end
+    
+    do
+        local enabled = false
+    
+        function ToggleFreecam()
+            if enabled then
+                StopFreecam()
+            else
+                StartFreecam()
+            end
+            enabled = not enabled
+        end
+    end
+
+end
+coroutine.resume(coroutine.create(FreeCameraWrap))
 
 --------------------------------------------------------------------------------------KEYBINDS----------------------------------------------------------------------------------------
 function WalkSpeedFunction()
@@ -916,6 +1345,10 @@ Target:addToggle("Fling", false, function(Value)
     FlingFunction()
 end)
 
+Server:addToggle("Free Camera", false, function()
+    ToggleFreecam()
+end)
+
 Server:addToggle("RTX Shaders", false, function(Value)
     if Value then
         local Bloom = Instance.new("BloomEffect")
@@ -1149,6 +1582,13 @@ else
         GunAccuracySlider = Value
     end)
 end
+
+Innocent:addToggle("2 Lifes", false, function(Value)
+    Change2Lifes = Value
+    while Change2Lifes and task.wait() do
+        Humanoid:ChangeState(11)
+    end
+end)
 
 Innocent:addDropdown("Play Dead", {"Lay On Back", "Sit Down"}, function(Value)
     if Value == "Lay On Back" then
@@ -1386,7 +1826,7 @@ end)
 Trading:addToggle("Auto Accept Trade", false, function(Value)
     ChangeAutoAcceptTrade = Value
     while ChangeAutoAcceptTrade do
-        ReplicatedStorage.Trade.AcceptTrade:FireServer()
+        Trade.AcceptTrade:FireServer()
     end
 end)
 
@@ -1511,13 +1951,13 @@ LoopTarget:addToggle("Loop Trap Player", false, function(Value)
             for i,v in pairs(Players:GetChildren()) do
                 if v ~= LocalPlayer then
                     local Target = Players:FindFirstChild(v.Name)
-                    ReplicatedStorage:WaitForChild("TrapSystem"):WaitForChild("PlaceTrap"):InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
+                    PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
                 end
                 wait()
             end
         else
-            Target = players:FindFirstChild(ChangeLoopTarget)
-            ReplicatedStorage:WaitForChild("TrapSystem"):WaitForChild("PlaceTrap"):InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
+            Target = Players:FindFirstChild(ChangeLoopTarget)
+            PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
         end
     end
     wait()
@@ -1525,164 +1965,20 @@ LoopTarget:addToggle("Loop Trap Player", false, function(Value)
     end
 end)
 
-LoopTarget:addToggle("Rain Guns On Player", false, function(raingunsplayer) -- havent updated this messy shit yet
-    raingunsplayerloop = raingunsplayer
-    while raingunsplayerloop do
-        function raingunsplayerloopfix()
-        if targetUsername == "All" then
-            for i,v in pairs(game.Players:GetChildren()) do
-                function loopraingunsallloopfix()
-                if v.Name ~= LocalPlayer.Name then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,8)
-                    game:GetService("ReplicatedStorage").Remotes.Gameplay.FakeGun:FireServer(true)
-                    dropgun()
-                    wait()
-                    clearbackpackguns()
-                    wait()
-                end
-            end
-            wait()
-            pcall(loopraingunsallloopfix)
-            end
-        else
-            targetPlayer = players:FindFirstChild(targetUsername)
-            LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,8)
-            game:GetService("ReplicatedStorage").Remotes.Gameplay.FakeGun:FireServer(true)
-            dropgun()
-            wait()
-            clearbackpackguns()
-            wait()
-        end 
-    end
-    wait()
-    pcall(raingunsplayerloopfix)
-    end
-end)
-
 LoopTarget:addToggle("Auto Equip Spray Paint", false, function(Value)
-    autoequipsprayloop = Value
-    while autoequipsprayloop do
-        function autoequipsprayloopfix()
-        game:GetService("ReplicatedStorage").Remotes.Extras.ReplicateToy:InvokeServer("SprayPaint")
-        for _,obj in next, game.Players.LocalPlayer.Backpack:GetChildren() do
-            if obj.Name == "SprayPaint" then
-                local equip = game.Players.LocalPlayer.Backpack.SprayPaint
-                equip.Parent = game.Players.LocalPlayer.Character
+    ChangeAutoEquipSprayPaint = Value
+    while ChangeAutoEquipSprayPaint do
+        function ChangeAutoEquipSprayPaintFix()
+        ReplicateToy:InvokeServer("SprayPaint")
+        for _,v in next, Backpack:GetChildren() do
+            if v.Name == "SprayPaint" then
+                local equip = Backpack.SprayPaint
+                equip.Parent = Character
             end
         end
     end
     wait()
-    pcall(autoequipsprayloopfix)
-    end
-end)
-
-FE:addDropdown("Select Player", playerlist, function(fetarget)
-    fetargetname = fetarget
-end)
-
-function fepenisfunc()
-    -- Top Penis
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,-0.7))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,-1))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,-1.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,-2))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(13850207336, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1,-2.5))
-    
-    ----Bottom Penis
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1.3,-0.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1.3,-1))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1.3,-1.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1.3,-2))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(13850207336, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1.3,-2.5))
-
-    -- Left Penis
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Left, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.15,-1.15,-0.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Left, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.15,-1.15,-1))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Left, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.15,-1.15,-1.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Left, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.15,-1.15,-2))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(13850207336, Enum.NormalId.Left, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.15,-1.15,-2.5))
-
-    -- Right Penis
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Right, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.15,-1.15,-0.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Right, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.15,-1.15,-1))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Right, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.15,-1.15,-1.5))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Right, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.15,-1.15,-2))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(13850207336, Enum.NormalId.Right, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.15,-1.15,-2.5))
-    
-    -- Front Penis
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(13850207336, Enum.NormalId.Front, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0,-1.15,-2.65))
-
-    -- Left Sack
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.5,-1,-0.7))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Front, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.5,-1.15,-0.85))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.5,-1.3,-0.7))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Right, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(0.65,-1.15,-0.7))
-    
-    -- Right side
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Top, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.5,-1,-0.7))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Front, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.5,-1.15,-0.85))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Bottom, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.5,-1.3,-0.7))
-    game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(12976059241, Enum.NormalId.Left, 0.5, (fepenistarget.Character.HumanoidRootPart), fepenistarget.Character.HumanoidRootPart.CFrame * CFrame.new(-0.65,-1.15,-0.7))
-end
-
-FE:addToggle("FE Penis", false, function(fepenis)
-    if fepenis == true then
-        fepenistarget = Players:FindFirstChild(LocalPlayer.Name)
-        fepenisloop = true
-        while fepenisloop do
-            function fepenisloopfix()
-            task.wait(0.4)
-            if fetargetname == "All" then
-                for i,v in pairs(game.Players:GetPlayers()) do
-                    fepenistarget = Players:FindFirstChild(v.Name)
-                    fepenisfunc()
-                    task.wait()
-                end
-            else
-                fepenistarget = Players:FindFirstChild(fetargetname)
-                fepenisfunc()
-            end
-            task.wait(15)
-        end
-        wait()
-        pcall(fepenisloopfix)
-        end
-    end
-    if fepenis == false then
-        fepenisloop = false
-        wait()
-    end
-end)
-
-FE:addToggle("FE Cum Aura", false, function(fecum)
-    fecumloop = fecum
-    while fecumloop do
-        function fecumloopfix()
-        for i,v in pairs(game.Players:GetPlayers()) do
-            if v ~= game.Players.LocalPlayer and game.Players.LocalPlayer:DistanceFromCharacter(v.Character.HumanoidRootPart.Position) < 5 then
-                cumtarget = Players:FindFirstChild(v.Name)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Front, 3, (cumtarget.Character.RightHand), cumtarget.Character.RightHand.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Top, 3, (cumtarget.Character.LeftLowerArm), cumtarget.Character.LeftLowerArm.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Top, 3, (cumtarget.Character.RightLowerArm), cumtarget.Character.RightLowerArm.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Back, 3, (cumtarget.Character.LeftUpperArm), cumtarget.Character.LeftUpperArm.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Right, 3, (cumtarget.Character.LowerTorso), cumtarget.Character.LowerTorso.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Left, 3, (cumtarget.Character.LeftLowerLeg), cumtarget.Character.LeftLowerLeg.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Top, 3, (cumtarget.Character.LeftUpperLeg), cumtarget.Character.LeftUpperLeg.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Back, 3, (cumtarget.Character.LeftFoot), cumtarget.Character.LeftFoot.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Front, 3, (cumtarget.Character.RightFoot), cumtarget.Character.RightFoot.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Left, 3, (cumtarget.Character.RightLowerLeg), cumtarget.Character.RightLowerLeg.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Right, 3, (cumtarget.Character.RightUpperLeg), cumtarget.Character.RightUpperLeg.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Left, 3, (cumtarget.Character.UpperTorso), cumtarget.Character.UpperTorso.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Right, 3, (cumtarget.Character.Head), cumtarget.Character.Head.CFrame)
-                game:GetService("Players").LocalPlayer.Character.SprayPaint.Remote:FireServer(1302869037, Enum.NormalId.Front, 3, (cumtarget.Character.Head), cumtarget.Character.Head.CFrame)
-                wait()
-            end
-            wait()
-        end
-        wait()
-    end
-    wait()
-    pcall(fecumloopfix)
+    pcall(ChangeAutoEquipSprayPaintFix)
     end
 end)
 
@@ -1803,6 +2099,12 @@ UniversalKeybind:addKeybind("Fling", KeyCode, function()
     end
 end, function()
 	print("[ R3TH PRIV ] Fling keybind changed.")
+end)
+
+UniversalKeybind:addKeybind("Free Camera", KeyCode, function()
+    ToggleFreecam()
+end, function()
+	print("[ R3TH PRIV ] Free Camera keybind changed.")
 end)
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
