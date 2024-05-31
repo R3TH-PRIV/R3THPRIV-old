@@ -228,15 +228,15 @@ function HidePlayers()
             if character then
                 for _, descendant in pairs(character:GetDescendants()) do
                     if descendant:IsA("BasePart") or descendant:IsA("MeshPart") then
-                        descendant.Transparency = descendant.Name == "HumanoidRootPart" and 1 or (hideplayersloop and 1 or 0)
+                        descendant.Transparency = descendant.Name == "HumanoidRootPart" and 1 or (ChangeHidePlayers and 1 or 0)
                     elseif descendant:IsA("Accessory") then
                         local handle = descendant:FindFirstChild("Handle")
                         if handle then
-                            handle.Transparency = hideplayersloop and 1 or 0
+                            handle.Transparency = ChangeHidePlayers and 1 or 0
                         end
                     elseif descendant.Name == "Sector" then
-                        hidenametags = not hideplayersloop
-                        descendant.Visible = hidenametags
+                        ChangeHideNameTags = not ChangeHidePlayers
+                        descendant.Visible = ChangeHideNameTags
                     end
                 end
             end
@@ -1566,6 +1566,7 @@ if MapName ~= "Lobby" then
                     v.hit.Transparency = 1
                     v.hit.CanCollide = false
                     v.hit.Position = Character.Torso.Position
+                    task.wait()
                     if v.Name == "Bag" then
                         v:Destroy()
                     end
