@@ -1,5 +1,4 @@
--- Only reuploading due to the original source being deleted
--- Credit to https://v3rmillion.net/member.php?action=profile&uid=244024
+-- Fixed the original code and added some more options
 
 -- init
 local player = game.Players.LocalPlayer
@@ -2091,32 +2090,99 @@ do
 		end
 	end
 	
-	function section:updateSlider(slider, title, value, min, max, lvalue)
-		slider = self:getModule(slider)
-		
-		if title then
-			slider.Title.Text = title
+	function section:addSlider(title, default, min, max, callback)
+		local slider = utility:Create("Frame", {
+			Name = "Slider",
+			Parent = self.container,
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1, 0, 0, 50),
+		}, {
+			utility:Create("TextLabel", {
+				Name = "Title",
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0, 10, 0, 6),
+				Size = UDim2.new(0.5, 0, 0, 16),
+				Font = Enum.Font.Gotham,
+				Text = title,
+				TextColor3 = themes.TextColor,
+				TextSize = 12,
+				TextXAlignment = Enum.TextXAlignment.Left
+			}),
+			utility:Create("TextBox", {
+				Name = "TextBox",
+				BackgroundTransparency = 1,
+				BorderSizePixel = 0,
+				Position = UDim2.new(1, -30, 0, 6),
+				Size = UDim2.new(0, 20, 0, 16),
+				Font = Enum.Font.GothamSemibold,
+				Text = default or min,
+				TextColor3 = themes.TextColor,
+				TextSize = 12,
+				TextXAlignment = Enum.TextXAlignment.Right
+			}),
+			utility:Create("Frame", {
+				Name = "SliderFrame",
+				BackgroundTransparency = 1,
+				Position = UDim2.new(0, 10, 0, 28),
+				Size = UDim2.new(1, -20, 0, 16),
+			}, {
+				utility:Create("TextLabel", {
+					Name = "Bar",
+					BackgroundTransparency = 1,
+					Size = UDim2.new(1, 0, 0, 4),
+					BackgroundColor3 = themes.LightContrast
+				}),
+				utility:Create("TextButton", {
+					Name = "Circle",
+					BackgroundTransparency = 1,
+					Position = UDim2.new(0, 0, 0.5, -5),
+					Size = UDim2.new(0, 10, 0, 10),
+					Text = "",
+					ZIndex = 3,
+					AutoButtonColor = false,
+					BackgroundColor3 = themes.TextColor,
+				})
+			})
+		})
+	
+		local textbox = slider.TextBox
+		local circle = slider.SliderFrame.Circle
+		local bar = slider.SliderFrame.Bar
+	
+		local function updateValue(newValue)
+			callback(newValue)
 		end
-		
-		local bar = slider.Slider.Bar
-		local percent = (mouse.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X
-		
-		if value then -- support negative ranges
-			percent = (value - min) / (max - min)
+	
+		local function updateSliderPosition(x)
+			local barWidth = bar.AbsoluteSize.X
+			local percent = math.clamp((x - bar.AbsolutePosition.X) / barWidth, 0, 1)
+			local newValue = min + (max - min) * percent
+			circle.Position = UDim2.new(percent, 0, 0.5, -5)
+			return newValue
 		end
-		
-		percent = math.clamp(percent, 0, 1)
-		value = value or math.floor(min + (max - min) * percent)
-		
-		slider.TextBox.Text = value
-		utility:Tween(bar.Fill, {Size = UDim2.new(percent, 0, 1, 0)}, 0.1)
-		
-		if value ~= lvalue and slider.ImageTransparency == 0 then
-			utility:Pop(slider, 10)
+	
+		local function onTouchMoved(input)
+			updateValue(updateSliderPosition(input.Position.X))
 		end
-		
-		return value
-	end
+	
+		local function onTouchEnded()
+			game:GetService("UserInputService").TouchMoved:Disconnect()
+		end
+	
+		slider.SliderFrame.MouseButton1Down:Connect(function()
+			game:GetService("UserInputService").TouchMoved:Connect(onTouchMoved)
+			game:GetService("UserInputService").TouchEnded:Connect(onTouchEnded)
+		end)
+	
+		textbox.FocusLost:Connect(function()
+			local newValue = tonumber(textbox.Text) or default or min
+			newValue = math.clamp(newValue, min, max)
+			textbox.Text = tostring(newValue)
+			updateValue(newValue)
+		end)
+	
+		return slider
+	end	
 	
 	function section:updateDropdown(dropdown, title, list, callback)
 		dropdown = self:getModule(dropdown)
