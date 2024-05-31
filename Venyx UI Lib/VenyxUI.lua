@@ -716,6 +716,10 @@ do
 	
 		table.insert(self.modules, paragraphContainer)
 	
+		if not title then
+			paragraphContainer:Destroy()
+		end
+	
 		return paragraphContainer, paragraph
 	end	
 	
