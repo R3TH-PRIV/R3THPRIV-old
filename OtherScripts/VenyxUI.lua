@@ -663,12 +663,26 @@ do
 	end
 
 	function section:addParagraph(text)
-		local paragraph = utility:Create("TextLabel", {
-			Name = "Paragraph",
+		local paragraphContainer = utility:Create("ImageButton", {
+			Name = "ParagraphContainer",
 			Parent = self.container,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 0),
+			BorderSizePixel = 0,
+			Size = UDim2.new(1, 0, 0, 30), -- Adjust the size as needed
 			ZIndex = 2,
+			Image = "rbxassetid://5028857472",
+			ImageColor3 = themes.DarkContrast,
+			ScaleType = Enum.ScaleType.Slice,
+			SliceCenter = Rect.new(2, 2, 298, 298)
+		})
+	
+		local paragraph = utility:Create("TextLabel", {
+			Name = "Paragraph",
+			Parent = paragraphContainer,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 10, 0, 0),
+			Size = UDim2.new(1, -20, 1, 0),
+			ZIndex = 3,
 			Font = Enum.Font.Gotham,
 			Text = text,
 			TextColor3 = themes.TextColor,
@@ -678,13 +692,14 @@ do
 			TextYAlignment = Enum.TextYAlignment.Top
 		})
 	
-		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(self.container.AbsoluteSize.X - 20, math.huge))
-		paragraph.Size = UDim2.new(1, 0, 0, textSize.Y)
+		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(paragraph.AbsoluteSize.X, math.huge))
+		paragraphContainer.Size = UDim2.new(1, 0, 0, textSize.Y + 20) -- Adjust the padding as needed
 	
-		table.insert(self.modules, paragraph)
+		table.insert(self.modules, paragraphContainer)
 	
-		return paragraph
+		return paragraphContainer
 	end
+	
 	
 	
 	function section:addButton(title, callback)
