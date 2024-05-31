@@ -1,5 +1,4 @@
 -- init
-print("yeh")
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -704,6 +703,26 @@ do
 			close()
 		end)
 	end
+
+	function section:addParagraph(data)
+		local this = {}
+		this.title = data.title or ""
+		this.text = data.text or ""
+	
+		local paragraphContainer = Drawing.new("Text")
+		paragraphContainer.Visible = true
+		paragraphContainer.Transparency = 1
+		paragraphContainer.Text = this.title .. "\n" .. this.text
+		paragraphContainer.Size = Vector2.new(200, 100) -- Adjust size as needed
+		paragraphContainer.Position = Vector2.new(0, 0) -- Adjust position as needed
+	
+		-- Optionally set font, color, etc. using paragraphContainer properties
+	
+		-- Remember to handle paragraphContainer removal when necessary
+	
+		return paragraphContainer
+	end
+	
 
 	function section:addButton(data)
 		local this = {}
@@ -1954,61 +1973,6 @@ do
 
 		return module
 	end
-
-	function section:addParagraph(title, text)
-		local paragraphContainer = utility:Create("ImageLabel", {
-			Name = "ParagraphContainer",
-			Parent = self.container,
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 30),
-			ZIndex = 2,
-			Image = "rbxassetid://5028857472",
-			ImageColor3 = themes.DarkContrast,
-			ScaleType = Enum.ScaleType.Slice,
-			SliceCenter = Rect.new(2, 2, 298, 298)
-		})
-	
-		local titleLabel
-		if title then
-			titleLabel = utility:Create("TextLabel", {
-				Name = "TitleLabel",
-				Parent = paragraphContainer,
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0, 5),
-				Size = UDim2.new(1, -20, 0, 16),
-				ZIndex = 3,
-				Font = Enum.Font.GothamSemibold,
-				Text = title,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextWrapped = true,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				TextYAlignment = Enum.TextYAlignment.Top
-			})
-		end
-	
-		local positionOffset = title and UDim2.new(0, 10, 0, 26) or UDim2.new(0, 10, 0, 5)
-		local sizeOffset = title and UDim2.new(1, -20, 1, -26) or UDim2.new(1, -20, 1, -5)
-	
-		local paragraph = utility:Create("TextLabel", {
-			Name = "Paragraph",
-			Parent = paragraphContainer,
-			BackgroundTransparency = 1,
-			Position = positionOffset,
-			Size = sizeOffset,
-			ZIndex = 3,
-			Font = Enum.Font.Gotham,
-			Text = text,
-			TextColor3 = themes.TextColor,
-			TextSize = 12,
-			TextWrapped = true,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextYAlignment = Enum.TextYAlignment.Top
-		})
-	
-		local module = { Container = paragraphContainer, TitleLabel = titleLabel, Paragraph = paragraph }
-		return module
-	end	
 
 	-- class functions
 
