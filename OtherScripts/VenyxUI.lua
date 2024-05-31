@@ -667,7 +667,7 @@ do
 			Name = "ParagraphContainer",
 			Parent = self.container,
 			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 30), -- Adjust the size as needed
+			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
 			Image = "rbxassetid://5028857472",
 			ImageColor3 = themes.DarkContrast,
@@ -679,7 +679,8 @@ do
 			Name = "Paragraph",
 			Parent = paragraphContainer,
 			BackgroundTransparency = 1,
-			Position = UDim2.new(0, 10, 0, 0),
+			Position = UDim2.new(0, 10, 0.5, 0),
+			AnchorPoint = Vector2.new(0, 0.5),
 			Size = UDim2.new(1, -20, 1, 0),
 			ZIndex = 3,
 			Font = Enum.Font.Gotham,
@@ -688,16 +689,16 @@ do
 			TextSize = 12,
 			TextWrapped = true,
 			TextXAlignment = Enum.TextXAlignment.Left,
-			TextYAlignment = Enum.TextYAlignment.Top
+			TextYAlignment = Enum.TextYAlignment.Center
 		})
 	
 		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(paragraph.AbsoluteSize.X, math.huge))
-		paragraphContainer.Size = UDim2.new(1, 0, 0, textSize.Y + 20) -- Adjust the padding as needed
+		paragraphContainer.Size = UDim2.new(1, 0, 0, textSize.Y + 20)
 	
 		table.insert(self.modules, paragraphContainer)
 	
-		return paragraphContainer
-	end
+		return paragraphContainer, paragraph
+	end	
 	
 	
 	function section:addButton(title, callback)
