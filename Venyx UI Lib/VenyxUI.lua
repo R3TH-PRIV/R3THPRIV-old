@@ -1,5 +1,5 @@
 -- Fixed and added a few things
-print("NEW")
+print("YEA")
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -715,10 +715,6 @@ do
 		paragraphContainer.Size = title and UDim2.new(1, 0, 0, textSize.Y + 36) or UDim2.new(1, 0, 0, textSize.Y + 11)
 	
 		table.insert(self.modules, paragraphContainer)
-	
-		if not title then
-			paragraphContainer:Destroy()
-		end
 	
 		return paragraphContainer, paragraph
 	end	
