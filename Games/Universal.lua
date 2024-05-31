@@ -1343,7 +1343,7 @@ end)
 UniversalKeybind:addKeybind("Free Camera", KeyCode, function()
     ToggleFreecam()
 end, function()
-	print("[ R3TH PRIV ] Fling keybind changed.")
+	print("[ R3TH PRIV ] Free Camera keybind changed.")
 end)
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
