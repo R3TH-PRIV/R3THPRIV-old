@@ -1,6 +1,4 @@
--- Only reuploading due to the original source being deleted
--- Credit to https://v3rmillion.net/member.php?action=profile&uid=244024
-
+print("yea")
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
