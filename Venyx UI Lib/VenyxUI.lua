@@ -2225,5 +2225,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: discord.gg/pethicial")
+print("[ R3TH PRIV ]: UI Fixed and Improved by Pethicial")
 return library
