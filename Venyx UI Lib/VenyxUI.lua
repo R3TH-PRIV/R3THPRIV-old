@@ -1,3 +1,6 @@
+-- Only reuploading due to the original source being deleted
+-- Credit to https://v3rmillion.net/member.php?action=profile&uid=244024
+
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -1804,64 +1807,6 @@ do
 		end)
 
 		return dropdown
-	end
-
-	function section:addParagraph(title, text)
-		local paragraphContainer = utility:Create("ImageLabel", {
-			Name = "ParagraphContainer",
-			Parent = self.container,
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 30),
-			ZIndex = 2,
-			Image = "rbxassetid://5028857472",
-			ImageColor3 = themes.DarkContrast,
-			ScaleType = Enum.ScaleType.Slice,
-			SliceCenter = Rect.new(2, 2, 298, 298)
-		})
-	
-		if title then
-			local titleLabel = utility:Create("TextLabel", {
-				Name = "TitleLabel",
-				Parent = paragraphContainer,
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0, 5),
-				Size = UDim2.new(1, -20, 0, 16),
-				ZIndex = 3,
-				Font = Enum.Font.GothamSemibold,
-				Text = title,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextWrapped = true,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				TextYAlignment = Enum.TextYAlignment.Top
-			})
-		end
-	
-		local positionOffset = title and UDim2.new(0, 10, 0, 26) or UDim2.new(0, 10, 0, 5)
-		local sizeOffset = title and UDim2.new(1, -20, 1, -26) or UDim2.new(1, -20, 1, -5)
-	
-		local paragraph = utility:Create("TextLabel", {
-			Name = "Paragraph",
-			Parent = paragraphContainer,
-			BackgroundTransparency = 1,
-			Position = positionOffset,
-			Size = sizeOffset,
-			ZIndex = 3,
-			Font = Enum.Font.Gotham,
-			Text = text,
-			TextColor3 = themes.TextColor,
-			TextSize = 12,
-			TextWrapped = true,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextYAlignment = Enum.TextYAlignment.Top
-		})
-	
-		local textSize = game:GetService("TextService"):GetTextSize(text, 12, Enum.Font.Gotham, Vector2.new(paragraph.AbsoluteSize.X, math.huge))
-		paragraphContainer.Size = title and UDim2.new(1, 0, 0, textSize.Y + 36) or UDim2.new(1, 0, 0, textSize.Y + 11)
-	
-		table.insert(self.modules, paragraphContainer)
-	
-		return paragraphContainer, paragraph
 	end
 
 	-- class functions
