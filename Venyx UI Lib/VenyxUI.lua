@@ -1,3 +1,4 @@
+print("yea2")
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -2023,44 +2024,44 @@ do
 		end
 	end
 
-	function section:updateColorPicker(colorpicker, title, color)
-		colorpicker = self:getModule(colorpicker)
-
-		local picker = self.colorpickers[colorpicker]
-		local tab = picker.tab
-		local callback = picker.callback
-
-		if title then
-			colorpicker.Title.Text = title
-			tab.Title.Text = title
-		end
-
-		local color3
-		local hue, sat, brightness
-
-		if type(color) == "table" then -- roblox is literally retarded x2
-			hue, sat, brightness = unpack(color)
-			color3 = Color3.fromHSV(hue, sat, brightness)
-		else
-			color3 = color
-			hue, sat, brightness = Color3.toHSV(color3)
-		end
-
-		utility:Tween(colorpicker.Button, {ImageColor3 = color3}, 0.5)
-		utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(hue, 0, 0, 0)}, 0.1)
-
-		utility:Tween(tab.Container.Canvas, {ImageColor3 = Color3.fromHSV(hue, 1, 1)}, 0.5)
-		utility:Tween(tab.Container.Canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness)}, 0.5)
-
-		for i, container in pairs(tab.Container.Inputs:GetChildren()) do
-			if container:IsA("ImageLabel") then
-				local value = math.clamp(color3[container.Name], 0, 1) * 255
-
-				container.Textbox.Text = math.floor(value)
-				--callback(container.Name:lower(), value)
-			end
-		end
-	end
+    function section:updateColorPicker(colorpicker, title, color)
+        colorpicker = self:getModule(colorpicker)
+    
+        local picker = self.colorpickers[colorpicker]
+        local tab = picker.tab
+        local callback = picker.callback
+    
+        if title then
+            colorpicker.Title.Text = title
+            tab.Title.Text = title
+        end
+    
+        local color3
+        local hue, sat, brightness
+    
+        if type(color) == "table" then
+            hue, sat, brightness = unpack(color)
+            color3 = Color3.fromHSV(hue, sat, brightness)
+        else
+            color3 = color
+            hue, sat, brightness = Color3.toHSV(color3)
+        end
+    
+        tab.Container.Canvas.ImageColor3 = Color3.fromHSV(hue, 1, 1)
+        tab.Container.Canvas.Cursor.Position = UDim2.new(sat, 0, 1 - brightness, 0)
+    
+        tab.Container.Inputs.Hue.Textbox.Text = tostring(math.floor(hue * 360))
+        tab.Container.Inputs.Saturation.Textbox.Text = tostring(math.floor(sat * 100))
+        tab.Container.Inputs.Brightness.Textbox.Text = tostring(math.floor(brightness * 100))
+    
+        utility:Tween(colorpicker.Button, {ImageColor3 = color3}, 0.5)
+    
+        if callback then
+            callback(Color3.new(color3.R, color3.G, color3.B), function(...)
+                self:updateColorPicker(colorpicker, ...)
+            end)
+        end
+    end    
 
 	function section:updateSlider(slider, title, value, min, max, lvalue)
 		slider = self:getModule(slider)
