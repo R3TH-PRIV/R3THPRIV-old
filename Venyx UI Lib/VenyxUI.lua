@@ -1,4 +1,4 @@
-print("yea2")
+print("yeah")
 -- init
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
@@ -1046,7 +1046,7 @@ do
 				SliceCenter = Rect.new(2, 2, 298, 298)
 			})
 		})
-
+		
 		local tab = utility:Create("ImageLabel", {
 			Name = "ColorPicker",
 			Parent = self.page.library.container,
@@ -1308,23 +1308,23 @@ do
 				})
 			})
 		})
-
+		
 		utility:DraggingEnabled(tab)
 		table.insert(self.modules, colorpicker)
 		--self:Resize()
-
+		
 		local allowed = {
 			[""] = true
 		}
-
+		
 		local canvas = tab.Container.Canvas
 		local color = tab.Container.Color
-
+		
 		local canvasSize, canvasPosition = canvas.AbsoluteSize, canvas.AbsolutePosition
 		local colorSize, colorPosition = color.AbsoluteSize, color.AbsolutePosition
-
+		
 		local draggingColor, draggingCanvas
-
+		
 		local color3 = default or Color3.fromRGB(255, 255, 255)
 		local hue, sat, brightness = 0, 0, 1
 		local rgb = {
@@ -1332,7 +1332,7 @@ do
 			g = 255,
 			b = 255
 		}
-
+		
 		self.colorpickers[colorpicker] = {
 			tab = tab,
 			callback = function(prop, value)
@@ -1340,7 +1340,7 @@ do
 				hue, sat, brightness = Color3.toHSV(Color3.fromRGB(rgb.r, rgb.g, rgb.b))
 			end
 		}
-
+		
 		local callback = function(value)
 			if callback then
 				callback(value, function(...)
@@ -1348,115 +1348,115 @@ do
 				end)
 			end
 		end
-
+		
 		utility:DraggingEnded(function()
 			draggingColor, draggingCanvas = false, false
 		end)
-
+		
 		if default then
 			self:updateColorPicker(colorpicker, nil, default)
-
+			
 			hue, sat, brightness = Color3.toHSV(default)
 			default = Color3.fromHSV(hue, sat, brightness)
-
+			
 			for i, prop in pairs({"r", "g", "b"}) do
 				rgb[prop] = default[prop:upper()] * 255
 			end
 		end
-
+		
 		for i, container in pairs(tab.Container.Inputs:GetChildren()) do -- i know what you are about to say, so shut up
 			if container:IsA("ImageLabel") then
 				local textbox = container.Textbox
 				local focused
-
+				
 				textbox.Focused:Connect(function()
 					focused = true
 				end)
-
+				
 				textbox.FocusLost:Connect(function()
 					focused = false
-
+					
 					if not tonumber(textbox.Text) then
 						textbox.Text = math.floor(rgb[container.Name:lower()])
 					end
 				end)
-
+				
 				textbox:GetPropertyChangedSignal("Text"):Connect(function()
 					local text = textbox.Text
-
+					
 					if not allowed[text] and not tonumber(text) then
 						textbox.Text = text:sub(1, #text - 1)
 					elseif focused and not allowed[text] then
 						rgb[container.Name:lower()] = math.clamp(tonumber(textbox.Text), 0, 255)
-
+						
 						local color3 = Color3.fromRGB(rgb.r, rgb.g, rgb.b)
 						hue, sat, brightness = Color3.toHSV(color3)
-
+						
 						self:updateColorPicker(colorpicker, nil, color3)
 						callback(color3)
 					end
 				end)
 			end
 		end
-
+		
 		canvas.MouseButton1Down:Connect(function()
 			draggingCanvas = true
-
+			
 			while draggingCanvas do
-
+				
 				local x, y = mouse.X, mouse.Y
-
+				
 				sat = math.clamp((x - canvasPosition.X) / canvasSize.X, 0, 1)
 				brightness = 1 - math.clamp((y - canvasPosition.Y) / canvasSize.Y, 0, 1)
-
+				
 				color3 = Color3.fromHSV(hue, sat, brightness)
-
+				
 				for i, prop in pairs({"r", "g", "b"}) do
 					rgb[prop] = color3[prop:upper()] * 255
 				end
-
+				
 				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
 				utility:Tween(canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness, 0)}, 0.1) -- overwrite
-
+				
 				callback(color3)
 				utility:Wait()
 			end
 		end)
-
+		
 		color.MouseButton1Down:Connect(function()
 			draggingColor = true
-
+			
 			while draggingColor do
-
+			
 				hue = 1 - math.clamp(1 - ((mouse.X - colorPosition.X) / colorSize.X), 0, 1)
 				color3 = Color3.fromHSV(hue, sat, brightness)
-
+				
 				for i, prop in pairs({"r", "g", "b"}) do
 					rgb[prop] = color3[prop:upper()] * 255
 				end
-
+				
 				local x = hue -- hue is updated
 				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
 				utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(x, 0, 0, 0)}, 0.1) -- overwrite
-
+				
 				callback(color3)
 				utility:Wait()
 			end
 		end)
-
+		
 		-- click events
 		local button = colorpicker.Button
 		local toggle, debounce, animate
-
+		
 		lastColor = Color3.fromHSV(hue, sat, brightness)
 		animate = function(visible, overwrite)
-
+			
 			if overwrite then
-
+			
 				if not toggle then
 					return
 				end
-
+				
 				if debounce then
 					while debounce do
 						utility:Wait()
@@ -1466,67 +1466,67 @@ do
 				if debounce then 
 					return 
 				end
-
+				
 				if button.ImageTransparency == 0 then
 					utility:Pop(button, 10)
 				end
 			end
-
+			
 			toggle = visible
 			debounce = true
-
+			
 			if visible then
-
+			
 				if self.page.library.activePicker and self.page.library.activePicker ~= animate then
 					self.page.library.activePicker(nil, true)
 				end
-
+				
 				self.page.library.activePicker = animate
 				lastColor = Color3.fromHSV(hue, sat, brightness)
-
+				
 				local x1, x2 = button.AbsoluteSize.X / 2, 162--tab.AbsoluteSize.X
 				local px, py = button.AbsolutePosition.X, button.AbsolutePosition.Y
-
+				
 				tab.ClipsDescendants = true
 				tab.Visible = true
 				tab.Size = UDim2.new(0, 0, 0, 0)
-
+				
 				tab.Position = UDim2.new(0, x1 + x2 + px, 0, py)
 				utility:Tween(tab, {Size = UDim2.new(0, 162, 0, 169)}, 0.2)
-
+				
 				-- update size and position
 				wait(0.2)
 				tab.ClipsDescendants = false
-
+				
 				canvasSize, canvasPosition = canvas.AbsoluteSize, canvas.AbsolutePosition
 				colorSize, colorPosition = color.AbsoluteSize, color.AbsolutePosition
 			else
 				utility:Tween(tab, {Size = UDim2.new(0, 0, 0, 0)}, 0.2)
 				tab.ClipsDescendants = true
-
+				
 				wait(0.2)
 				tab.Visible = false
 			end
-
+			
 			debounce = false
 		end
-
+		
 		local toggleTab = function()
 			animate(not toggle)
 		end
-
+		
 		button.MouseButton1Click:Connect(toggleTab)
 		colorpicker.MouseButton1Click:Connect(toggleTab)
-
+		
 		tab.Container.Button.MouseButton1Click:Connect(function()
 			animate()
 		end)
-
+		
 		tab.Close.MouseButton1Click:Connect(function()
 			self:updateColorPicker(colorpicker, nil, lastColor)
 			animate()
 		end)
-
+		
 		return colorpicker
 	end
 
@@ -2024,44 +2024,44 @@ do
 		end
 	end
 
-    function section:updateColorPicker(colorpicker, title, color)
-        colorpicker = self:getModule(colorpicker)
-    
-        local picker = self.colorpickers[colorpicker]
-        local tab = picker.tab
-        local callback = picker.callback
-    
-        if title then
-            colorpicker.Title.Text = title
-            tab.Title.Text = title
-        end
-    
-        local color3
-        local hue, sat, brightness
-    
-        if type(color) == "table" then
-            hue, sat, brightness = unpack(color)
-            color3 = Color3.fromHSV(hue, sat, brightness)
-        else
-            color3 = color
-            hue, sat, brightness = Color3.toHSV(color3)
-        end
-    
-        tab.Container.Canvas.ImageColor3 = Color3.fromHSV(hue, 1, 1)
-        tab.Container.Canvas.Cursor.Position = UDim2.new(sat, 0, 1 - brightness, 0)
-    
-        tab.Container.Inputs.Hue.Textbox.Text = tostring(math.floor(hue * 360))
-        tab.Container.Inputs.Saturation.Textbox.Text = tostring(math.floor(sat * 100))
-        tab.Container.Inputs.Brightness.Textbox.Text = tostring(math.floor(brightness * 100))
-    
-        utility:Tween(colorpicker.Button, {ImageColor3 = color3}, 0.5)
-    
-        if callback then
-            callback(Color3.new(color3.R, color3.G, color3.B), function(...)
-                self:updateColorPicker(colorpicker, ...)
-            end)
-        end
-    end    
+	function section:updateColorPicker(colorpicker, title, color)
+		colorpicker = self:getModule(colorpicker)
+
+		local picker = self.colorpickers[colorpicker]
+		local tab = picker.tab
+		local callback = picker.callback
+
+		if title then
+			colorpicker.Title.Text = title
+			tab.Title.Text = title
+		end
+
+		local color3
+		local hue, sat, brightness
+
+		if type(color) == "table" then -- roblox is literally retarded x2
+			hue, sat, brightness = unpack(color)
+			color3 = Color3.fromHSV(hue, sat, brightness)
+		else
+			color3 = color
+			hue, sat, brightness = Color3.toHSV(color3)
+		end
+
+		utility:Tween(colorpicker.Button, {ImageColor3 = color3}, 0.5)
+		utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(hue, 0, 0, 0)}, 0.1)
+
+		utility:Tween(tab.Container.Canvas, {ImageColor3 = Color3.fromHSV(hue, 1, 1)}, 0.5)
+		utility:Tween(tab.Container.Canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness)}, 0.5)
+
+		for i, container in pairs(tab.Container.Inputs:GetChildren()) do
+			if container:IsA("ImageLabel") then
+				local value = math.clamp(color3[container.Name], 0, 1) * 255
+
+				container.Textbox.Text = math.floor(value)
+				--callback(container.Name:lower(), value)
+			end
+		end
+	end
 
 	function section:updateSlider(slider, title, value, min, max, lvalue)
 		slider = self:getModule(slider)
