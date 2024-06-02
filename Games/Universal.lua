@@ -1473,7 +1473,7 @@ Sniper:addToggle("Search", false, function(Value)
 end)
 
 --------------------------------------------------------------------------------------SCRIPTS----------------------------------------------------------------------------------------
-loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-V2/main/OtherScripts/Game%20Status.lua'))()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Game%20Status.lua'))()
 
 Container1, Text1 = R3THPRIVV1:addParagraph(nil, "Abyss World: " .. R3THPRIVV1_AbyssWorld)
 
