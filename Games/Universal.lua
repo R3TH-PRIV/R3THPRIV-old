@@ -15,8 +15,8 @@ print("[ R3TH PRIV ]: R3TH PRIV Universal loading...")
 local TimeStart = tick()
 
 if R3THEXECUTOR == nil then -- if you want to directly execute the script
-    R3THEXECUTOR = "Unsupported"
-    R3THDEVICE = "PC"
+    R3THEXECUTOR = "Unsupported" -- Supported / Unsupported
+    R3THDEVICE = "PC" -- Mobile / PC
 end
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
