@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
-print("[ R3TH PRIV ]: R3TH PRIV ABYSS WORLD LOADING...")
+print("[ R3TH PRIV ]: R3TH PRIV Abyss World loading...")
 
 local TimeStart = tick()
 
