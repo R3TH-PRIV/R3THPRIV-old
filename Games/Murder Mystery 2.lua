@@ -63,6 +63,11 @@ local Antijoin = SprayPaint:addSection("Anti Join")
 local Sniper0 = R3TH:addPage("Sniper", 10734977012)
 local Sniper = Sniper0:addSection("Sniper")
 
+local Settings0 = R3TH:addPage("Settings", 10734950309) -- moved to the top for mobile users
+local Settings = Settings0:addSection("Settings")
+local Theme = Settings0:addSection("Theme")
+local Credits = Settings0:addSection("Credits")
+
 local Scripts = R3TH:addPage("Scripts", 10723356507)
 local R3THPRIVV1 = Scripts:addSection("R3TH PRIV V1")
 
@@ -71,11 +76,6 @@ local FAQ = FAQ0:addSection("FAQ")
 
 local Keybinds = R3TH:addPage("Keybinds", 10723416765)
 local UniversalKeybind = Keybinds:addSection("Universal")
-
-local Settings0 = R3TH:addPage("Settings", 10734950309)
-local Settings = Settings0:addSection("Settings")
-local Theme = Settings0:addSection("Theme")
-local Credits = Settings0:addSection("Credits")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
