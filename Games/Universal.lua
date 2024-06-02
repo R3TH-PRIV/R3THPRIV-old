@@ -129,18 +129,23 @@ function ToggleUI()
     end
 end
 
-function sendnotification(message)
-    if R3THDEVICE == "Mobile" then
-        StarterGui:SetCore("SendNotification", {
-            Title = "R3TH PRIV";
-            Text = message;
-            Duration = 7;
-        })
-    else
-        Notification:Notify(
-            {Title = "R3TH PRIV", Description = message},
-            {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
-        )
+function sendnotification(message, type)
+    if type == false or type == nil then
+        print("[ R3TH PRIV ]: " .. message)
+    end
+    if type == true or type == nil then
+        if R3THDEVICE == "Mobile" then
+            StarterGui:SetCore("SendNotification", {
+                Title = "R3TH PRIV";
+                Text = message;
+                Duration = 7;
+            })
+        else
+            Notification:Notify(
+                {Title = "R3TH PRIV", Description = message},
+                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
+            )
+        end
     end
 end
 
@@ -250,7 +255,7 @@ local function getUserAvatarsByTokens(playerTokens)
 end
 
 local function CancelSearch()
-    sendnotification("Search canceled.")
+    sendnotification("Search canceled.", nil)
     SniperText.Text = "Join a player by just knowing what game their in!"
 end
 
@@ -752,7 +757,7 @@ function FlyFunction()
 end
 
 function NoclipFunction()
-    while ChangeNoclip do
+    while ChangeNoclip and task.wait() do
         for a, b in pairs(Workspace:GetChildren()) do
             if b.Name == LocalPlayer.Name then
                 for i, v in pairs(Workspace[LocalPlayer.Name]:GetChildren()) do
@@ -762,7 +767,6 @@ function NoclipFunction()
                 end 
             end 
         end
-        wait()
     end
 end
 
@@ -855,7 +859,7 @@ function FlingFunction()
                         OldPos = RootPart.CFrame
                     end
                     if THumanoid and THumanoid.Sit and not AllBool then
-                        return sendnotification("Error Occurred: Targeting is sitting")
+                        return sendnotification("Error Occurred: Targeting is sitting", true)
                     end
                     if THead then
                         workspace.CurrentCamera.CameraSubject = THead
@@ -963,7 +967,7 @@ function FlingFunction()
                     elseif not TRootPart and not THead and Accessory and Handle then
                         SFBasePart(Handle)
                     else
-                        return sendnotification("Error Occurred: Target is missing everything")
+                        return sendnotification("Error Occurred: Target is missing everything", true)
                     end
     
                     BV:Destroy()
@@ -983,7 +987,7 @@ function FlingFunction()
                     until (RootPart.Position - OldPos.p).Magnitude < 25
                     workspace.FallenPartsDestroyHeight = FPDH
                 else
-                    return sendnotification("Error Occurred: Random error")
+                    return sendnotification("Error Occurred: Random error", true)
                 end
             end
     
@@ -1002,7 +1006,7 @@ function FlingFunction()
                         SkidFling(TPlayer)
                     end
                 elseif not GetPlayer(x) and not AllBool then
-                    sendnotification("Error Occurred: Username Invalid")
+                    sendnotification("Error Occurred: Username Invalid", true)
                 end
             end
             task.wait()
@@ -1473,7 +1477,7 @@ Sniper:addToggle("Search", false, function(Value)
     
     if not sniperfound then
         SniperText.Text = "The user could not be found in the game."
-        sendnotification("The user could not be found in the game.")
+        sendnotification("The user could not be found in the game.", nil)
     end
 end)
 
@@ -1522,7 +1526,7 @@ UniversalKeybind:addKeybind("Enable WalkSpeed", KeyCode, function()
         WalkSpeedFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable WalkSpeed keybind changed.")
+	sendnotification("Enable WalkSpeed keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Enable JumpPower", KeyCode, function()
@@ -1533,7 +1537,7 @@ UniversalKeybind:addKeybind("Enable JumpPower", KeyCode, function()
         JumpPowerFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable JumpPower keybind changed.")
+	sendnotification("Enable JumpPower keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Noclip", KeyCode, function()
@@ -1544,7 +1548,7 @@ UniversalKeybind:addKeybind("Noclip", KeyCode, function()
         NoclipFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable JumpPower keybind changed.")
+	sendnotification("Enable JumpPower keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
@@ -1556,7 +1560,7 @@ UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
         FlyFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable Fly keybind changed.")
+	sendnotification("Enable Fly keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Xray", KeyCode, function()
@@ -1568,13 +1572,13 @@ UniversalKeybind:addKeybind("Xray", KeyCode, function()
         XrayFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Xray keybind changed.")
+	sendnotification("Xray keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Respawn", KeyCode, function()
     Humanoid.Health = 0
 end, function()
-	print("[ R3TH PRIV ] Respawn keybind changed.")
+	sendnotification("Respawn keybind changed.")
 end)
 
 UniversalKeybind:addKeybind("Fling", KeyCode, function()
@@ -1586,13 +1590,13 @@ UniversalKeybind:addKeybind("Fling", KeyCode, function()
         FlingFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Fling keybind changed.")
+	sendnotification("Fling keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Free Camera", KeyCode, function()
     ToggleFreecam()
 end, function()
-	print("[ R3TH PRIV ] Free Camera keybind changed.")
+	sendnotification("Free Camera keybind changed.", false)
 end)
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
@@ -1603,7 +1607,7 @@ end)
 Settings:addKeybind("UI Toggle", Enum.KeyCode.LeftControl, function()
 	R3TH:toggle()
 end, function()
-	print("[ R3TH PRIV ] UI Toggle keybind changed.")
+	sendnotification("UI Toggle keybind changed.", false)
 end)
 
 Settings:addToggle("UI Toggle Button", false, function(Value)
@@ -1634,5 +1638,4 @@ R3TH:SelectPage(R3TH.pages[1], true)
 
 local TimeEnd = tick()
 local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
-print("[ R3TH PRIV ]: Successfully loaded the script in " .. TotalTime .. "s.")
-sendnotification("Successfully loaded the script in " .. TotalTime .. "s.")
+sendnotification("Successfully loaded the script in " .. TotalTime .. "s.", nil)
