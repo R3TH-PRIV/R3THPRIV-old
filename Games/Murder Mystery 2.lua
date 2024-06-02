@@ -2189,7 +2189,7 @@ Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
 end)
 
 Sniper:addToggle("Search", false, function(Value)
-    if ChangeFastSearch then sendnotification("Fast Search is already in progress.", true) return end
+    if ChangeFastSearch and Value then sendnotification("Fast Search is already in progress.", true) return end
     ChangeSearch = Value
     if not ChangeSearch then CancelSearch() return end
     SniperText.Text = 'Retrieving user info...'
@@ -2241,7 +2241,7 @@ Sniper:addToggle("Search", false, function(Value)
 end)
 
 Sniper:addToggle("Fast Search", false, function(Value)
-    if ChangeSearch then sendnotification("Search is already in progress.", true) return end
+    if ChangeSearch and Value then sendnotification("Search is already in progress.", true) return end
     ChangeFastSearch = Value
     if not ChangeFastSearch then return end
     SniperText.Text = 'Retrieving user info...'
