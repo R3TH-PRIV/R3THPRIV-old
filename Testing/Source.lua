@@ -668,11 +668,10 @@ do
 				resizeElement(child)
 			end
 		end
-	
 		resizeElement(uiObject)
 	end
-
-	function library:resizeVenyxUI(newSize)
+	
+	function library:resizeUI(newSize)
 		local venyx = game:GetService("CoreGui").Venyx
 		if venyx then
 			resizeUI(venyx, newSize)
@@ -2247,5 +2246,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 2")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 3")
 return library
