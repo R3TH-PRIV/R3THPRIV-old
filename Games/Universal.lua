@@ -1441,7 +1441,7 @@ Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
 end)
 
 Sniper:addToggle("Search", false, function(Value)
-    if ChangeFastSearch then sendnotification("Search is already in progress.", true) return end
+    if ChangeFastSearch then sendnotification("Fast Search is already in progress.", true) return end
     ChangeSearch = Value
     if not ChangeSearch then CancelSearch() return end
     SniperText.Text = 'Retrieving user info...'
@@ -1505,7 +1505,7 @@ Sniper:addToggle("Fast Search", false, function(Value)
 		local sniperpage = 1
 	
 		repeat
-			if not ChangeFastSearch then CancelSearch(true) return end
+			if not ChangeFastSearch then CancelSearch() return end
 			SniperText.Text = "Retrieving server list... (Page " .. sniperpage .. ")"
 	
 			local url = "https://games.roblox.com/v1/games/"..ChangeTargetPlaceId.."/servers/Public?sortOrder=Asc&limit=100&cursor="
@@ -1514,12 +1514,12 @@ Sniper:addToggle("Fast Search", false, function(Value)
 			local data = HttpService:JSONDecode(response)
 	
 			if not data then
-				sendnotification("Error: No response from the server.", nil)
+				sendnotification("No response from the server.", nil)
 				return
 			end
 	
 			if not data.data then
-				sendnotification("Error: No server data found in the response.", nil)
+				sendnotification("No server data found in the response.", nil)
 				return
 			end
 	
