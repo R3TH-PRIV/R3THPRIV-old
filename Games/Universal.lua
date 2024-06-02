@@ -1423,9 +1423,6 @@ Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
 end)
 
 Sniper:addToggle("Search", false, function(Value)
-    print(ChangeTargetUserId)
-    print(ChangeTargetPlaceId)
-    print(ChangeMinPlayerCount)
     ChangeSearch = Value
     if not ChangeSearch then CancelSearch() return end
     SniperText.Text = 'Retrieving user info...'
