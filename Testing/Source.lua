@@ -2246,5 +2246,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 3")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
 return library
