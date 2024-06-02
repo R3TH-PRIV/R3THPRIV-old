@@ -14,6 +14,11 @@ print("[ R3TH PRIV ]: R3TH PRIV Murder Mystery 2 loading...")
 
 local TimeStart = tick()
 
+if R3THEXECUTOR == nil then -- if you want to directly execute the script
+    R3THEXECUTOR = "Unsupported"
+    R3THDEVICE = "PC"
+end
+
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
