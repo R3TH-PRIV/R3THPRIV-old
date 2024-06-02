@@ -13,7 +13,7 @@ repeat wait() until game:IsLoaded()
 print("[ R3TH PRIV ]: R3TH PRIV Murder Mystery 2 loading...")
 
 local TimeStart = tick()
-R3THEXECUTOR = "Chigga"
+
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
