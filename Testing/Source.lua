@@ -668,16 +668,12 @@ do
 				resizeElement(child)
 			end
 		end
+	
 		resizeElement(uiObject)
 	end
 	
-	function library:resizeUI(newSize)
-		local venyx = game:GetService("CoreGui").Venyx
-		if venyx then
-			resizeUI(venyx, newSize)
-		else
-			warn("Venyx UI not found in CoreGui.")
-		end
+	function library:resizeVenyxUI(newSize)
+		resizeUI(self.container.Parent, newSize)
 	end
 	
 	function section:addButton(title, callback)
@@ -2246,5 +2242,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 1")
 return library
