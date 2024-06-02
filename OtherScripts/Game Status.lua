@@ -1,4 +1,4 @@
-R3THPRIVV1_AbyssWorld = "Outdated"
+R3THPRIVV1_AbyssWorld = "Getting Updated"
 R3THPRIVV1_BladeBall = "Outdated"
 R3THPRIVV1_BloxyBingo = "Outdated"
 R3THPRIVV1_BulkedUp = "Outdated"
