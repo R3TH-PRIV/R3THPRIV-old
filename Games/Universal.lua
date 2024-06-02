@@ -70,7 +70,6 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ContextActionService = game:GetService("ContextActionService")
 local HttpService = game:GetService("HttpService")
-local GUIErrorPrompt = game.CoreGui.RobloxPromptGui.promptOverlay:FindFirstChild("ErrorPrompt")
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
 local DefaultJumpPower = Humanoid.JumpPower
