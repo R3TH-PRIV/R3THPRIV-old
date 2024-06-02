@@ -1899,7 +1899,7 @@ end)
 
 Visual:addToggle("Improve FPS", false, function(Value)
     ChangeImproveFPS = Value
-    while ChangeImproveFPS and task.wait(10) do
+    while ChangeImproveFPS and task.wait() do
         for i,v in pairs (Workspace:GetDescendants()) do
             if v.Name == "Pet" then
                 v:Destroy()
@@ -1909,6 +1909,7 @@ Visual:addToggle("Improve FPS", false, function(Value)
                 v:Destroy()
             end
         end
+        wait(10)
     end
 end)
 
@@ -2051,17 +2052,19 @@ end)
 
 LoopTarget:addToggle("Give Noclip", false, function(Value)
     ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait(12) do
+    while ChangeLoopVoidPlayer and task.wait() do
         UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
         UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
+        wait(12)
     end
 end)
 
 LoopTarget:addToggle("Freeze", false, function(Value)
     ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait(12) do
+    while ChangeLoopVoidPlayer and task.wait() do
         function ChangeLoopVoidPlayerFix()
         UseSpray(ChangeLoopTarget, 0, "Top", 2048, "LeftLowerArm", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 30)
+        wait(12)
     end
     wait()
     pcall(ChangeLoopVoidPlayerFix)
@@ -2070,9 +2073,10 @@ end)
 
 LoopTarget:addToggle("Glitch", false, function(Value)
     ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait(12) do
+    while ChangeLoopVoidPlayer and task.wait() do
         function ChangeLoopVoidPlayerFix()
         UseSpray(ChangeLoopTarget, 0, "Right", 10, "HumanoidRootPart", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 1)
+        wait(12)
     end
     wait()
     pcall(ChangeLoopVoidPlayerFix)
