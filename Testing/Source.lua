@@ -301,12 +301,6 @@ do
 			pages = {}
 		}, library)
 	end
-
-	function library:Resize()
-		for _, page in pairs(self.pages) do
-			page:Resize()
-		end
-	end
 	
 	function page.new(library, title, icon)
 		local button = utility:Create("TextButton", {
@@ -604,7 +598,7 @@ do
 		
 		utility:Tween(notification, {Size = UDim2.new(0, textSize.X + 70, 0, 60)}, 0.2)
 		wait(0.2)
-				
+		
 		notification.ClipsDescendants = false
 		utility:Tween(notification.Flash, {
 			Size = UDim2.new(0, 0, 0, 60),
@@ -663,6 +657,28 @@ do
 			
 			close()
 		end)
+	end
+
+	local function resizeUI(uiObject, newSize)
+		local function resizeElement(element)
+			if element:IsA("GuiObject") then
+				element.Size = newSize
+			end
+			for _, child in ipairs(element:GetChildren()) do
+				resizeElement(child)
+			end
+		end
+	
+		resizeElement(uiObject)
+	end
+
+	function library:resizeVenyxUI(newSize)
+		local venyx = game:GetService("CoreGui").Venyx
+		if venyx then
+			resizeUI(venyx, newSize)
+		else
+			warn("Venyx UI not found in CoreGui.")
+		end
 	end
 	
 	function section:addButton(title, callback)
@@ -1965,7 +1981,7 @@ do
 		end
 	end
 	
-	function page:Resize()
+	function page:Resize(scroll)
 		local padding = 10
 		local size = 0
 		
@@ -1975,11 +1991,20 @@ do
 		
 		self.container.CanvasSize = UDim2.new(0, 0, 0, size)
 		self.container.ScrollBarImageTransparency = size > self.container.AbsoluteSize.Y
+		
+		if scroll then
+			utility:Tween(self.container, {CanvasPosition = Vector2.new(0, self.lastPosition or 0)}, 0.2)
+		end
 	end
 	
 	function section:Resize(smooth)
+	
+		if self.page.library.focusedPage ~= self.page then
+			return
+		end
+		
 		local padding = 4
-		local size = (4 * padding) + self.container.Title.AbsoluteSize.Y
+		local size = (4 * padding) + self.container.Title.AbsoluteSize.Y -- offset
 		
 		for i, module in pairs(self.modules) do
 			size = size + module.AbsoluteSize.Y + padding
@@ -1989,9 +2014,8 @@ do
 			utility:Tween(self.container.Parent, {Size = UDim2.new(1, -10, 0, size)}, 0.05)
 		else
 			self.container.Parent.Size = UDim2.new(1, -10, 0, size)
+			self.page:Resize()
 		end
-		
-		self.page:Resize()
 	end
 	
 	function section:getModule(info)
@@ -2223,5 +2247,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 2222")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 2")
 return library
