@@ -1,6 +1,6 @@
 R3THPRIVV1_AbyssWorld = "Working"
 R3THPRIVV1_BladeBall = "Outdated"
-R3THPRIVV1_BloxyBingo = "Outdated"
+R3THPRIVV1_BloxyBingo = "Getting Updated"
 R3THPRIVV1_BulkedUp = "Outdated"
 R3THPRIVV1_FOBLOX = "Outdated"
 R3THPRIVV1_HarborHavoc = "Outdated"
