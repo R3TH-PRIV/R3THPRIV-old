@@ -13,48 +13,68 @@ repeat wait() until game:IsLoaded()
 print("[ R3TH PRIV ]: R3TH PRIV Murder Mystery 2 loading...")
 
 local TimeStart = tick()
-
+R3THEXECUTOR = "Chigga"
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/VenyxUI.lua"))()
-local R3TH = library.new("R3TH PRIV | .gg/pethicial", 5013109572)
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
+local R3TH = library.new("R3TH PRIV | " .. R3THEXECUTOR .. " | .gg/pethicial")
 
-local Universal = R3TH:addPage("Universal", 5012540623)
+local Themes = {
+    Background = Color3.fromRGB(24, 24, 24),
+    Glow = Color3.fromRGB(0, 0, 0),
+    Accent = Color3.fromRGB(10, 10, 10),
+    LightContrast = Color3.fromRGB(20, 20, 20),
+    DarkContrast = Color3.fromRGB(14, 14, 14),  
+    TextColor = Color3.fromRGB(255, 255, 255)
+}
+
+local Universal = R3TH:addPage("Universal", 10734923549)
 local Player = Universal:addSection("Player")
 local ESP = Universal:addSection("ESP")
 local Target = Universal:addSection("Target")
+local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
 
-local Combat = R3TH:addPage("Combat", 5012544944)
+local Combat = R3TH:addPage("Combat", 10734975692)
 local Murderer = Combat:addSection("Murderer")
 local Sheriff = Combat:addSection("Sheriff")
 local Innocent = Combat:addSection("Innocent")
 
-local Main0 = R3TH:addPage("Main", 5012540623)
+local Main0 = R3TH:addPage("Main", 10709782154)
 local Teleports = Main0:addSection("Teleports")
 local Chams = Main0:addSection("Chams")
 local Main = Main0:addSection("Main")
 local Misc = Main0:addSection("Misc")
 
-local Toggles = R3TH:addPage("Toggles", 5012544092)
+local Toggles = R3TH:addPage("Toggles", 10734984834)
 local World = Toggles:addSection("World")
 local Visual = Toggles:addSection("Visual")
 local ChromaGuns = Toggles:addSection("Chroma Guns")
 local Trading = Toggles:addSection("Trading")
 local Traps = Toggles:addSection("Traps")
 
-local SprayPaint = R3TH:addPage("Spray Paint", 5012542120)
+local SprayPaint = R3TH:addPage("Spray Paint", 10709776050)
 local LoopTarget = SprayPaint:addSection("Loop Target")
 local FE = SprayPaint:addSection("FE")
 local Antijoin = SprayPaint:addSection("Anti Join")
 
-local Keybinds = R3TH:addPage("Keybinds")
+local Sniper0 = R3TH:addPage("Sniper", 10734977012)
+local Sniper = Sniper0:addSection("Sniper")
+
+local Scripts = R3TH:addPage("Scripts", 10723356507)
+local R3THPRIVV1 = Scripts:addSection("R3TH PRIV V1")
+
+local FAQ0 = R3TH:addPage("FAQ", 10723435515)
+local FAQ = FAQ0:addSection("FAQ")
+
+local Keybinds = R3TH:addPage("Keybinds", 10723416765)
 local UniversalKeybind = Keybinds:addSection("Universal")
 
-local Settings0 = R3TH:addPage("Settings", 5012544372)
+local Settings0 = R3TH:addPage("Settings", 10734950309)
 local Settings = Settings0:addSection("Settings")
+local Theme = Settings0:addSection("Theme")
 local Credits = Settings0:addSection("Credits")
 
 local Players = game:GetService("Players")
@@ -73,6 +93,7 @@ local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ContextActionService = game:GetService("ContextActionService")
+local HttpService = game:GetService("HttpService")
 local Remotes = ReplicatedStorage.Remotes
 local Gameplay = Remotes.Gameplay
 local ReplicateToy = Remotes.Extras.ReplicateToy
@@ -89,10 +110,10 @@ local WalkSpeedSlider = DefaultWalkSpeed
 local JumpPowerSlider = DefaultJumpPower
 FlySpeedSlider = 50
 ChangeAntiAFK = true
+ChangeMinPlayerCount = 1
 KnifeAuraSlider = 20
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
-
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
 function ToggleUI()
     local Toggle = false
@@ -221,6 +242,45 @@ end
 
 function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
+end
+
+local function getUserAvatarByUserId(ChangeTargetUserId)
+    local url = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds="..ChangeTargetUserId.."&size=48x48&format=Png&isCircular=false"
+    local response = request({Url = url}).Body
+    return HttpService:JSONDecode(response).data[1].imageUrl
+end
+
+local function getUserAvatarsByTokens(playerTokens)
+    local url = "https://thumbnails.roblox.com/v1/batch"
+    local data = {}
+    for _, token in ipairs(playerTokens) do
+        table.insert(data, {
+            token = token,
+            type = "AvatarHeadShot",
+            size = "48x48",
+            isCircular = false
+        })
+    end
+    data = HttpService:JSONEncode(data)
+    local headers = {
+        ["Content-Type"] = "application/json"
+    }
+    local response = request({
+        Url = url,
+        Method = "POST",
+        Headers = headers,
+        Body = data
+    }).Body
+    local imageUrls = {}
+    for _, item in ipairs(HttpService:JSONDecode(response).data) do
+        table.insert(imageUrls, item.imageUrl)
+    end
+    return imageUrls
+end
+
+local function CancelSearch()
+    sendnotification("Search canceled.")
+    SniperText.Text = "Join a player by just knowing what game their in!"
 end
 
 function CreateHighlight() -- outdated af will be improved
@@ -1262,10 +1322,6 @@ Player:addToggle("Enable Fly", false, function(Value)
     FlyFunction()
 end)
 
-Player:addButton("Mobile Fly", function()
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-V2/main/OtherScripts/Mobile%20Fly.lua'))()
-end)
-
 Player:addToggle("Noclip", false, function(Value)
     ChangeNoclip = Value
     NoclipFunction()
@@ -1346,6 +1402,92 @@ end)
 
 Server:addToggle("Free Camera", false, function()
     ToggleFreecam()
+end)
+
+Anti:addToggle("Anti Fling", false, function(Value)
+    if Value then
+        local Services = setmetatable({}, {__index = function(Self, Index)
+            local NewService = game.GetService(game, Index)
+            if NewService then
+                Self[Index] = NewService
+            end
+            return NewService
+        end})
+        
+        local LocalPlayer = Services.Players.LocalPlayer
+        
+        local function PlayerAdded(Player)
+            local Detected = false
+            local Character;
+            local PrimaryPart;
+            
+            local function CharacterAdded(NewCharacter)
+                Character = NewCharacter
+                repeat
+                    wait()
+                    PrimaryPart = NewCharacter:FindFirstChild("HumanoidRootPart")
+                until PrimaryPart
+                Detected = false
+            end
+            
+            CharacterAdded(Player.Character or Player.CharacterAdded:Wait())
+            AntiFlingCharacterAdded = Player.CharacterAdded:Connect(CharacterAdded)
+            AntiFlingConnection = Services.RunService.Heartbeat:Connect(function()
+                if (Character and Character:IsDescendantOf(workspace)) and (PrimaryPart and PrimaryPart:IsDescendantOf(Character)) then
+                    if PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 or PrimaryPart.AssemblyLinearVelocity.Magnitude > 100 then
+                        Detected = true
+                        for i,v in ipairs(Character:GetDescendants()) do
+                            if v:IsA("BasePart") then
+                                v.CanCollide = false
+                                v.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                                v.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                                v.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0)
+                            end
+                        end
+                        PrimaryPart.CanCollide = false
+                        PrimaryPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                        PrimaryPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                        PrimaryPart.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0)
+                    end
+                end
+            end)
+        end
+        
+        for i,v in ipairs(Services.Players:GetPlayers()) do
+            if v ~= LocalPlayer then
+                PlayerAdded(v)
+            end
+        end
+        AntiFlingPlayerAdded = Services.Players.PlayerAdded:Connect(PlayerAdded)
+        
+        local LastPosition = nil
+        AntiFlingConnection2 = Services.RunService.Heartbeat:Connect(function()
+            pcall(function()
+                local PrimaryPart = LocalPlayer.Character.PrimaryPart
+                if PrimaryPart.AssemblyLinearVelocity.Magnitude > 250 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 250 then
+                    PrimaryPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+                    PrimaryPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    PrimaryPart.CFrame = LastPosition
+                elseif PrimaryPart.AssemblyLinearVelocity.Magnitude < 50 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 then
+                    LastPosition = PrimaryPart.CFrame
+                end
+            end)
+        end)
+    else
+        AntiFlingPlayerAdded:Disconnect()
+        AntiFlingCharacterAdded:Disconnect()
+        AntiFlingConnection:Disconnect()
+        AntiFlingConnection2:Disconnect()
+    end
+end)
+
+Anti:addToggle("Anti Void", false, function(Value)
+    if Value then
+        OldFallenPartsDestroyHeight = Workspace.FallenPartsDestroyHeight
+        Workspace.FallenPartsDestroyHeight = math.huge-math.huge
+    else
+        Workspace.FallenPartsDestroyHeight = OldFallenPartsDestroyHeight
+    end
 end)
 
 Server:addToggle("RTX Shaders", false, function(Value)
@@ -2024,6 +2166,108 @@ Antijoin:addButton("Clear List", function()
     end
 end)
 
+--------------------------------------------------------------------------------------SNIPER----------------------------------------------------------------------------------------
+SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
+
+Sniper:addTextbox("Target User Id", nil, function(Value, focusLost)
+    ChangeTargetUserId = Value
+end)
+
+Sniper:addTextbox("Target Place Id", nil, function(Value, focusLost)
+    ChangeTargetPlaceId = Value
+end)
+
+Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
+    ChangeMinPlayerCount = tonumber(Value)
+end)
+
+Sniper:addToggle("Search", false, function(Value)
+    ChangeSearch = Value
+    if not ChangeSearch then CancelSearch() return end
+    SniperText.Text = 'Retrieving user info...'
+    
+    local userAvatarUrl = getUserAvatarByUserId(ChangeTargetUserId)
+    
+    local cursor = ""
+    local sniperfound = false
+    
+    local sniperpage = 1
+    
+    repeat
+        if not ChangeSearch then CancelSearch() return end
+        SniperText.Text = "Retrieving server list... (Page " .. sniperpage .. ")"
+        local url = "https://games.roblox.com/v1/games/"..ChangeTargetPlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+        if cursor then
+            url = url .. "&cursor=" .. cursor
+        end
+        local response = request({ Url = url }).Body
+        local data = HttpService:JSONDecode(response)
+        for i, server in ipairs(data.data) do
+            if not ChangeSearch then CancelSearch() return end
+            wait()
+            if server.playing < ChangeMinPlayerCount then continue end
+            SniperText.Text = "Scanning servers (Page " .. sniperpage .. " - " .. i .. "/" .. #data.data .. " - " .. server.playing .. " online)"
+            local serverAvatarUrls = getUserAvatarsByTokens(server.playerTokens)
+            for _, serverAvatarUrl in ipairs(serverAvatarUrls) do
+                if not ChangeSearch then CancelSearch() return end
+                wait()
+                if serverAvatarUrl == userAvatarUrl then
+                    SniperText.Text = "Player found, Teleporting..."
+                    TeleportService:TeleportToPlaceInstance(ChangeTargetPlaceId, server.id, LocalPlayer)
+                    wait(0.1)
+                    sniperfound = true
+                    break
+                end
+            end
+            if sniperfound then break end
+        end
+    
+        cursor = data.nextPageCursor or ""
+        sniperpage = sniperpage + 1
+    until sniperfound or cursor == ""
+    
+    if not sniperfound then
+        SniperText.Text = "The user could not be found in the game."
+        sendnotification("The user could not be found in the game.")
+    end
+end)
+
+--------------------------------------------------------------------------------------SCRIPTS----------------------------------------------------------------------------------------
+loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-V2/main/OtherScripts/Game%20Status.lua'))()
+
+Container1, Text1 = R3THPRIVV1:addParagraph(nil, "Abyss World: " .. R3THPRIVV1_AbyssWorld)
+
+Container2, Text2 = R3THPRIVV1:addParagraph(nil, "Blade Ball: " .. R3THPRIVV1_BladeBall)
+
+Container3, Text3 = R3THPRIVV1:addParagraph(nil, "Bloxy Bingo: " .. R3THPRIVV1_BloxyBingo)
+
+Container4, Text4 = R3THPRIVV1:addParagraph(nil, "Bulked Up: " .. R3THPRIVV1_BulkedUp)
+
+Container5, Text5 = R3THPRIVV1:addParagraph(nil, "FOBLOX: " .. R3THPRIVV1_FOBLOX)
+
+Container6, Text6 = R3THPRIVV1:addParagraph(nil, "Harbor Havoc: " .. R3THPRIVV1_HarborHavoc)
+
+Container7, Text7 = R3THPRIVV1:addParagraph(nil, "Murder Mystery 2: " .. R3THPRIVV1_MurderMystery2)
+
+Container8, Text8 = R3THPRIVV1:addParagraph(nil, "Sharkbite 2: " .. R3THPRIVV1_Sharkbite2)
+
+Container9, Text9 = R3THPRIVV1:addParagraph(nil, "THEIF LIFE Simulator: " .. R3THPRIVV1_THEIFLIFESimulator)
+
+Container10, Text10 = R3THPRIVV1:addParagraph(nil, "Total Roblox Drama: " .. R3THPRIVV1_TotalRobloxDrama)
+
+Container11, Text11 = R3THPRIVV1:addParagraph(nil, "Tower of Hell: " .. R3THPRIVV1_TowerofHell)
+
+Container12, Text12 = R3THPRIVV1:addParagraph(nil, "Universal: " .. R3THPRIVV1_Universal)
+
+--------------------------------------------------------------------------------------FAQ----------------------------------------------------------------------------------------
+Container13, Text13 = FAQ:addParagraph("Why should I use R3TH PRIV?", "At the moment, R3TH PRIV is completely free and without a key system, in contrast to competitors that charge up to $20 for a skidded script.")
+
+Container14, Text14 = FAQ:addParagraph("Does R3TH PRIV log anything?", "No, it's a common misconception that I log users just because the script is free. R3TH PRIV is trusted by over 10,000 individuals; as such, we will never gather information about you without your knowledge.")
+
+Container15, Text15 = FAQ:addParagraph("Why are the scripts all free to use?", "Despite the fact that I have encountered other script owners attempting to remove my script, I will not stop producing free scripts since it has always been my goal to provide all of my users with the greatest experience possible at no price.")
+
+Container16, Text16 = FAQ:addParagraph("How can I submit a bug report?", "If you have any problems using the script, you can report bugs by creating a ticket on the official Discord server at discord.gg/pethicial. The defect will be resolved as soon as possible to allow you to continue using the script.")
+
 --------------------------------------------------------------------------------------KEYBINDS----------------------------------------------------------------------------------------
 UniversalKeybind:addKeybind("Enable WalkSpeed", KeyCode, function()
     if ChangeWalkSpeed then
@@ -2129,6 +2373,13 @@ Settings:addToggle("UI Toggle Button", false, function(Value)
         end
     end
 end)
+
+for theme, color in pairs(Themes) do
+	Theme:addColorPicker(theme, color, function(color3)
+		R3TH:setTheme(theme, color3)
+	end)
+end
+
 
 Credits:addButton("Pethicial", function()
 end)
