@@ -163,18 +163,23 @@ function ToggleUI()
     end
 end
 
-function sendnotification(message)
-    if R3THDEVICE == "Mobile" then
-        StarterGui:SetCore("SendNotification", {
-            Title = "R3TH PRIV";
-            Text = message;
-            Duration = 7;
-        })
-    else
-        Notification:Notify(
-            {Title = "R3TH PRIV", Description = message},
-            {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
-        )
+function sendnotification(message, type)
+    if type == false or type == nil then
+        print("[ R3TH PRIV ]: " .. message)
+    end
+    if type == true or type == nil then
+        if R3THDEVICE == "Mobile" then
+            StarterGui:SetCore("SendNotification", {
+                Title = "R3TH PRIV";
+                Text = message;
+                Duration = 7;
+            })
+        else
+            Notification:Notify(
+                {Title = "R3TH PRIV", Description = message},
+                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
+            )
+        end
     end
 end
 
@@ -284,7 +289,7 @@ local function getUserAvatarsByTokens(playerTokens)
 end
 
 local function CancelSearch()
-    sendnotification("Search canceled.")
+    sendnotification("Search canceled.", nil)
     SniperText.Text = "Join a player by just knowing what game their in!"
 end
 
@@ -1009,7 +1014,7 @@ function FlyFunction()
 end
 
 function NoclipFunction()
-    while ChangeNoclip do
+    while ChangeNoclip and task.wait() do
         for a, b in pairs(Workspace:GetChildren()) do
             if b.Name == LocalPlayer.Name then
                 for i, v in pairs(Workspace[LocalPlayer.Name]:GetChildren()) do
@@ -1019,7 +1024,6 @@ function NoclipFunction()
                 end 
             end 
         end
-        wait()
     end
 end
 
@@ -1112,7 +1116,7 @@ function FlingFunction()
                         OldPos = RootPart.CFrame
                     end
                     if THumanoid and THumanoid.Sit and not AllBool then
-                        return sendnotification("Error Occurred: Targeting is sitting")
+                        return sendnotification("Error Occurred: Targeting is sitting", true)
                     end
                     if THead then
                         workspace.CurrentCamera.CameraSubject = THead
@@ -1220,7 +1224,7 @@ function FlingFunction()
                     elseif not TRootPart and not THead and Accessory and Handle then
                         SFBasePart(Handle)
                     else
-                        return sendnotification("Error Occurred: Target is missing everything")
+                        return sendnotification("Error Occurred: Target is missing everything", true)
                     end
     
                     BV:Destroy()
@@ -1240,7 +1244,7 @@ function FlingFunction()
                     until (RootPart.Position - OldPos.p).Magnitude < 25
                     workspace.FallenPartsDestroyHeight = FPDH
                 else
-                    return sendnotification("Error Occurred: Random error")
+                    return sendnotification("Error Occurred: Random error", true)
                 end
             end
     
@@ -1259,7 +1263,7 @@ function FlingFunction()
                         SkidFling(TPlayer)
                     end
                 elseif not GetPlayer(x) and not AllBool then
-                    sendnotification("Error Occurred: Username Invalid")
+                    sendnotification("Error Occurred: Username Invalid", true)
                 end
             end
             task.wait()
@@ -1671,7 +1675,7 @@ end)
 --------------------------------------------------------------------------------------COMBAT----------------------------------------------------------------------------------------
 Murderer:addToggle("Auto Kill All", false, function(Value)
     ChangeAutoKillAll = Value
-    while ChangeAutoKillAll do
+    while ChangeAutoKillAll and task.wait() do
         EquipKnife()
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer then
@@ -1683,13 +1687,12 @@ Murderer:addToggle("Auto Kill All", false, function(Value)
                 end
             end
         end
-        wait()
     end
 end)
 
 Murderer:addToggle("Knife Aura", false, function(Value)
     ChangeKnifeAura = Value
-    while ChangeKnifeAura do
+    while ChangeKnifeAura and task.wait() do
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and LocalPlayer:DistanceFromCharacter(player.Character.HumanoidRootPart.Position) < KnifeAuraSlider then
                 EquipKnife()
@@ -1796,11 +1799,10 @@ end)
 
 Chams:addToggle("Player Chams", false, function(playerchams) -- not improved yet
     playerchamsloop = playerchams
-    while playerchamsloop do
+    while playerchamsloop and task.wait(1) do
         function playerchamsloopfix()
         CreateHighlight()
         UpdateHighlights()
-        wait(1)
     end
     wait()
     pcall(playerchamsloopfix)
@@ -1857,7 +1859,7 @@ end)
 --------------------------------------------------------------------------------------TOGGLES----------------------------------------------------------------------------------------
 World:addToggle("Loop Interactive", false, function(Value)
     loopinteractiveloop = Value
-    while loopinteractiveloop do
+    while loopinteractiveloop and task.wait() do
         function loopinteractiveloopfix()
         if workspace:FindFirstChild("Bank2") then
             workspace.Bank2.Interactive.VaultSystem.InteractiveBox.Interact:FireServer()
@@ -1877,7 +1879,6 @@ World:addToggle("Loop Interactive", false, function(Value)
                 end
             end
         end
-        wait()
     end
     wait()
     pcall(loopinteractiveloopfix)
@@ -1898,7 +1899,7 @@ end)
 
 Visual:addToggle("Improve FPS", false, function(Value)
     ChangeImproveFPS = Value
-    while ChangeImproveFPS do
+    while ChangeImproveFPS and task.wait(10) do
         for i,v in pairs (Workspace:GetDescendants()) do
             if v.Name == "Pet" then
                 v:Destroy()
@@ -1908,7 +1909,6 @@ Visual:addToggle("Improve FPS", false, function(Value)
                 v:Destroy()
             end
         end
-        wait(10)
     end
 end)
 
@@ -1918,27 +1918,24 @@ end)
 
 ChromaGuns:addToggle("Loop Drop Guns", false, function(Value)
     ChangeLoopDropGuns = Value
-    while ChangeLoopDropGuns do
+    while ChangeLoopDropGuns and task.wait() do
         if Humanoid then
             Gameplay.FakeGun:FireServer(true)
             dropgun()
-            task.wait()
         end
     end
 end)
 
 ChromaGuns:addToggle("Pickup All Guns", false, function(Value)
     ChangePickupAllGuns = Value
-    while ChangePickupAllGuns do
+    while ChangePickupAllGuns and task.wait() do
         for _,v in pairs(Workspace:GetDescendants()) do
             if v:IsA("TouchTransmitter") then
                 firetouchinterest(HumanoidRootPart, v.Parent, 0)
                 task.wait()
                 firetouchinterest(HumanoidRootPart, v.Parent, 1)
             end
-            wait()
         end
-        wait()
     end
 end)
 
@@ -1956,7 +1953,7 @@ end)
 
 Trading:addToggle("Hide Trade UI", false, function(Value)
     ChangeHideTradeUI = Value
-    while ChangeHideTradeUI do
+    while ChangeHideTradeUI and task.wait() do
         local gui = LocalPlayer.PlayerGui:FindFirstChild("TradeGUI")
         if gui then
             gui.Enabled = false
@@ -1965,13 +1962,12 @@ Trading:addToggle("Hide Trade UI", false, function(Value)
                 frame.Visible = false
             end
         end
-        wait()
     end
 end)
 
 Trading:addToggle("Auto Accept Trade", false, function(Value)
     ChangeAutoAcceptTrade = Value
-    while ChangeAutoAcceptTrade do
+    while ChangeAutoAcceptTrade and task.wait() do
         Trade.AcceptTrade:FireServer()
     end
 end)
@@ -1979,17 +1975,16 @@ end)
 Traps:addKeybind("Place Trap", KeyCode, function()
     ReplicatedStorage:WaitForChild("TrapSystem"):WaitForChild("PlaceTrap"):InvokeServer(CFrame.new(Character.Head.Position.X, Character.Head.Position.Y, Character.Head.Position.Z))
 end, function()
-	print("[ R3TH PRIV ] Place Trap keybind changed.")
+	sendnotification("Place Trap keybind changed.", false)
 end)
 
 Traps:addToggle("Anti Trap", false, function(Value)
     ChangeAntiTrap = Value
-    while ChangeAntiTrap do -- will be better when i remake it
+    while ChangeAntiTrap and task.wait() do -- will be better when i remake it
         function ChangeAntiTrapFix()
         if Humanoid.WalkSpeed == 0.009999999776482582 then
             Humanoid.WalkSpeed = 16
         end
-        wait()
     end
     wait()
     pcall(ChangeAntiTrapFix)
@@ -2015,7 +2010,6 @@ function UseSpray(Target, SprayId, Side, Size, Part, Position, Offset, Repeat)
                     end
                 end
             end
-            wait()
         end
     else
         for i = 1, Repeat do
@@ -2029,7 +2023,6 @@ function UseSpray(Target, SprayId, Side, Size, Part, Position, Offset, Repeat)
                     end
                 end
             end
-            wait()
         end
     end
 end
@@ -2058,19 +2051,17 @@ end)
 
 LoopTarget:addToggle("Give Noclip", false, function(Value)
     ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait() do
+    while ChangeLoopVoidPlayer and task.wait(12) do
         UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
         UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
-        wait(12)
     end
 end)
 
 LoopTarget:addToggle("Freeze", false, function(Value)
     ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait() do
+    while ChangeLoopVoidPlayer and task.wait(12) do
         function ChangeLoopVoidPlayerFix()
         UseSpray(ChangeLoopTarget, 0, "Top", 2048, "LeftLowerArm", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 30)
-        wait(12)
     end
     wait()
     pcall(ChangeLoopVoidPlayerFix)
@@ -2079,10 +2070,9 @@ end)
 
 LoopTarget:addToggle("Glitch", false, function(Value)
     ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait() do
+    while ChangeLoopVoidPlayer and task.wait(12) do
         function ChangeLoopVoidPlayerFix()
         UseSpray(ChangeLoopTarget, 0, "Right", 10, "HumanoidRootPart", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 1)
-        wait(12)
     end
     wait()
     pcall(ChangeLoopVoidPlayerFix)
@@ -2091,7 +2081,7 @@ end)
 
 LoopTarget:addToggle("Loop Trap Player", false, function(Value)
     ChangeLoopTrapPlayer = Value
-    while ChangeLoopTrapPlayer do
+    while ChangeLoopTrapPlayer and task.wait() do
         function ChangeLoopTrapPlayerFix()
         if ChangeLoopTarget == "All" then
             for i,v in pairs(Players:GetChildren()) do
@@ -2099,7 +2089,6 @@ LoopTarget:addToggle("Loop Trap Player", false, function(Value)
                     local Target = Players:FindFirstChild(v.Name)
                     PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
                 end
-                wait()
             end
         else
             Target = Players:FindFirstChild(ChangeLoopTarget)
@@ -2113,7 +2102,7 @@ end)
 
 LoopTarget:addToggle("Auto Equip Spray Paint", false, function(Value)
     ChangeAutoEquipSprayPaint = Value
-    while ChangeAutoEquipSprayPaint do
+    while ChangeAutoEquipSprayPaint and task.wait() do
         function ChangeAutoEquipSprayPaintFix()
         ReplicateToy:InvokeServer("SprayPaint")
         for _,v in next, Backpack:GetChildren() do
@@ -2130,12 +2119,11 @@ end)
 
 Antijoin:addToggle("Anti Join", false, function(Value)
     ChangeAntiJoin = Value
-    while ChangeAntiJoin do
+    while ChangeAntiJoin and task.wait() do
         function ChangeAntiJoinFix()
         for i,v in pairs(antijoinlist) do
             local Target = Players:FindFirstChild(v.Name)
             UseSpray(Target, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
-            wait()
         end
     end
     wait()
@@ -2233,7 +2221,7 @@ Sniper:addToggle("Search", false, function(Value)
     
     if not sniperfound then
         SniperText.Text = "The user could not be found in the game."
-        sendnotification("The user could not be found in the game.")
+        sendnotification("The user could not be found in the game.", nil)
     end
 end)
 
@@ -2282,7 +2270,7 @@ UniversalKeybind:addKeybind("Enable WalkSpeed", KeyCode, function()
         WalkSpeedFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable WalkSpeed keybind changed.")
+	sendnotification("Enable WalkSpeed keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Enable JumpPower", KeyCode, function()
@@ -2293,7 +2281,7 @@ UniversalKeybind:addKeybind("Enable JumpPower", KeyCode, function()
         JumpPowerFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable JumpPower keybind changed.")
+	sendnotification("Enable JumpPower keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Noclip", KeyCode, function()
@@ -2304,7 +2292,7 @@ UniversalKeybind:addKeybind("Noclip", KeyCode, function()
         NoclipFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable JumpPower keybind changed.")
+	sendnotification("Enable JumpPower keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
@@ -2316,7 +2304,7 @@ UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
         FlyFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Enable Fly keybind changed.")
+	sendnotification("Enable Fly keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Xray", KeyCode, function()
@@ -2328,13 +2316,13 @@ UniversalKeybind:addKeybind("Xray", KeyCode, function()
         XrayFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Xray keybind changed.")
+	sendnotification("Xray keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Respawn", KeyCode, function()
     Humanoid.Health = 0
 end, function()
-	print("[ R3TH PRIV ] Respawn keybind changed.")
+	sendnotification("Respawn keybind changed.")
 end)
 
 UniversalKeybind:addKeybind("Fling", KeyCode, function()
@@ -2346,13 +2334,13 @@ UniversalKeybind:addKeybind("Fling", KeyCode, function()
         FlingFunction()
     end
 end, function()
-	print("[ R3TH PRIV ] Fling keybind changed.")
+	sendnotification("Fling keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Free Camera", KeyCode, function()
     ToggleFreecam()
 end, function()
-	print("[ R3TH PRIV ] Free Camera keybind changed.")
+	sendnotification("Free Camera keybind changed.", false)
 end)
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
@@ -2363,7 +2351,7 @@ end)
 Settings:addKeybind("UI Toggle", Enum.KeyCode.LeftControl, function()
 	R3TH:toggle()
 end, function()
-	print("[ R3TH PRIV ] UI Toggle keybind changed.")
+	sendnotification("UI Toggle keybind changed.", false)
 end)
 
 Settings:addToggle("UI Toggle Button", false, function(Value)
@@ -2394,8 +2382,7 @@ R3TH:SelectPage(R3TH.pages[1], true)
 
 local TimeEnd = tick()
 local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
-print("[ R3TH PRIV ]: Successfully loaded the script in " .. TotalTime .. "s.")
-sendnotification("Successfully loaded the script in " .. TotalTime .. "s.")
+sendnotification("Successfully loaded the script in " .. TotalTime .. "s.", nil)
 
 roleupdater = true
 while roleupdater do
