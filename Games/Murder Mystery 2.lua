@@ -79,7 +79,7 @@ local FAQ = FAQ0:addSection("FAQ")
 local Keybinds = R3TH:addPage("Keybinds", 10723416765)
 local UniversalKeybind = Keybinds:addSection("Universal")
 
-if R3THEXECUTOR == "PC" then -- moved to the top for mobile users
+if R3THEXECUTOR == "PC" then -- moved to the bottom for pc users
     local Settings0 = R3TH:addPage("Settings", 10734950309)
     local Settings = Settings0:addSection("Settings")
     local Theme = Settings0:addSection("Theme")
