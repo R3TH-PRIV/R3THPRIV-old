@@ -301,6 +301,12 @@ do
 			pages = {}
 		}, library)
 	end
+
+	function library:Resize()
+		for _, page in pairs(self.pages) do
+			page:Resize()
+		end
+	end
 	
 	function page.new(library, title, icon)
 		local button = utility:Create("TextButton", {
