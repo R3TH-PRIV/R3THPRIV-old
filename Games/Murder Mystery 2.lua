@@ -282,15 +282,25 @@ local function getUserAvatarsByTokens(playerTokens)
         Body = data
     }).Body
     local imageUrls = {}
-    for _, item in ipairs(HttpService:JSONDecode(response).data) do
-        table.insert(imageUrls, item.imageUrl)
+    local jsonData = HttpService:JSONDecode(response)
+    if jsonData then
+        local serverData = jsonData.data
+        if serverData then
+            for _, item in ipairs(serverData) do
+                if item.imageUrl then
+                    table.insert(imageUrls, item.imageUrl)
+                end
+            end
+        end
     end
     return imageUrls
 end
 
-local function CancelSearch()
-    sendnotification("Search canceled.", nil)
+local function CancelSearch(block)
     SniperText.Text = "Join a player by just knowing what game their in!"
+    if not block then
+        sendnotification("Search canceled.", nil)
+    end
 end
 
 function CreateHighlight() -- outdated af will be improved
@@ -2179,6 +2189,7 @@ Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
 end)
 
 Sniper:addToggle("Search", false, function(Value)
+    if ChangeFastSearch then sendnotification("Fast Search is already in progress.", true) return end
     ChangeSearch = Value
     if not ChangeSearch then CancelSearch() return end
     SniperText.Text = 'Retrieving user info...'
@@ -2227,6 +2238,77 @@ Sniper:addToggle("Search", false, function(Value)
         SniperText.Text = "The user could not be found in the game."
         sendnotification("The user could not be found in the game.", nil)
     end
+end)
+
+Sniper:addToggle("Fast Search", false, function(Value)
+    if ChangeSearch then sendnotification("Search is already in progress.", true) return end
+    ChangeFastSearch = Value
+    if not ChangeFastSearch then return end
+    SniperText.Text = 'Retrieving user info...'
+    
+    local userAvatarUrl = getUserAvatarByUserId(ChangeTargetUserId)
+
+	local function searchServers()
+		local sniperfound = false
+		local sniperpage = 1
+	
+		repeat
+			if not ChangeFastSearch then CancelSearch() return end
+			SniperText.Text = "Retrieving server list... (Page " .. sniperpage .. ")"
+	
+			local url = "https://games.roblox.com/v1/games/"..ChangeTargetPlaceId.."/servers/Public?sortOrder=Asc&limit=100&cursor="
+			local response = request({ Url = url }).Body
+	
+			local data = HttpService:JSONDecode(response)
+	
+			if not data then
+				sendnotification("No response from the server.", nil)
+				return
+			end
+	
+			if not data.data then
+				sendnotification("No server data found in the response.", nil)
+				return
+			end
+	
+			local serverData = data.data
+	
+			if #serverData == 0 then
+				sendnotification("No more servers found. Exiting loop.", nil)
+				break
+			end
+
+			task.spawn(function()
+				for _, server in ipairs(serverData) do
+					if server.playing >= ChangeMinPlayerCount then
+						local serverAvatarUrls = getUserAvatarsByTokens(server.playerTokens)
+						for _, serverAvatarUrl in ipairs(serverAvatarUrls) do
+							if not ChangeFastSearch then CancelSearch(true) return end
+							wait()
+							if serverAvatarUrl == userAvatarUrl then
+								SniperText.Text = "Player found, Teleporting..."
+								TeleportService:TeleportToPlaceInstance(ChangeTargetPlaceId, server.id, LocalPlayer)
+								wait(0.1)
+								sniperfound = true
+								return
+							end
+						end
+					end
+				end
+			end)
+	
+			wait()
+	
+			sniperpage = sniperpage + 1
+		until sniperfound
+	
+		if not sniperfound then
+			SniperText.Text = "The user could not be found in the game."
+			sendnotification("The user could not be found in the game.", nil)
+		end
+	end
+	
+    searchServers()
 end)
 
 --------------------------------------------------------------------------------------SCRIPTS----------------------------------------------------------------------------------------
