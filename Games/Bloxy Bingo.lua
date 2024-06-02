@@ -78,7 +78,7 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ContextActionService = game:GetService("ContextActionService")
 local HttpService = game:GetService("HttpService")
-local SubContainer =LocalPlayer.PlayerGui.Bingo.StaticDisplayArea.Cards.PlayerArea.Cards.Container.SubContainer
+local SubContainer = LocalPlayer.PlayerGui.Bingo.StaticDisplayArea.Cards.PlayerArea.Cards.Container.SubContainer
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
 local DefaultJumpPower = Humanoid.JumpPower
@@ -1434,7 +1434,7 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-AutoFarm:addToggle("Auto Farm", false, function(Value) -- patched atm will be fixing
+AutoFarm:addToggle("Auto Farm", false, function(Value)
     ChangeAutoFarm = Value
     while ChangeAutoFarm do
         function ChangeAutoFarmFix()
