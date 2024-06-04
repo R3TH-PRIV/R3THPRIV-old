@@ -42,8 +42,9 @@ local Target = Universal:addSection("Target")
 local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
 
-local Sniper0 = R3TH:addPage("Sniper", 10734977012)
-local Sniper = Sniper0:addSection("Sniper")
+local Target0 = R3TH:addPage("Target", 10734977012)
+local Sniper = Target0:addSection("Sniper")
+local Webhook = Target0:addSection("Webhook")
 
 local Scripts = R3TH:addPage("Scripts", 10723356507)
 local R3THPRIVV1 = Scripts:addSection("R3TH PRIV V1")
@@ -82,7 +83,6 @@ local WalkSpeedSlider = DefaultWalkSpeed
 local JumpPowerSlider = DefaultJumpPower
 FlySpeedSlider = 50
 ChangeAntiAFK = true
-ChangeMinPlayerCount = 1
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
@@ -1426,10 +1426,6 @@ Sniper:addTextbox("Target Place Id", nil, function(Value, focusLost)
     ChangeTargetPlaceId = Value
 end)
 
-Sniper:addTextbox("Min Player Count", nil, function(Value, focusLost)
-    ChangeMinPlayerCount = tonumber(Value)
-end)
-
 Sniper:addToggle("Search", false, function(Value)
     ChangeSearch = Value
     if not ChangeSearch then CancelSearch() return end
@@ -1454,7 +1450,6 @@ Sniper:addToggle("Search", false, function(Value)
         for i, server in ipairs(data.data) do
             if not ChangeSearch then CancelSearch() return end
             wait()
-            if server.playing < ChangeMinPlayerCount then continue end
             SniperText.Text = "Scanning servers (Page " .. sniperpage .. " - " .. i .. "/" .. #data.data .. " - " .. server.playing .. " online)"
             local serverAvatarUrls = getUserAvatarsByTokens(server.playerTokens)
             for _, serverAvatarUrl in ipairs(serverAvatarUrls) do
@@ -1478,6 +1473,34 @@ Sniper:addToggle("Search", false, function(Value)
     if not sniperfound then
         SniperText.Text = "The user could not be found in the game."
         sendnotification("The user could not be found in the game.", nil)
+    end
+end)
+
+Webhook:addTextbox("Webhook Url", nil, function(Value, focusLost)
+    ChangeWebhookUrl = Value
+end)
+
+Webhook:addTextbox("Webhook Username", nil, function(Value, focusLost)
+    ChangeWebhookUsername = Value
+end)
+
+Webhook:addTextbox("Webhook Message", nil, function(Value, focusLost)
+    ChangeWebhookMessage = Value
+end)
+
+Webhook:addToggle("Spam Webhook", false, function(Value)
+    ChangeSpamWebhook = Value
+    while ChangeSpamWebhook and task.wait() do
+        function ChangeSpamWebhookFix()
+        local response = request({
+            Url = ChangeWebhookUrl,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
+        })
+    end
+    wait()
+    pcall(ChangeSpamWebhookFix)
     end
 end)
 
