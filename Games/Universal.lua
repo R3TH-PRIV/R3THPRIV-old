@@ -38,6 +38,7 @@ local Themes = {
 local Universal = R3TH:addPage("Universal", 10734923549)
 local Player = Universal:addSection("Player")
 local ESP = Universal:addSection("ESP")
+local Aimbot = Universal:addSection("Aimbot")
 local Target = Universal:addSection("Target")
 local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
@@ -76,13 +77,34 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ContextActionService = game:GetService("ContextActionService")
 local HttpService = game:GetService("HttpService")
+local Mouse = LocalPlayer:GetMouse()
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
 local DefaultJumpPower = Humanoid.JumpPower
 local WalkSpeedSlider = DefaultWalkSpeed
 local JumpPowerSlider = DefaultJumpPower
+local AimbotEnabled = false
+local AimbotActive = false
+local VisibilityCheck = false
+local TeamCheck = false
+local ShowFOV = false
+local AimingAt = nil
+local Smoothness = 12.5
+local MovementPrediction = false
+local MovementPredictionStrength = 1
+local FOV_Color = Color3.fromRGB(0, 255, 127)
+local FOV_Size = 25
 FlySpeedSlider = 50
 ChangeAntiAFK = true
+
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Position = Vector2.new(0, 0)
+FOVCircle.Radius = FOV_Size
+FOVCircle.Thickness = 1
+FOVCircle.Filled = false
+FOVCircle.Transparency = 1
+FOVCircle.Visible = true
+FOVCircle.Color = FOV_Color
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
@@ -218,6 +240,92 @@ end
 
 function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
+end
+
+local function AimToPosition(Position)
+	local AimX = ((Position.X - Mouse.X) + 0) / Smoothness 
+    local AimY = ((Position.Y - Mouse.Y - 36) + 0) / Smoothness
+    return AimX, AimY
+end
+
+local function InitAimbot()
+    if game:GetService("Workspace"):FindFirstChildOfClass("Camera") then
+        Camera = game:GetService("Workspace"):FindFirstChildOfClass("Camera")
+    end
+    local ScreenSize = Camera.ViewportSize
+    if FOVCircle then
+        FOVCircle.Radius = FOV_Size
+        FOVCircle.Visible = ShowFOV
+		FOVCircle.Color = FOV_Color
+		FOVCircle.Transparency = 1
+		FOVCircle.Filled = false
+        FOVCircle.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+    end
+    if AimbotEnabled == false then return end
+    if AimbotActive == true then
+        local Closest = {nil, nil, nil, nil, nil}
+        for i, v in pairs(Players:GetChildren()) do
+            pcall(function()
+                if v.Character and v ~= Client then
+                    local HumanoidHealth = nil
+                    if v.Character:FindFirstChildOfClass("Humanoid") ~= nil then
+                        HumanoidHealth = v.Character:FindFirstChildOfClass("Humanoid").Health
+                    end
+                    if HumanoidHealth == nil or HumanoidHealth > 0 then
+                        local PlayerRoot = v.Character:FindFirstChild("HumanoidRootPart") or v.Character:FindFirstChild("Torso")
+                        local PlayerHead = v.Character:FindFirstChild("Head") or PlayerRoot
+                        local PlayerScreen, InFOV = Camera:WorldToViewportPoint(PlayerRoot.Position)
+                        local DistanceFromCenter = 0
+                        DistanceFromCenter = (Vector2.new(PlayerScreen.X, PlayerScreen.Y) - Vector2.new(Mouse.X, Mouse.Y)).magnitude
+                        if (InFOV == true and DistanceFromCenter < FOV_Size) or AimingAt == v then
+                            if AimingAt == v then
+                                DistanceFromCenter = 0
+                            end
+                            if (TeamCheck == true and v.Team ~= Client.Team) or TeamCheck == false then
+                                local Obscuring = false
+                                if VisibilityCheck == true then
+                                	local Parts = Camera:GetPartsObscuringTarget({Client.Character.Head.Position, PlayerHead.Position}, {Camera, Client.Character})
+                                	for i2, v2 in pairs(Parts) do
+                                    if v2:IsDescendantOf(v.Character) == false and v2.Transparency == 0 then
+                                            Obscuring = true
+                                        end
+                                    end
+                                end
+                                if Obscuring == false and ((Closest[1] ~= nil and DistanceFromCenter < Closest[1]) or Closest[1] == nil) then
+                                    if Closest[1] == nil or (DistanceFromCenter < Closest[1]) then
+                                        local Prediction = Vector3.new(0, 0, 0)
+                                        if MovementPrediction == true then
+                                            Prediction = PlayerRoot.Velocity * (MovementPredictionStrength / 10) * (Client.Character.Head.Position - PlayerHead.Position).magnitude / 100
+                                        end
+                                        Closest[1] = DistanceFromCenter
+                                        local PlayerAim = nil
+                                        if AimPart == "Torso" then
+                                            PlayerAim = v.Character:FindFirstChild("HumanoidRootPart") or v.Character:FindFirstChild("Torso")
+                                        else
+                                            PlayerAim = v.Character.Head
+                                        end
+                                        Closest[2] = PlayerAim
+                                        Closest[3] = Vector2.new(PlayerScreen.X, PlayerScreen.Y)
+                                        Closest[4] = Prediction
+                                        Closest[5] = v
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        if Closest[1] ~= nil and Closest[2] ~= nil and Closest[3] ~= nil and Closest[4] ~= nil and Closest[5] ~= nil then
+            pcall(function()
+                local AimAt = Camera:WorldToViewportPoint(Closest[2].Position + Closest[4])
+                mousemoverel(AimToPosition(Vector2.new(AimAt.X, AimAt.Y)))
+                AimingAt = Closest[5]
+            end)
+        else
+            AimingAt = nil
+        end
+    end
 end
 
 local function getUserAvatarByUserId(ChangeTargetUserId)
@@ -796,6 +904,34 @@ function XrayFunction()
     x(t)
 end
 
+function EnableAimbotFunction()
+    if AimbotEnabled then
+        FOVCircle.Visible = OriginalShowFOV
+        AimbotInputBegan = UserInputService.InputBegan:Connect(function(Input, GPE)
+            if GPE or AimbotEnabled == false then return end
+            if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                AimbotActive = true
+            end
+        end)
+        
+        AimbotInputEnded = UserInputService.InputEnded:Connect(function(Input, GPE)
+            if GPE or AimbotEnabled == false then return end
+            if Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                AimbotActive = false
+                AimingAt = nil
+            end
+        end)
+        
+        AimbotRunService = RunService:BindToRenderStep("InitAimbot", 1, InitAimbot)
+    else
+        AimbotInputBegan:Disconnect()
+        AimbotInputEnded:Disconnect()
+        RunService:UnbindFromRenderStep("InitAimbot")
+        OriginalShowFOV = ShowFOV
+        FOVCircle.Visible = false
+    end
+end
+
 function FlingFunction()
     while ChangeFling do
         function ChangeFlingFix()
@@ -1152,8 +1288,72 @@ Target:addToggle("Fling", false, function(Value)
     FlingFunction()
 end)
 
-Server:addToggle("Free Camera", false, function()
-    ToggleFreecam()
+Aimbot:addToggle("Enable Aimbot", false, function(Value)
+    AimbotEnabled = Value
+    EnableAimbotFunction()
+end)
+
+Aimbot:addToggle("Visibility Check", false, function(Value)
+    VisibilityCheck = Value
+end)
+
+Aimbot:addToggle("Movement Prediction", false, function(Value)
+    MovementPredicition = Value
+end)
+
+if R3THDEVICE == "Mobile" then
+    Aimbot:addTextbox("Movement Prediction Strength 0 - 20", 1, function(Value, focusLost)
+        MovementPredictionStrength = Value
+    end)
+else
+    Aimbot:addSlider("Movement Prediction Strength", 1, 0, 20, function(Value)
+        MovementPredictionStrength = Value
+    end)
+end
+
+Aimbot:addToggle("Team Check", false, function(Value)
+    TeamCheck = Value
+end)
+
+Aimbot:addToggle("Show FOV Circle", false, function(Value)
+    ShowFOV = Value
+end)
+
+if R3THDEVICE == "Mobile" then
+    Aimbot:addTextbox("Field Of View 0 - 200", 25, function(Value, focusLost)
+        FOV_Size = Value
+    end)
+else
+    Aimbot:addSlider("Field Of View", 25, 0, 200, function(Value)
+        FOV_Size = Value
+    end)
+end
+
+Aimbot:addToggle("Trigger Bot", false, function(Value)
+    ChangeTriggerBot = Value
+    local Mouse = LocalPlayer:GetMouse()
+    while ChangeTriggerBot do
+        for i, v in pairs(game:GetService("Players"):GetChildren()) do 
+            if TeamCheck and Mouse.Target.Parent == v.Character and Mouse.Target:IsA("Part" or "BasePart") and v.Team ~= LocalPlayer.Team then 
+                mouse1press()
+                wait()
+                mouse1release()
+            elseif not TeamCheck and Mouse.Target.Parent == v.Character and Mouse.Target:IsA("Part" or "BasePart") then
+                mouse1press()
+                wait()
+                mouse1release()
+            end
+        end
+        wait()
+    end
+end)
+
+Aimbot:addDropdown("Aim Part", {"Head", "Torso"}, function(Value)
+    ChangeAimPart = Value
+end)
+
+Aimbot:addColorPicker("Circle Color", Color3.fromRGB(0, 255, 127), function(Value)
+    FOV_Color = Value
 end)
 
 Anti:addToggle("Anti Fling", false, function(Value)
@@ -1240,6 +1440,15 @@ Anti:addToggle("Anti Void", false, function(Value)
     else
         Workspace.FallenPartsDestroyHeight = OldFallenPartsDestroyHeight
     end
+end)
+
+Server:addButton("No Delay", function()
+    g = hookfunction(wait, function(seconds) return g(0) end)
+    visualg = hookfunction(wait, function(seconds) return g(0) end)
+end)
+
+Server:addToggle("Free Camera", false, function()
+    ToggleFreecam()
 end)
 
 Server:addToggle("RTX Shaders", false, function(Value)
@@ -1415,7 +1624,7 @@ Server:addButton("Serverhop", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Serverhop.lua'),true))()
 end)
 
---------------------------------------------------------------------------------------SNIPER----------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------TARGET----------------------------------------------------------------------------------------
 SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
 
 Sniper:addTextbox("Target User Id", nil, function(Value, focusLost)
@@ -1488,7 +1697,7 @@ Webhook:addTextbox("Webhook Message", nil, function(Value, focusLost)
     ChangeWebhookMessage = Value
 end)
 
-Webhook:addToggle("Spam Webhook", false, function(Value)
+Webhook:addToggle("Spam Webhook", false, function(Value) -- I am not liable for how this might be utilised because it was simply added for educational purposes.
     ChangeSpamWebhook = Value
     while ChangeSpamWebhook and task.wait() do
         function ChangeSpamWebhookFix()
@@ -1602,6 +1811,18 @@ UniversalKeybind:addKeybind("Respawn", KeyCode, function()
     Humanoid.Health = 0
 end, function()
 	sendnotification("Respawn keybind changed.")
+end)
+
+UniversalKeybind:addKeybind("Enable Aimbot", KeyCode, function()
+    if AimbotEnabled then
+        AimbotEnabled = false
+        EnableAimbotFunction()
+    else
+        AimbotEnabled = true
+        EnableAimbotFunction()
+    end
+end, function()
+	sendnotification("Enable Aimbot keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Fling", KeyCode, function()
