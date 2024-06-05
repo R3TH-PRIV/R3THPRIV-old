@@ -658,23 +658,6 @@ do
 			close()
 		end)
 	end
-
-	local function resizeUI(uiObject, newSize)
-		local function resizeElement(element)
-			if element:IsA("GuiObject") then
-				element.Size = newSize
-			end
-			for _, child in ipairs(element:GetChildren()) do
-				resizeElement(child)
-			end
-		end
-	
-		resizeElement(uiObject)
-	end
-	
-	function library:resizeVenyxUI(newSize)
-		resizeUI(self.container.Parent, newSize)
-	end
 	
 	function section:addButton(title, callback)
 		local button = utility:Create("ImageButton", {
@@ -2240,7 +2223,17 @@ do
 			frame.ScrollBarImageTransparency = 1
 		end
 	end
+	
+	function section:deleteParagraph(paragraphContainer)
+		for i, module in ipairs(self.modules) do
+			if module == paragraphContainer then
+				table.remove(self.modules, i)
+				paragraphContainer:Destroy()
+				break
+			end
+		end
+	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial 1")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
 return library
