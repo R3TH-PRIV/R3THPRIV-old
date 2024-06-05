@@ -103,7 +103,7 @@ FOVCircle.Radius = FOV_Size
 FOVCircle.Thickness = 1
 FOVCircle.Filled = false
 FOVCircle.Transparency = 1
-FOVCircle.Visible = true
+FOVCircle.Visible = false
 FOVCircle.Color = FOV_Color
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
@@ -365,6 +365,13 @@ end
 local function CancelSearch()
     sendnotification("Search canceled.", nil)
     SniperText.Text = "Join a player by just knowing what game their in!"
+end
+
+function ExecutorFunction()
+    if R3THEXECUTOR == "Unsupported" then
+        sendnotification("This option is not supported by your executor.")
+        return true
+    end
 end
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
@@ -1443,6 +1450,7 @@ Anti:addToggle("Anti Void", false, function(Value)
 end)
 
 Server:addButton("No Delay", function()
+    if ExecutorFunction() then return end
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
