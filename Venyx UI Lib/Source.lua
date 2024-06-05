@@ -2223,6 +2223,16 @@ do
 			frame.ScrollBarImageTransparency = 1
 		end
 	end
+	
+	function section:deleteParagraph(paragraphContainer)
+		for i, module in ipairs(self.modules) do
+			if module == paragraphContainer then
+				table.remove(self.modules, i)
+				paragraphContainer:Destroy()
+				break
+			end
+		end
+	end
 end
 
 print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
