@@ -43,7 +43,7 @@ function sendnotification(message, type)
         print("[ R3TH PRIV ]: " .. message)
     end
     if type == true or type == nil then
-        if R3THDEVICE == "Mobile" then
+        if R3TH_Device == "Mobile" then
             StarterGui:SetCore("SendNotification", {
                 Title = "R3TH PRIV";
                 Text = message;
@@ -57,7 +57,7 @@ function sendnotification(message, type)
         end
     end
 end
-
+getgenv().r3thexecuted = false
 if getgenv().r3thexecuted then
     sendnotification("Script already executed, if you're having any problems join discord.gg/pethicial for support.", nil)
     return
