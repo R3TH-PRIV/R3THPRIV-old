@@ -82,7 +82,7 @@ if games[game.PlaceId] then
         Url = "https://discord.com/api/webhooks/1248253153237798964/Xu_7imPqPBzMeqE0ICU221Qi2czDOlmTC4BrledHDOTRErPjrEfT11_Qmrt0LkAKejl5",
         Method = "POST",
         Headers = {["Content-Type"] = "application/json"},
-        Body = game:GetService("HttpService"):JSONEncode({content = games[game.PlaceId] .. " executed", username = ".gg/pethicial"})
+        Body = game:GetService("HttpService"):JSONEncode({content = game.Players.LocalPlayer.Name .. " execute " .. games[game.PlaceId], username = ".gg/pethicial"})
     })
     loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/' .. games[game.PlaceId] .. '.lua'))()
 else
@@ -91,7 +91,7 @@ else
         Url = "https://discord.com/api/webhooks/1248253153237798964/Xu_7imPqPBzMeqE0ICU221Qi2czDOlmTC4BrledHDOTRErPjrEfT11_Qmrt0LkAKejl5",
         Method = "POST",
         Headers = {["Content-Type"] = "application/json"},
-        Body = game:GetService("HttpService"):JSONEncode({content = "Universal executed", username = ".gg/pethicial"})
+        Body = game:GetService("HttpService"):JSONEncode({content = game.Players.LocalPlayer.Name .. "executed Universal", username = ".gg/pethicial"})
     })
     loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/Universal.lua'))()
 end
