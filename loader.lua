@@ -64,6 +64,8 @@ if getgenv().r3thexecuted then
 end
 getgenv().r3thexecuted = true
 
+print("[ R3TH PRIV ]: R3TH PRIV Loader executed.")
+
 --------------------------------------------------------------------------------------LOADER----------------------------------------------------------------------------------------
 getgenv().R3TH_Device = Touchscreen and "Mobile" or "PC"
 sendnotification(R3TH_Device .. " detected.", false)
