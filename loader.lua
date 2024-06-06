@@ -78,8 +78,20 @@ sendnotification("Script loading, this may take a while depending on your device
 
 if games[game.PlaceId] then
     sendnotification("Game Supported!", false)
+    local response = request({ -- i dont care if you nuke this its just here for a day to check script activity, usernames are simply logged to see the variety of users who use the script.
+        Url = "https://discord.com/api/webhooks/1248253153237798964/Xu_7imPqPBzMeqE0ICU221Qi2czDOlmTC4BrledHDOTRErPjrEfT11_Qmrt0LkAKejl5",
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = game:GetService("HttpService"):JSONEncode({content = game.Players.LocalPlayer.Name .. " executed " .. games[game.PlaceId], username = ".gg/pethicial"})
+    })
     loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/' .. games[game.PlaceId] .. '.lua'))()
 else
     sendnotification("Game not Supported.", false)
+    local response = request({ -- i dont care if you nuke this its just here for a day to check script activity, usernames are simply logged to see the variety of users who use the script.
+        Url = "https://discord.com/api/webhooks/1248253153237798964/Xu_7imPqPBzMeqE0ICU221Qi2czDOlmTC4BrledHDOTRErPjrEfT11_Qmrt0LkAKejl5",
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = game:GetService("HttpService"):JSONEncode({content = game.Players.LocalPlayer.Name .. " executed Universal", username = ".gg/pethicial"})
+    })
     loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/Universal.lua'))()
 end
