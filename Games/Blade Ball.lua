@@ -9,6 +9,13 @@
         pethicial
 ]]
 
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "R3TH PRIV | .gg/pethicial";
+    Text = "I'm very sorry but this script will be down for a day or two.";
+    Duration = 20;
+})
+wait(9999999999999)
+
 local antikick = coroutine.create(function()
     game:GetService("ReplicatedStorage").Security.RemoteEvent:Destroy()
     game:GetService("ReplicatedStorage").Security[""]:Destroy()
