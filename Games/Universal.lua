@@ -14,17 +14,17 @@ print("[ R3TH PRIV ]: R3TH PRIV Universal loading...")
 
 local TimeStart = tick()
 
-if R3THEXECUTOR == nil then -- if you want to directly execute the script
-    R3THEXECUTOR = "Unsupported" -- Supported / Unsupported
-    R3THDEVICE = "PC" -- Mobile / PC
+if R3TH_Device == nil then -- if you want to directly execute the script
+    R3TH_Device = "PC" -- PC / Mobile
+    R3TH_Hook = "Supported" -- Supported / Unsupported
+    R3TH_Drawing = "Supported" -- Supported / Unsupported
 end
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
-local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
-local R3TH = library.new("R3TH PRIV | " .. R3THEXECUTOR .. " | .gg/pethicial")
+local R3TH = library.new("R3TH PRIV | .gg/pethicial")
 
 local Themes = {
     Background = Color3.fromRGB(24, 24, 24),
@@ -43,6 +43,11 @@ local Target = Universal:addSection("Target")
 local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
 
+local Settings0 = R3TH:addPage("Settings", 10734950309)
+local Settings = Settings0:addSection("Settings")
+local Theme = Settings0:addSection("Theme")
+local Credits = Settings0:addSection("Credits")
+
 local Target0 = R3TH:addPage("Target", 10734977012)
 local Sniper = Target0:addSection("Sniper")
 local Webhook = Target0:addSection("Webhook")
@@ -55,11 +60,6 @@ local FAQ = FAQ0:addSection("FAQ")
 
 local Keybinds = R3TH:addPage("Keybinds", 10723416765)
 local UniversalKeybind = Keybinds:addSection("Universal")
-
-local Settings0 = R3TH:addPage("Settings", 10734950309)
-local Settings = Settings0:addSection("Settings")
-local Theme = Settings0:addSection("Theme")
-local Credits = Settings0:addSection("Credits")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -81,8 +81,10 @@ local Mouse = LocalPlayer:GetMouse()
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
 local DefaultJumpPower = Humanoid.JumpPower
+local DefaultHipHeight= Humanoid.HipHeight
 local WalkSpeedSlider = DefaultWalkSpeed
 local JumpPowerSlider = DefaultJumpPower
+local HipHeightSlider = DefaultHipHeight
 local AimbotEnabled = false
 local AimbotActive = false
 local VisibilityCheck = false
@@ -94,21 +96,25 @@ local MovementPrediction = false
 local MovementPredictionStrength = 1
 local FOV_Color = Color3.fromRGB(0, 255, 127)
 local FOV_Size = 25
-FlySpeedSlider = 50
-ChangeAntiAFK = true
+local FlySpeedSlider = 50
+local ChangeAntiAFK = true
+local CircleSpeedSlider = 5
+local CircleRadiusSlider = 10
 
-local FOVCircle = Drawing.new("Circle")
-FOVCircle.Position = Vector2.new(0, 0)
-FOVCircle.Radius = FOV_Size
-FOVCircle.Thickness = 1
-FOVCircle.Filled = false
-FOVCircle.Transparency = 1
-FOVCircle.Visible = false
-FOVCircle.Color = FOV_Color
+if R3TH_Drawing == "Supported" then
+    FOVCircle = Drawing.new("Circle")
+    FOVCircle.Position = Vector2.new(0, 0)
+    FOVCircle.Radius = FOV_Size
+    FOVCircle.Thickness = 1
+    FOVCircle.Filled = false
+    FOVCircle.Transparency = 1
+    FOVCircle.Visible = false
+    FOVCircle.Color = FOV_Color
+end
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
-function ToggleUI()
+local function ToggleUI()
     local Toggle = false
     
     local R3THTOGGLEBUTTON = Instance.new("ScreenGui")
@@ -151,7 +157,7 @@ function ToggleUI()
     end
 end
 
-function sendnotification(message, type)
+local function sendnotification(message, type)
     if type == false or type == nil then
         print("[ R3TH PRIV ]: " .. message)
     end
@@ -171,7 +177,7 @@ function sendnotification(message, type)
     end
 end
 
-function startFly()
+local function startFly()
     FlyInputBegan = UserInputService.InputBegan:connect(function (input, GPE) 
         if GPE then return end
         for i, e in pairs(buttons) do
@@ -226,7 +232,7 @@ function startFly()
     FlyHumanoidDied = Humanoid.Died:connect(function() flying = false end)
 end
   
-function endFly()
+local function endFly()
     if not Character or not flying then return end
     Humanoid.PlatformStand = false
     bv:Destroy()
@@ -238,7 +244,7 @@ function endFly()
     FlyHumanoidDied:Disconnect()
 end
 
-function setVec(vec)
+local function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
 end
 
@@ -328,6 +334,28 @@ local function InitAimbot()
     end
 end
 
+local function calculateCirclePosition(angle)
+    local targetPlayer = Players:FindFirstChild(ChangeTarget)
+    if not targetPlayer then
+        return nil
+    end
+
+    local targetPosition = targetPlayer.Character and targetPlayer.Character.HumanoidRootPart.Position
+    if not targetPosition then
+        return nil
+    end
+
+    local x = targetPosition.X + CircleRadiusSlider * math.cos(angle)
+    local z = targetPosition.Z + CircleRadiusSlider * math.sin(angle)
+    return Vector3.new(x, targetPosition.Y, z)
+end
+
+local function calculateNextAngle(currentAngle, speed)
+    local maxDeltaAngle = math.rad(speed)
+    local nextAngle = currentAngle + maxDeltaAngle
+    return nextAngle
+end
+
 local function getUserAvatarByUserId(ChangeTargetUserId)
     local url = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds="..ChangeTargetUserId.."&size=48x48&format=Png&isCircular=false"
     local response = request({Url = url}).Body
@@ -367,8 +395,9 @@ local function CancelSearch()
     SniperText.Text = "Join a player by just knowing what game their in!"
 end
 
-function ExecutorFunction()
-    if R3THEXECUTOR == "Unsupported" then
+local function ExecutorSupport(Value)
+    if Value == "Hook" and R3TH_Hook == "Unsupported" or
+       Value == "Drawing" and R3TH_Drawing == "Unsupported" then
         sendnotification("This option is not supported by your executor.")
         return true
     end
@@ -843,7 +872,7 @@ end
 coroutine.resume(coroutine.create(FreeCameraWrap))
 
 --------------------------------------------------------------------------------------KEYBINDS----------------------------------------------------------------------------------------
-function WalkSpeedFunction()
+local function WalkSpeedFunction()
     while ChangeWalkSpeed and task.wait() do
         if ChangeWalkSpeed then
             Humanoid.WalkSpeed = WalkSpeedSlider
@@ -853,7 +882,7 @@ function WalkSpeedFunction()
     end
 end
 
-function JumpPowerFunction()
+local function JumpPowerFunction()
     while ChangeJumpPower and task.wait() do
         if ChangeJumpPower then
             Humanoid.JumpPower = JumpPowerSlider
@@ -863,7 +892,7 @@ function JumpPowerFunction()
     end
 end
 
-function FlyFunction()
+local function FlyFunction()
     if ChangeFly then
         startFly()
     else
@@ -871,7 +900,7 @@ function FlyFunction()
     end
 end
 
-function NoclipFunction()
+local function NoclipFunction()
     while ChangeNoclip and task.wait() do
         for a, b in pairs(Workspace:GetChildren()) do
             if b.Name == LocalPlayer.Name then
@@ -885,7 +914,17 @@ function NoclipFunction()
     end
 end
 
-function XrayFunction()
+local function HipHeightFunction()
+    while ChangeHipHeight and task.wait() do
+        if ChangeHipHeight then
+            Humanoid.HipHeight = HipHeightSlider
+        else
+            Humanoid.HipHeight = DefaultHipHeight
+        end
+    end
+end
+
+local function XrayFunction()
     local t=false
 
     local function scan(z,t)
@@ -911,7 +950,7 @@ function XrayFunction()
     x(t)
 end
 
-function EnableAimbotFunction()
+local function EnableAimbotFunction()
     if AimbotEnabled then
         FOVCircle.Visible = OriginalShowFOV
         AimbotInputBegan = UserInputService.InputBegan:Connect(function(Input, GPE)
@@ -939,11 +978,11 @@ function EnableAimbotFunction()
     end
 end
 
-function FlingFunction()
+local function FlingFunction()
     while ChangeFling do
         function ChangeFlingFix()
     
-            local Targets = {ChangeFlingTarget}
+            local Targets = {ChangeTarget}
     
             local AllBool = false
     
@@ -1160,7 +1199,7 @@ function FlingFunction()
 end
 
 --------------------------------------------------------------------------------------UNIVERSAL----------------------------------------------------------------------------------------
-if R3THDEVICE == "Mobile" then
+if R3TH_Device == "Mobile" then
     Player:addTextbox("Walkspeed", DefaultWalkSpeed, function(Value, focusLost)
         WalkSpeedSlider = Value
         if ChangeWalkSpeed then
@@ -1176,7 +1215,7 @@ else
     end)
 end
 
-if R3THDEVICE == "Mobile" then
+if R3TH_Device == "Mobile" then
     Player:addTextbox("Jumppower", DefaultJumpPower, function(Value, focusLost)
         JumpPowerSlider = Value
         if ChangeJumpPower then
@@ -1202,7 +1241,7 @@ Player:addToggle("Enable JumpPower", false, function(Value)
     JumpPowerFunction()
 end)
 
-if R3THDEVICE == "Mobile" then
+if R3TH_Device == "Mobile" then
     Player:addTextbox("Fly Speed", 50, function(Value, focusLost)
         FlySpeedSlider = Value
     end)
@@ -1222,6 +1261,27 @@ Player:addToggle("Noclip", false, function(Value)
     NoclipFunction()
 end)
 
+if R3TH_Device == "Mobile" then
+    Player:addTextbox("Hip Height", DefaultHipHeight, function(Value, focusLost)
+        HipHeightSlider = Value
+        if ChangeHipHeight then
+            Humanoid.HipHeight = HipHeightSlider
+        end
+    end)
+else
+    Player:addSlider("Hip Height", DefaultHipHeight, 0, 100, function(Value)
+        HipHeightSlider = Value
+        if ChangeHipHeight then
+            Humanoid.HipHeight = HipHeightSlider
+        end
+    end)
+end
+
+Player:addToggle("Enable Hip Height", false, function(Value)
+    ChangeHipHeight = Value
+    HipHeightFunction()
+end)
+
 Player:addToggle("Xray", false, function(Value)
     ChangeXray = Value
     XrayFunction()
@@ -1239,7 +1299,7 @@ Player:addToggle("Enable Reset", false, function(Value)
     StarterGui:SetCore("ResetButtonCallback", Value)
 end)
 
-if R3THDEVICE == "Mobile" then
+if R3TH_Device == "Mobile" then
     Player:addTextbox("FOV", 70, function(FOV, focusLost)
         Workspace.Camera.FieldOfView = FOV
     end)
@@ -1287,7 +1347,7 @@ ESP:addToggle("Health", false, function(Value)
 end)
 
 Target:addDropdown("Select Player", playerlist, function(Value)
-    ChangeFlingTarget = Value
+    ChangeTarget = Value
 end)
 
 Target:addToggle("Fling", false, function(Value)
@@ -1295,7 +1355,63 @@ Target:addToggle("Fling", false, function(Value)
     FlingFunction()
 end)
 
+Target:addToggle("View Player", false, function(Value)
+    if ChangeTarget ~= "All" then
+        if Value then
+            Workspace.Camera.CameraSubject = Players[ChangeTarget].Character:WaitForChild("Humanoid")
+        else
+            Workspace.Camera.CameraSubject = Humanoid
+        end
+    end
+end)
+
+Target:addButton("Teleport to Player", function()
+    if ChangeTarget ~= "All" and ChangeTarget ~= nil then
+        HumanoidRootPart.CFrame = CFrame.new(Players:FindFirstChild(ChangeTarget).Character:WaitForChild("HumanoidRootPart").Position)
+    end
+end)
+
+if R3TH_Device == "Mobile" then
+    Target:addTextbox("Circle Radius 0 - 100", 10, function(Value, focusLost)
+        CircleRadiusSlider = Value
+    end)
+else
+    Target:addSlider("Circle Radius", 10, 0, 100, function(Value)
+        CircleRadiusSlider = Value
+    end)
+end
+
+if R3TH_Device == "Mobile" then
+    Target:addTextbox("Circle Speed 0 - 50", 5, function(Value, focusLost)
+        CircleSpeedSlider = Value
+    end)
+else
+    Target:addSlider("Circle Speed", 5, 0, 50, function(Value)
+        CircleSpeedSlider = Value
+    end)
+end
+
+Target:addToggle("Circle Player", false, function(Value)
+    if ChangeTarget ~= "All" then
+        if Value then
+            local angle = math.atan2(Players:FindFirstChild(ChangeTarget).Character.HumanoidRootPart.Position.Z - HumanoidRootPart.Position.Z, Players:FindFirstChild(ChangeTarget).Character.HumanoidRootPart.Position.X - HumanoidRootPart.Position.X)
+            ChangeCirclePlayer = RunService.Heartbeat:Connect(function()
+                angle = calculateNextAngle(angle, CircleSpeedSlider)
+                
+                local circlePosition = calculateCirclePosition(angle)
+                
+                HumanoidRootPart.CFrame = CFrame.new(circlePosition)
+                
+                Character:SetPrimaryPartCFrame(CFrame.new(HumanoidRootPart.Position, Players:FindFirstChild(ChangeTarget).Character.HumanoidRootPart.Position))
+            end)
+        else
+            ChangeCirclePlayer:Disconnect()
+        end
+    end
+end)
+
 Aimbot:addToggle("Enable Aimbot", false, function(Value)
+    if ExecutorSupport("Drawing") then return end
     AimbotEnabled = Value
     EnableAimbotFunction()
 end)
@@ -1308,7 +1424,7 @@ Aimbot:addToggle("Movement Prediction", false, function(Value)
     MovementPredicition = Value
 end)
 
-if R3THDEVICE == "Mobile" then
+if R3TH_Device == "Mobile" then
     Aimbot:addTextbox("Movement Prediction Strength 0 - 20", 1, function(Value, focusLost)
         MovementPredictionStrength = Value
     end)
@@ -1326,7 +1442,7 @@ Aimbot:addToggle("Show FOV Circle", false, function(Value)
     ShowFOV = Value
 end)
 
-if R3THDEVICE == "Mobile" then
+if R3TH_Device == "Mobile" then
     Aimbot:addTextbox("Field Of View 0 - 200", 25, function(Value, focusLost)
         FOV_Size = Value
     end)
@@ -1450,7 +1566,7 @@ Anti:addToggle("Anti Void", false, function(Value)
 end)
 
 Server:addButton("No Delay", function()
-    if ExecutorFunction() then return end
+    if ExecutorSupport("Hook") then return end
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
@@ -1632,6 +1748,40 @@ Server:addButton("Serverhop", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Serverhop.lua'),true))()
 end)
 
+--------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
+Settings:addToggle("Anti Afk", true, function(Value)
+    ChangeAntiAFK = Value
+end)
+
+Settings:addKeybind("UI Toggle", Enum.KeyCode.LeftControl, function()
+	R3TH:toggle()
+end, function()
+	sendnotification("UI Toggle keybind changed.", false)
+end)
+
+Settings:addToggle("UI Toggle Button", false, function(Value)
+    ChangeUIToggleButton = Value
+    if ChangeUIToggleButton then
+        ToggleUI()
+    else
+        for i,v in pairs (CoreGui:GetChildren()) do
+            if v.Name == "R3THTOGGLEBUTTON" then
+                v:Destroy()
+            end
+        end
+    end
+end)
+
+for theme, color in pairs(Themes) do
+	Theme:addColorPicker(theme, color, function(color3)
+		R3TH:setTheme(theme, color3)
+	end)
+end
+
+
+Credits:addButton("Pethicial", function()
+end)
+
 --------------------------------------------------------------------------------------TARGET----------------------------------------------------------------------------------------
 SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
 
@@ -1780,6 +1930,18 @@ end, function()
 	sendnotification("Enable JumpPower keybind changed.", false)
 end)
 
+UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
+    if ChangeFly then
+        ChangeFly = false
+        FlyFunction()
+    else
+        ChangeFly = true
+        FlyFunction()
+    end
+end, function()
+	sendnotification("Enable Fly keybind changed.", false)
+end)
+
 UniversalKeybind:addKeybind("Noclip", KeyCode, function()
     if ChangeNoclip then
         ChangeNoclip = false
@@ -1791,16 +1953,15 @@ end, function()
 	sendnotification("Enable JumpPower keybind changed.", false)
 end)
 
-UniversalKeybind:addKeybind("Enable Fly", KeyCode, function()
-    if ChangeFly then
-        ChangeFly = false
-        FlyFunction()
+UniversalKeybind:addKeybind("Enable Hip Height", KeyCode, function()
+    if ChangeHipHeight then
+        ChangeHipHeight = false
     else
-        ChangeFly = true
-        FlyFunction()
+        ChangeHipHeight = true
+        HipHeightFunction()
     end
 end, function()
-	sendnotification("Enable Fly keybind changed.", false)
+	sendnotification("Enable Hip Height keybind changed.", false)
 end)
 
 UniversalKeybind:addKeybind("Xray", KeyCode, function()
@@ -1849,40 +2010,6 @@ UniversalKeybind:addKeybind("Free Camera", KeyCode, function()
     ToggleFreecam()
 end, function()
 	sendnotification("Free Camera keybind changed.", false)
-end)
-
---------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
-Settings:addToggle("Anti Afk", true, function(Value)
-    ChangeAntiAFK = Value
-end)
-
-Settings:addKeybind("UI Toggle", Enum.KeyCode.LeftControl, function()
-	R3TH:toggle()
-end, function()
-	sendnotification("UI Toggle keybind changed.", false)
-end)
-
-Settings:addToggle("UI Toggle Button", false, function(Value)
-    ChangeUIToggleButton = Value
-    if ChangeUIToggleButton then
-        ToggleUI()
-    else
-        for i,v in pairs (CoreGui:GetChildren()) do
-            if v.Name == "R3THTOGGLEBUTTON" then
-                v:Destroy()
-            end
-        end
-    end
-end)
-
-for theme, color in pairs(Themes) do
-	Theme:addColorPicker(theme, color, function(color3)
-		R3TH:setTheme(theme, color3)
-	end)
-end
-
-
-Credits:addButton("Pethicial", function()
 end)
 
 --------------------------------------------------------------------------------------FINISHED----------------------------------------------------------------------------------------
