@@ -196,7 +196,7 @@ local function sendnotification(message, type)
         print("[ R3TH PRIV ]: " .. message)
     end
     if type == true or type == nil then
-        if R3THDEVICE == "Mobile" then
+        if R3TH_Device == "Mobile" then
             StarterGui:SetCore("SendNotification", {
                 Title = "R3TH PRIV";
                 Text = message;
