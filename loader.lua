@@ -128,30 +128,32 @@ local function test(name, aliases, callback)
 	end)
 end
 
-test("hookfunction", {"replaceclosure"}, function()
-	local function test()
-		return true
-	end
-	local ref = hookfunction(test, function()
-		return false
-	end)
-	assert(test() == false, "Function should return false")
-	assert(ref() == true, "Original function should return true")
-	assert(test ~= ref, "Original function should not be same as the reference")
-end)
-
-test("getnamecallmethod", {}, function()
-	local method
-	local ref
-	ref = hookmetamethod(game, "__namecall", function(...)
-		if not method then
-			method = getnamecallmethod()
-		end
-		return ref(...)
-	end)
-	game:GetService("Lighting")
-	assert(method == "GetService", "Did not get the correct method (GetService)")
-end)
+if games[game.PlaceId] ~= "Total%20Roblox%20Drama" then
+    test("hookfunction", {"replaceclosure"}, function()
+        local function test()
+            return true
+        end
+        local ref = hookfunction(test, function()
+            return false
+        end)
+        assert(test() == false, "Function should return false")
+        assert(ref() == true, "Original function should return true")
+        assert(test ~= ref, "Original function should not be same as the reference")
+    end)
+    
+    test("getnamecallmethod", {}, function()
+        local method
+        local ref
+        ref = hookmetamethod(game, "__namecall", function(...)
+            if not method then
+                method = getnamecallmethod()
+            end
+            return ref(...)
+        end)
+        game:GetService("Lighting")
+        assert(method == "GetService", "Did not get the correct method (GetService)")
+    end)
+end
 
 test("Drawing.new", {}, function()
 	local drawing = Drawing.new("Square")
