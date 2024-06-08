@@ -16,11 +16,13 @@ local TimeStart = tick()
 
 if R3TH_Device == nil then -- if you want to directly execute the script
     R3TH_Device = "PC" -- PC / Mobile
-    R3TH_Hook = "Supported" -- Supported / Unsupported
-    R3TH_Drawing = "Supported" -- Supported / Unsupported
+    R3TH_hookfunction = "Supported" -- Supported / Unsupported
+    R3TH_getnamecallmethod = "Supported" -- Supported / Unsupported
+    R3TH_Drawingnew = "Supported" -- Supported / Unsupported
 end
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
@@ -101,7 +103,7 @@ local ChangeAntiAFK = true
 local CircleSpeedSlider = 5
 local CircleRadiusSlider = 10
 
-if R3TH_Drawing == "Supported" then
+if R3TH_Drawingnew == "Supported" then
     FOVCircle = Drawing.new("Circle")
     FOVCircle.Position = Vector2.new(0, 0)
     FOVCircle.Radius = FOV_Size
@@ -396,9 +398,10 @@ local function CancelSearch()
 end
 
 local function ExecutorSupport(Value)
-    if Value == "Hook" and R3TH_Hook == "Unsupported" or
-       Value == "Drawing" and R3TH_Drawing == "Unsupported" then
-        sendnotification("This option is not supported by your executor.")
+    if Value == "hookfunction" and R3TH_hookfunction == "Unsupported" or
+       Value == "getnamecallmethod" and R3TH_getnamecallmethod == "Unsupported" or
+       Value == "Drawing.new" and R3TH_Drawingnew == "Unsupported" then
+        sendnotification("This option is not supported by your executor.", true)
         return true
     end
 end
@@ -1411,7 +1414,7 @@ Target:addToggle("Circle Player", false, function(Value)
 end)
 
 Aimbot:addToggle("Enable Aimbot", false, function(Value)
-    if ExecutorSupport("Drawing") then return end
+    if ExecutorSupport("Drawing.new") then return end
     AimbotEnabled = Value
     EnableAimbotFunction()
 end)
@@ -1566,7 +1569,7 @@ Anti:addToggle("Anti Void", false, function(Value)
 end)
 
 Server:addButton("No Delay", function()
-    if ExecutorSupport("Hook") then return end
+    if ExecutorSupport("hookfunction") then return end
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
