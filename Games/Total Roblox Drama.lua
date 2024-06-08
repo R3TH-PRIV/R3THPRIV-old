@@ -1641,11 +1641,6 @@ Anti:addToggle("Anti Void", false, function(Value)
     end
 end)
 
-Server:addButton("No Delay", function()
-    g = hookfunction(wait, function(seconds) return g(0) end)
-    visualg = hookfunction(wait, function(seconds) return g(0) end)
-end)
-
 Server:addToggle("Free Camera", false, function()
     ToggleFreecam()
 end)
