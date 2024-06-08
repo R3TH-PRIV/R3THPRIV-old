@@ -16,8 +16,9 @@ local TimeStart = tick()
 
 if R3TH_Device == nil then -- if you want to directly execute the script
     R3TH_Device = "PC" -- PC / Mobile
-    R3TH_Hook = "Supported" -- Supported / Unsupported
-    R3TH_Drawing = "Supported" -- Supported / Unsupported
+    R3TH_hookfunction = "Supported" -- Supported / Unsupported
+    R3TH_getnamecallmethod = "Supported"
+    R3TH_Drawingnew = "Supported"
 end
 
 for i,v in pairs(game.ReplicatedStorage:GetDescendants())do
@@ -33,6 +34,7 @@ end
 print("[ R3TH PRIV ]: " ..MapName .." detected")
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
 wait()
 
@@ -129,6 +131,17 @@ local CircleSpeedSlider = 5
 local CircleRadiusSlider = 10
 ChangeMinPlayerCount = 1
 ChangeAnswerDelay = 0
+
+if R3TH_Drawingnew == "Supported" then
+    FOVCircle = Drawing.new("Circle")
+    FOVCircle.Position = Vector2.new(0, 0)
+    FOVCircle.Radius = FOV_Size
+    FOVCircle.Thickness = 1
+    FOVCircle.Filled = false
+    FOVCircle.Transparency = 1
+    FOVCircle.Visible = false
+    FOVCircle.Color = FOV_Color
+end
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
@@ -414,9 +427,10 @@ local function CancelSearch()
 end
 
 local function ExecutorSupport(Value)
-    if Value == "Hook" and R3TH_Hook == "Unsupported" or
-       Value == "Drawing" and R3TH_Drawing == "Unsupported" then
-        sendnotification("This option is not supported by your executor.")
+    if Value == "hookfunction" and R3TH_hookfunction == "Unsupported" or
+       Value == "getnamecallmethod" and R3TH_getnamecallmethod == "Unsupported" or
+       Value == "Drawing.new" and R3TH_Drawingnew == "Unsupported" then
+        sendnotification("This option is not supported by your executor.", true)
         return true
     end
 end
@@ -1473,7 +1487,7 @@ Target:addToggle("Circle Player", false, function(Value)
 end)
 
 Aimbot:addToggle("Enable Aimbot", false, function(Value)
-    if ExecutorSupport("Drawing") then return end
+    if ExecutorSupport("Drawing.new") then return end
     AimbotEnabled = Value
     EnableAimbotFunction()
 end)
@@ -1628,7 +1642,6 @@ Anti:addToggle("Anti Void", false, function(Value)
 end)
 
 Server:addButton("No Delay", function()
-    if ExecutorSupport("Hook") then return end
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
