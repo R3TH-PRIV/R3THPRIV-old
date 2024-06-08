@@ -17,8 +17,8 @@ local TimeStart = tick()
 if R3TH_Device == nil then -- if you want to directly execute the script
     R3TH_Device = "PC" -- PC / Mobile
     R3TH_hookfunction = "Supported" -- Supported / Unsupported
-    R3TH_getnamecallmethod = "Supported" -- Supported / Unsupported
-    R3TH_Drawingnew = "Supported" -- Supported / Unsupported
+    R3TH_getnamecallmethod = "Supported"
+    R3TH_Drawingnew = "Supported"
 end
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
@@ -530,7 +530,7 @@ function TeleportPlayer(Position, Offset)
     HumanoidRootPart.CFrame = Position * Offset
 end
 
-if R3TH_hookfunction == "Supported" and R3TH_getnamecallmethod == "Supported" then
+if R3TH_getnamecallmethod == "Supported" then
     local mt = getrawmetatable(game)
     local old = {}
     for i, v in pairs(mt) do old[i] = v end
@@ -1827,7 +1827,6 @@ Anti:addToggle("Anti Void", false, function(Value)
 end)
 
 Server:addButton("No Delay", function()
-    if ExecutorSupport("hookfunction") then return end
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
@@ -2046,7 +2045,6 @@ Murderer:addToggle("Knife Aura", false, function(Value)
 end)
 
 Murderer:addButton("Fast Knife Throw", function()
-    if ExecutorSupport("hookfunction") then return end
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
@@ -2062,7 +2060,7 @@ else
 end
 
 Sheriff:addToggle("Gun Silent Aim", false, function(Value)
-    if ExecutorSupport("hookfunction") == true and ExecutorSupport("getnamecallmethod") == true then return end
+    if ExecutorSupport("getnamecallmethod") then return end
     ChangeGunSilentAim = Value
 end)
 
@@ -2229,7 +2227,7 @@ World:addToggle("Loop Interactive", false, function(Value) -- not improved yet
 end)
 
 World:addToggle("Always Alive Chat", false, function(Value)
-    if ExecutorSupport("hookfunction") == true and ExecutorSupport("getnamecallmethod") == true then return end
+    if ExecutorSupport("getnamecallmethod") then return end
     ChangeAlwaysAliveChat = Value
 end)
 
