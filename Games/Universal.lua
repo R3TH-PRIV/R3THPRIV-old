@@ -17,8 +17,8 @@ local TimeStart = tick()
 if R3TH_Device == nil then -- if you want to directly execute the script
     R3TH_Device = "PC" -- PC / Mobile
     R3TH_hookfunction = "Supported" -- Supported / Unsupported
-    R3TH_getnamecallmethod = "Supported" -- Supported / Unsupported
-    R3TH_Drawingnew = "Supported" -- Supported / Unsupported
+    R3TH_getnamecallmethod = "Supported"
+    R3TH_Drawingnew = "Supported"
 end
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
@@ -1566,12 +1566,6 @@ Anti:addToggle("Anti Void", false, function(Value)
     else
         Workspace.FallenPartsDestroyHeight = OldFallenPartsDestroyHeight
     end
-end)
-
-Server:addButton("No Delay", function()
-    if ExecutorSupport("hookfunction") then return end
-    g = hookfunction(wait, function(seconds) return g(0) end)
-    visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
 
 Server:addToggle("Free Camera", false, function()
