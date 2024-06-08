@@ -10,6 +10,7 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 local StarterGui = game:GetService("StarterGui")
 local UIS = game:GetService("UserInputService")
@@ -66,15 +67,104 @@ getgenv().r3thexecuted = true
 
 print("[ R3TH PRIV ]: R3TH PRIV Loader executed.")
 
+--------------------------------------------------------------------------------------SUPPORTCHECK----------------------------------------------------------------------------------------
+local function getGlobal(path)
+	local value = getfenv(0)
+
+	while value ~= nil and path ~= "" do
+		local name, nextValue = string.match(path, "^([^.]+)%.?(.*)$")
+		value = value[name]
+		path = nextValue
+	end
+
+	return value
+end
+
+local function SetSupport(name, support)
+    local target = (support == "Supported") and "Supported" or "Unsupported"
+    
+    if name == "hookfunction" then
+        getgenv().R3TH_hookfunction = target
+    elseif name == "getnamecallmethod" then
+        getgenv().R3TH_getnamecallmethod = target
+    elseif name == "Drawing.new" then
+        getgenv().R3TH_Drawingnew = target
+    end
+end
+
+local function test(name, aliases, callback)
+	task.spawn(function()
+		if not callback then
+            SetSupport(name, "Supported")
+			sendnotification("⏺️ " .. name, false)
+		elseif not getGlobal(name) then
+            SetSupport(name, "Unsupported")
+			sendnotification("⛔ " .. name, false)
+		else
+			local success, message = pcall(callback)
+	
+			if success then
+                SetSupport(name, "Supported")
+				sendnotification("✅ " .. name .. (message and " • " .. message or ""), false)
+			else
+                SetSupport(name, "Unsupported")
+				sendnotification("⛔ " .. name .. " failed: " .. message, false)
+			end
+		end
+	
+		local undefinedAliases = {}
+	
+		for _, alias in ipairs(aliases) do
+			if getGlobal(alias) == false then
+				table.insert(undefinedAliases, alias)
+			end
+		end
+	
+		if #undefinedAliases > 0 then
+            SetSupport(name, "Unsupported")
+			sendnotification("⚠️ " .. table.concat(undefinedAliases, ", "), false)
+		end
+
+	end)
+end
+
+test("hookfunction", {"replaceclosure"}, function()
+	local function test()
+		return true
+	end
+	local ref = hookfunction(test, function()
+		return false
+	end)
+	assert(test() == false, "Function should return false")
+	assert(ref() == true, "Original function should return true")
+	assert(test ~= ref, "Original function should not be same as the reference")
+end)
+
+test("getnamecallmethod", {}, function()
+	local method
+	local ref
+	ref = hookmetamethod(game, "__namecall", function(...)
+		if not method then
+			method = getnamecallmethod()
+		end
+		return ref(...)
+	end)
+	game:GetService("Lighting")
+	assert(method == "GetService", "Did not get the correct method (GetService)")
+end)
+
+test("Drawing.new", {}, function()
+	local drawing = Drawing.new("Square")
+	drawing.Visible = false
+	local canDestroy = pcall(function()
+		drawing:Destroy()
+	end)
+	assert(canDestroy, "Drawing:Destroy() should not throw an error")
+end)
+
 --------------------------------------------------------------------------------------LOADER----------------------------------------------------------------------------------------
 getgenv().R3TH_Device = Touchscreen and "Mobile" or "PC"
 sendnotification(R3TH_Device .. " detected.", false)
-
-getgenv().R3TH_Hook = (type(hookmetamethod) == "function" and type(getnamecallmethod) == "function") and "Supported" or "Unsupported"
-sendnotification("Hook method is " .. R3TH_Hook .. ".", false)
-
-getgenv().R3TH_Drawing = (type(Drawing.new) == "function") and "Supported" or "Unsupported"
-sendnotification("Drawing.new is " .. R3TH_Drawing .. ".", false)
 
 sendnotification("Script loading, this may take a while depending on your device.", nil)
 
