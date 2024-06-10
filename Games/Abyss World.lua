@@ -901,7 +901,7 @@ function FreeCameraWrap()
 end
 coroutine.resume(coroutine.create(FreeCameraWrap))
 
-if R3THEXECUTOR == "Supported" then
+if R3TH_getnamecallmethod == "Supported" then
     local mt = getrawmetatable(game)
     local namecall = mt.__namecall
     setreadonly(mt,false)
@@ -1824,6 +1824,7 @@ Main:addToggle("Infinite Lifes", false, function(Value)
 end)
 
 Main:addToggle("No Fall Damage", false, function(Value)
+    if ExecutorSupport("getnamecallmethod") then return end
     ChangeNoFallDamage = Value
 end)
 
