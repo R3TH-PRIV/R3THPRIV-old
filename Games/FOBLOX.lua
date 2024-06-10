@@ -881,23 +881,6 @@ function FreeCameraWrap()
 end
 coroutine.resume(coroutine.create(FreeCameraWrap))
 
-if R3TH_hookfunction == "Supported" then
-    function modifyEventBehavior(meta, eventName, condition)
-        local namecall = meta.__namecall
-        setreadonly(meta, false)
-        meta.__namecall = function(...)
-            local args = {...}
-            if args[1] == eventName and condition then
-                return
-            end
-            return namecall(...)
-        end
-        setreadonly(meta, true)
-    end
-    modifyEventBehavior(getrawmetatable(game), ReplicatedStorage.Events.EventData, ChangeNoFallDamage)
-    modifyEventBehavior(getrawmetatable(game), ReplicatedStorage.Events.ForceField.ForceFieldRE, ChangeGodMode)
-end
-
 --------------------------------------------------------------------------------------KEYBINDS----------------------------------------------------------------------------------------
 local function WalkSpeedFunction()
     while ChangeWalkSpeed and task.wait() do
@@ -1773,19 +1756,6 @@ end)
 Main:addButton("Redeem Codes", function()
     ReplicatedStorage.FeatureModules.CodeRedeem.Functions.RedeemRF:InvokeServer("like90k")
     ReplicatedStorage.FeatureModules.CodeRedeem.Functions.RedeemRF:InvokeServer("foblox2023")
-end)
-
-Main:addToggle("God Mode", false, function(Value)
-    ChangeGodMode = Value
-    if ChangeGodMode then
-        Humanoid.Health = 0
-    else
-        ReplicatedStorage.Events.ForceField.ForceFieldRE:FireServer("disable")
-    end
-end)
-
-Main:addToggle("No Fall Damage", false, function(Value)
-    ChangeNoFallDamage = Value
 end)
 
 Gun:addDropdown("Select Gun", {"Railgun", "Crossbow", "GrenadeLauncher", "RPG", "RainbowRPG", "RayGun", "AK47", "Famas", "Galil", "HoneyBadger", "M249", "NEGEV", "RainbowM16", "SCAR", "MAC10", "MP5", "P90", "PP_Bizon", "TommyGun", "UMP45S", "AWP", "BarrettM82", "MK20", "SSG08", "ArsenalPumpShotgun", "LaserShotGun", "XM1014", "ColtPython", "Deagle", "M1911", "PinkHyperLaser", "USPS"}, function(Value)
