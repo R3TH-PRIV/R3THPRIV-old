@@ -1,7 +1,7 @@
 R3THPRIVV1_AbyssWorld = "Working"
 R3THPRIVV1_BladeBall = "Working"
 R3THPRIVV1_BloxyBingo = "Working"
-R3THPRIVV1_BulkedUp = "Down"
+R3THPRIVV1_BulkedUp = "Working"
 R3THPRIVV1_FOBLOX = "Working"
 R3THPRIVV1_HarborHavoc = "Down"
 R3THPRIVV1_MurderMystery2 = "Working"
