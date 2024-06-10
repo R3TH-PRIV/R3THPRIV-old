@@ -213,7 +213,7 @@ local function sendnotification(message, type)
     end
 end
 
-function startFly()
+local function startFly()
     FlyInputBegan = UserInputService.InputBegan:connect(function (input, GPE) 
         if GPE then return end
         for i, e in pairs(buttons) do
@@ -268,7 +268,7 @@ function startFly()
     FlyHumanoidDied = Humanoid.Died:connect(function() flying = false end)
 end
   
-function endFly()
+local function endFly()
     if not Character or not flying then return end
     Humanoid.PlatformStand = false
     bv:Destroy()
@@ -280,7 +280,7 @@ function endFly()
     FlyHumanoidDied:Disconnect()
 end
 
-function setVec(vec)
+local function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
 end
 
@@ -526,6 +526,32 @@ function SearchforGun()
     end
 end
 
+local function ForceJump()
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
+    game.Players.LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+end
+
+local function CheckForKKey()
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        ForceJump()
+    end
+end
+
+local function TwoLifes()
+    if Character then
+        if Humanoid then
+            Humanoid.Name = "1"
+        end
+        local HumanoidClone = Character["1"]:Clone()
+        HumanoidClone.Parent = Character
+        HumanoidClone.Name = "Humanoid"; wait(0.1)
+        Character["1"]:Destroy()
+        Workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid
+        Character.Animate.Disabled = true; wait(0.1)
+        Character.Animate.Disabled = false
+    end
+end
+
 function TeleportPlayer(Position, Offset)
     HumanoidRootPart.CFrame = Position * Offset
 end
@@ -699,6 +725,9 @@ LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     Character = newCharacter
     Humanoid = Character:WaitForChild("Humanoid")
     HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+    if Change2Lifes then
+        TwoLifes()
+    end
 end)
 
 -- Free Camera --
@@ -2071,8 +2100,17 @@ end
 
 Innocent:addToggle("2 Lifes", false, function(Value)
     Change2Lifes = Value
-    while Change2Lifes and task.wait() do
-        Humanoid:ChangeState(11)
+    if Change2Lifes then
+        TwoLifes()
+        ForceJumpKeybind = RunService.Heartbeat:Connect(CheckForKKey)
+        ForceJumpButton = UserInputService.JumpButtonStateChanged:Connect(function(jumpState) -- will error if on pc but it wont effect anything
+            if jumpState == Enum.UserInputState.Begin then
+                ForceJump()
+            end
+        end)
+    else
+        ForceJumpKeybind:Disconnect()
+        ForceJumpButton:Disconnect()
     end
 end)
 
@@ -2369,10 +2407,9 @@ LoopTarget:addToggle("Loop Reset", false, function(Value)
     ChangeLoopResetPlayer = Value
     while ChangeLoopResetPlayer and task.wait() do
         function ChangeLoopResetPlayerFix()
-        UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
-    end
-    wait()
-    pcall(ChangeLoopResetPlayerFix)
+            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
+        end
+        pcall(ChangeLoopResetPlayerFix)
     end
 end)
 
@@ -2380,43 +2417,65 @@ LoopTarget:addToggle("Loop Void", false, function(Value)
     ChangeLoopVoidPlayer = Value
     while ChangeLoopVoidPlayer and task.wait() do
         function ChangeLoopVoidPlayerFix()
-        UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, 8999999488, 8999999488), CFrame.Angles(-0, 0, -0), 1)
-    end
-    wait()
-    pcall(ChangeLoopVoidPlayerFix)
+            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, 8999999488, 8999999488), CFrame.Angles(-0, 0, -0), 1)
+        end
+        pcall(ChangeLoopVoidPlayerFix)
     end
 end)
 
 LoopTarget:addToggle("Give Noclip", false, function(Value)
-    ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait() do
-        UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
-        UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
-        wait(12)
+    ChangeGiveNoclip = Value
+    while ChangeGiveNoclip do
+        function ChangeGiveNoclipFix()
+            UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
+            UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
+            wait(12)
+        end
+        pcall(ChangeGiveNoclipFix)
     end
 end)
 
-LoopTarget:addToggle("Freeze", false, function(Value)
-    ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait() do
-        function ChangeLoopVoidPlayerFix()
-        UseSpray(ChangeLoopTarget, 0, "Top", 2048, "LeftLowerArm", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 30)
-        wait(12)
-    end
-    wait()
-    pcall(ChangeLoopVoidPlayerFix)
+LoopTarget:addToggle("Freeze Player", false, function(Value)
+    ChangeFreeze = Value
+    while ChangeFreeze do
+        function ChangeFreezeFix()
+            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "RightUpperLeg", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 10), 30)
+            wait(12)
+        end
+        pcall(ChangeFreezeFix)
     end
 end)
 
-LoopTarget:addToggle("Glitch", false, function(Value)
-    ChangeLoopVoidPlayer = Value
-    while ChangeLoopVoidPlayer and task.wait() do
-        function ChangeLoopVoidPlayerFix()
-        UseSpray(ChangeLoopTarget, 0, "Right", 10, "HumanoidRootPart", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 1)
-        wait(12)
+LoopTarget:addToggle("Lag Player", false, function(Value)
+    ChangeLag = Value
+    while ChangeLag do
+        function ChangeLagFix()
+            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "Head", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 500)
+            wait(5)
+        end
+        pcall(ChangeLagFix)
     end
-    wait()
-    pcall(ChangeLoopVoidPlayerFix)
+end)
+
+LoopTarget:addToggle("Glitch Player", false, function(Value)
+    ChangeGlitch = Value
+    while ChangeGlitch do
+        function ChangeGlitchFix()
+            UseSpray(ChangeLoopTarget, 0, "Right", 10, "HumanoidRootPart", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 1)
+            wait(12)
+        end
+        pcall(ChangeGlitchFix)
+    end
+end)
+
+LoopTarget:addToggle("Crab Player", false, function(Value)
+    ChangeCrab = Value
+    while ChangeCrab and task.wait() do
+        function ChangeCrabFix()
+            UseSpray(ChangeLoopTarget, 1, "Back", 50, "RightLowerLeg", HumanoidRootPart.CFrame, CFrame.Angles(10, 5, -10), 10)
+            wait(5)
+        end
+        pcall(ChangeCrabFix)
     end
 end)
 
@@ -2424,37 +2483,35 @@ LoopTarget:addToggle("Loop Trap Player", false, function(Value)
     ChangeLoopTrapPlayer = Value
     while ChangeLoopTrapPlayer and task.wait() do
         function ChangeLoopTrapPlayerFix()
-        if ChangeLoopTarget == "All" then
-            for i,v in pairs(Players:GetChildren()) do
-                if v ~= LocalPlayer then
-                    local Target = Players:FindFirstChild(v.Name)
-                    PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
+            if ChangeLoopTarget == "All" then
+                for i,v in pairs(Players:GetChildren()) do
+                    if v ~= LocalPlayer then
+                        local Target = Players:FindFirstChild(v.Name)
+                        PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
+                    end
                 end
+            else
+                Target = Players:FindFirstChild(ChangeLoopTarget)
+                PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
             end
-        else
-            Target = Players:FindFirstChild(ChangeLoopTarget)
-            PlaceTrap:InvokeServer(CFrame.new(Target.Character.HumanoidRootPart.Position))
         end
-    end
-    wait()
-    pcall(ChangeLoopTrapPlayerFix)
+        pcall(ChangeLoopTrapPlayerFix)
     end
 end)
 
 LoopTarget:addToggle("Auto Equip Spray Paint", false, function(Value)
     ChangeAutoEquipSprayPaint = Value
-    while ChangeAutoEquipSprayPaint and task.wait() do
+    while ChangeAutoEquipSprayPaint and task.wait(1) do
         function ChangeAutoEquipSprayPaintFix()
-        ReplicateToy:InvokeServer("SprayPaint")
-        for _,v in next, Backpack:GetChildren() do
-            if v.Name == "SprayPaint" then
-                local equip = Backpack.SprayPaint
-                equip.Parent = Character
+            ReplicateToy:InvokeServer("SprayPaint")
+            for _,v in next, Backpack:GetChildren() do
+                if v.Name == "SprayPaint" then
+                    local equip = Backpack.SprayPaint
+                    equip.Parent = Character
+                end
             end
         end
-    end
-    wait()
-    pcall(ChangeAutoEquipSprayPaintFix)
+        pcall(ChangeAutoEquipSprayPaintFix)
     end
 end)
 
@@ -2462,13 +2519,12 @@ Antijoin:addToggle("Anti Join", false, function(Value)
     ChangeAntiJoin = Value
     while ChangeAntiJoin and task.wait() do
         function ChangeAntiJoinFix()
-        for i,v in pairs(antijoinlist) do
-            local Target = Players:FindFirstChild(v.Name)
-            UseSpray(Target, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
+            for i,v in pairs(antijoinlist) do
+                local Target = Players:FindFirstChild(v.Name)
+                UseSpray(Target, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
+            end
         end
-    end
-    wait()
-    pcall(ChangeAntiJoinFix)
+        pcall(ChangeAntiJoinFix)
     end
 end)
 
@@ -2529,7 +2585,6 @@ for theme, color in pairs(Themes) do
 		R3TH:setTheme(theme, color3)
 	end)
 end
-
 
 Credits:addButton("Pethicial", function()
 end)
@@ -2611,15 +2666,14 @@ Webhook:addToggle("Spam Webhook", false, function(Value) -- I am not liable for 
     ChangeSpamWebhook = Value
     while ChangeSpamWebhook and task.wait() do
         function ChangeSpamWebhookFix()
-        local response = request({
-            Url = ChangeWebhookUrl,
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
-        })
-    end
-    wait()
-    pcall(ChangeSpamWebhookFix)
+            local response = request({
+                Url = ChangeWebhookUrl,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
+            })
+        end
+        pcall(ChangeSpamWebhookFix)
     end
 end)
 
@@ -2636,19 +2690,17 @@ Container4, Text4 = R3THPRIVV1:addParagraph(nil, "Bulked Up: " .. R3THPRIVV1_Bul
 
 Container5, Text5 = R3THPRIVV1:addParagraph(nil, "FOBLOX: " .. R3THPRIVV1_FOBLOX)
 
-Container6, Text6 = R3THPRIVV1:addParagraph(nil, "Harbor Havoc: " .. R3THPRIVV1_HarborHavoc)
+Container6, Text6 = R3THPRIVV1:addParagraph(nil, "Murder Mystery 2: " .. R3THPRIVV1_MurderMystery2)
 
-Container7, Text7 = R3THPRIVV1:addParagraph(nil, "Murder Mystery 2: " .. R3THPRIVV1_MurderMystery2)
+Container7, Text7 = R3THPRIVV1:addParagraph(nil, "Sharkbite 2: " .. R3THPRIVV1_Sharkbite2)
 
-Container8, Text8 = R3THPRIVV1:addParagraph(nil, "Sharkbite 2: " .. R3THPRIVV1_Sharkbite2)
+Container8, Text8 = R3THPRIVV1:addParagraph(nil, "THEIF LIFE Simulator: " .. R3THPRIVV1_THEIFLIFESimulator)
 
-Container9, Text9 = R3THPRIVV1:addParagraph(nil, "THEIF LIFE Simulator: " .. R3THPRIVV1_THEIFLIFESimulator)
+Container9, Text9 = R3THPRIVV1:addParagraph(nil, "Total Roblox Drama: " .. R3THPRIVV1_TotalRobloxDrama)
 
-Container10, Text10 = R3THPRIVV1:addParagraph(nil, "Total Roblox Drama: " .. R3THPRIVV1_TotalRobloxDrama)
+Container10, Text10 = R3THPRIVV1:addParagraph(nil, "Tower of Hell: " .. R3THPRIVV1_TowerofHell)
 
-Container11, Text11 = R3THPRIVV1:addParagraph(nil, "Tower of Hell: " .. R3THPRIVV1_TowerofHell)
-
-Container12, Text12 = R3THPRIVV1:addParagraph(nil, "Universal: " .. R3THPRIVV1_Universal)
+Container11, Text11 = R3THPRIVV1:addParagraph(nil, "Universal: " .. R3THPRIVV1_Universal)
 
 --------------------------------------------------------------------------------------FAQ----------------------------------------------------------------------------------------
 Container13, Text13 = FAQ:addParagraph("Why should I use R3TH PRIV?", "At the moment, R3TH PRIV is completely free and without a key system, in contrast to competitors that charge up to $20 for a skidded script.")
