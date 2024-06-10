@@ -207,7 +207,7 @@ local function sendnotification(message, type)
     end
 end
 
-local function startFly()
+function startFly()
     FlyInputBegan = UserInputService.InputBegan:connect(function (input, GPE) 
         if GPE then return end
         for i, e in pairs(buttons) do
@@ -262,7 +262,7 @@ local function startFly()
     FlyHumanoidDied = Humanoid.Died:connect(function() flying = false end)
 end
   
-local function endFly()
+function endFly()
     if not Character or not flying then return end
     Humanoid.PlatformStand = false
     bv:Destroy()
@@ -274,7 +274,7 @@ local function endFly()
     FlyHumanoidDied:Disconnect()
 end
 
-local function setVec(vec)
+function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
 end
 
@@ -2087,7 +2087,6 @@ for theme, color in pairs(Themes) do
 	end)
 end
 
-
 Credits:addButton("Pethicial", function()
 end)
 
@@ -2168,15 +2167,14 @@ Webhook:addToggle("Spam Webhook", false, function(Value) -- I am not liable for 
     ChangeSpamWebhook = Value
     while ChangeSpamWebhook and task.wait() do
         function ChangeSpamWebhookFix()
-        local response = request({
-            Url = ChangeWebhookUrl,
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
-        })
-    end
-    wait()
-    pcall(ChangeSpamWebhookFix)
+            local response = request({
+                Url = ChangeWebhookUrl,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
+            })
+        end
+        pcall(ChangeSpamWebhookFix)
     end
 end)
 
@@ -2193,19 +2191,17 @@ Container4, Text4 = R3THPRIVV1:addParagraph(nil, "Bulked Up: " .. R3THPRIVV1_Bul
 
 Container5, Text5 = R3THPRIVV1:addParagraph(nil, "FOBLOX: " .. R3THPRIVV1_FOBLOX)
 
-Container6, Text6 = R3THPRIVV1:addParagraph(nil, "Harbor Havoc: " .. R3THPRIVV1_HarborHavoc)
+Container6, Text6 = R3THPRIVV1:addParagraph(nil, "Murder Mystery 2: " .. R3THPRIVV1_MurderMystery2)
 
-Container7, Text7 = R3THPRIVV1:addParagraph(nil, "Murder Mystery 2: " .. R3THPRIVV1_MurderMystery2)
+Container7, Text7 = R3THPRIVV1:addParagraph(nil, "Sharkbite 2: " .. R3THPRIVV1_Sharkbite2)
 
-Container8, Text8 = R3THPRIVV1:addParagraph(nil, "Sharkbite 2: " .. R3THPRIVV1_Sharkbite2)
+Container8, Text8 = R3THPRIVV1:addParagraph(nil, "THEIF LIFE Simulator: " .. R3THPRIVV1_THEIFLIFESimulator)
 
-Container9, Text9 = R3THPRIVV1:addParagraph(nil, "THEIF LIFE Simulator: " .. R3THPRIVV1_THEIFLIFESimulator)
+Container9, Text9 = R3THPRIVV1:addParagraph(nil, "Total Roblox Drama: " .. R3THPRIVV1_TotalRobloxDrama)
 
-Container10, Text10 = R3THPRIVV1:addParagraph(nil, "Total Roblox Drama: " .. R3THPRIVV1_TotalRobloxDrama)
+Container10, Text10 = R3THPRIVV1:addParagraph(nil, "Tower of Hell: " .. R3THPRIVV1_TowerofHell)
 
-Container11, Text11 = R3THPRIVV1:addParagraph(nil, "Tower of Hell: " .. R3THPRIVV1_TowerofHell)
-
-Container12, Text12 = R3THPRIVV1:addParagraph(nil, "Universal: " .. R3THPRIVV1_Universal)
+Container11, Text11 = R3THPRIVV1:addParagraph(nil, "Universal: " .. R3THPRIVV1_Universal)
 
 --------------------------------------------------------------------------------------FAQ----------------------------------------------------------------------------------------
 Container13, Text13 = FAQ:addParagraph("Why should I use R3TH PRIV?", "At the moment, R3TH PRIV is completely free and without a key system, in contrast to competitors that charge up to $20 for a skidded script.")
