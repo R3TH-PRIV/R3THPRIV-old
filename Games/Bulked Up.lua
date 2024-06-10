@@ -86,7 +86,6 @@ local HttpService = game:GetService("HttpService")
 local Mouse = LocalPlayer:GetMouse()
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local Backpack = LocalPlayer.Backpack
-local StarterCharacter = Workspace:FindFirstChild("StarterCharacter")
 local Punch = Backpack:FindFirstChild("Punch")
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
@@ -1755,35 +1754,17 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-AutoFarm:addToggle("Farm Noob", false, function(Value)
-    ChangeFarmNoob = Value
-    while ChangeFarmNoob and task.wait() do
-        if Punch then
-            Punch.Parent = Character
-        elseif StarterCharacter and Character:FindFirstChild("Punch") then
-            for i,v in pairs(StarterCharacter:GetChildren()) do
-                if v:IsA("Part") and v.Name == "HumanoidRootPart" then
-                    HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,0,2);
-                    VirtualInputManager:SendMouseButtonEvent(4, 1, 0, true, game, 1);
-                end
-            end
-        end
+Main:addToggle("Auto UnRagdoll", false, function(Value)
+    ChangeAutoUnRagdoll = Value
+    while ChangeAutoUnRagdoll and task.wait() do
+        ReplicatedStorage.Events.unRagdoll:FireServer(Character)
     end
 end)
 
-AutoFarm:addToggle("Meteor Farm", false, function(Value)
-    ChangeMeteorFarm = Value
-    while ChangeMeteorFarm and task.wait() do
-        if Punch then
-            Punch.Parent = Character
-        elseif StarterCharacter and Character:FindFirstChild("Punch") then
-            for i,v in pairs(Workspace.Meteorites:GetDescendants()) do
-                if v:IsA("Part") and v.Name == "RootPart" then
-                    HumanoidRootPart.CFrame = v.CFrame;
-                    VirtualInputManager:SendMouseButtonEvent(4, 1, 0, true, game, 1);
-                end
-            end
-        end
+Main:addButton("Get Trophies", function()
+    for i,v in pairs (Workspace.Trophies:GetDescendants()) do
+        HumanoidRootPart.CFrame = v.CFrame
+        task.wait(0.2)
     end
 end)
 
@@ -1795,20 +1776,6 @@ AutoFarm:addToggle("Auto Pickup Items", false, function(Value)
                 v.CFrame = HumanoidRootPart.CFrame
             end
         end
-    end
-end)
-
-Main:addToggle("Auto UnRagdoll", false, function(Value)
-    ChangeAutoUnRagdoll = Value
-    while ChangeAutoUnRagdoll and task.wait() do
-        ReplicatedStorage.Events.unRagdoll:FireServer(Character)
-    end
-end)
-
-Main:addButton("Get Trophies", function()
-    for i,v in pairs (Workspace.Trophies:GetDescendants()) do
-        HumanoidRootPart.CFrame = v.CFrame
-        task.wait()
     end
 end)
 
