@@ -26,7 +26,6 @@ local games = {
     [6847090259] = 'Bulked%20Up',
     [12151453277] = 'Abyss%20World',
     [2693739238] = 'THIEF%20LIFE%20Simulator',
-    [3891618314] = 'Harbor%20Havoc',
     [16281300371] = 'Blade%20Ball',
     [13772394625] = 'Blade%20Ball',
     [14732610803] = 'Blade%20Ball',
