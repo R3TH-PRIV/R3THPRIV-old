@@ -213,7 +213,7 @@ local function sendnotification(message, type)
     end
 end
 
-local function startFly()
+function startFly()
     FlyInputBegan = UserInputService.InputBegan:connect(function (input, GPE) 
         if GPE then return end
         for i, e in pairs(buttons) do
@@ -268,7 +268,7 @@ local function startFly()
     FlyHumanoidDied = Humanoid.Died:connect(function() flying = false end)
 end
   
-local function endFly()
+function endFly()
     if not Character or not flying then return end
     Humanoid.PlatformStand = false
     bv:Destroy()
@@ -280,7 +280,7 @@ local function endFly()
     FlyHumanoidDied:Disconnect()
 end
 
-local function setVec(vec)
+function setVec(vec)
     return vec * (FlySpeedSlider / vec.Magnitude)
 end
 
