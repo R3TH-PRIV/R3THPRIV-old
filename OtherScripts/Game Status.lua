@@ -1,5 +1,5 @@
 R3THPRIVV1_AbyssWorld = "Working"
-R3THPRIVV1_BladeBall = "Down"
+R3THPRIVV1_BladeBall = "Working"
 R3THPRIVV1_BloxyBingo = "Working"
 R3THPRIVV1_BulkedUp = "Down"
 R3THPRIVV1_FOBLOX = "Down"
