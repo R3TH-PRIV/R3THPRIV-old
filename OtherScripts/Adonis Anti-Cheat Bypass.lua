@@ -1,3 +1,4 @@
+print("[ R3TH PRIV ]: Adonis Anti-Cheat Bypass activated.")
 local getinfo = getinfo or debug.getinfo
 local DEBUG = false
 local Hooked = {}
@@ -55,4 +56,3 @@ local Old; Old = hookfunction(getrenv().debug.info, newcclosure(function(...)
 end))
 
 setthreadidentity(7)
-print("[ R3TH PRIV ]: Adonis Anti-Cheat Bypass activated.")
