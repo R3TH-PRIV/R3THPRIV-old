@@ -45,7 +45,7 @@ local Target = Universal:addSection("Target")
 local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
 
-local Main0 = R3TH:addPage("Main", 10709782154)
+local Main0 = R3TH:addPage("Main", 5012544944)
 local Main = Main0:addSection("Main")
 
 local Settings0 = R3TH:addPage("Settings", 10734950309)
@@ -415,6 +415,10 @@ function SitCheck()
             Humanoid.Jump = true
         end
     end
+end
+
+function SelectBoat(Boat)
+    ReplicatedStorage.EventsFolder.BoatSelection.UpdateHostBoat:FireServer(Boat)
 end
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
@@ -1757,9 +1761,15 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-Main:addDropdown("Select Boat", {"SmallWoodenSailboat", "DuckyBoat", "FishingBoat", "UnicornBoat", "BlueWoodenMotorboat", "DoubleDoughnutTubeBoat", "VikingLongship", "SmallDinghyMotorboat", "HoverBike", "Sloop", "TourBoat", "TugBoat", "CanopyMotorboat", "SharkCageBoat", "Catamaran", "Duckmarine", "Lifeboat", "ViperSpeedBoat", "JetSki", "PartyBoat", "Marlin", "PyroTank", "CombatBoat", "MilitarySubmarine", "Wildfire", "CruiseShip", "HydroTank", "Sleigh2022", "Sleigh2023", "UFO", "RGBTurretSleigh", "Titanic", "GingerbreadSteamBoat", "StealthBoat", "Snowmobile", "GingerBoatMan", "SnowmobileLime", "SeaBreacher", "RedCanopyMotorboat", "ModernOilRig", "MagicWandBoat", "LightBike", "JetskiBoat", "HoverHeart", "EggSpeedBoat", "DuckyBoatBeta", "CoffinBoat", "BabyDuckTrail", "HMHSBritannic", "TheGoldenDucky"}, function(Value)
-    ReplicatedStorage.EventsFolder.BoatSelection.UpdateHostBoat:FireServer(Value)
-end)
+Main:addParagraph(nil, "Boat Picker") -- credit to seth0001. for making this
+
+for i,v in pairs (ReplicatedStorage.ClientViewportObjects.Boats:GetChildren()) do
+    if v ~= "Play Shark Sound" then
+        Main:addButton(v.Name, function()
+            SelectBoat(v.Name)
+        end)
+    end
+end
 
 Main:addToggle("Safe AFK Farm", false, function(Value)
     ChangeSafeAFKFarm = Value
