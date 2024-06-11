@@ -51,7 +51,7 @@ local Target = Universal:addSection("Target")
 local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
 
-local Main0 = R3TH:addPage("Main", 5012544944)
+local Main0 = R3TH:addPage("Main", 10709782154)
 local Main = Main0:addSection("Main")
 
 local Settings0 = R3TH:addPage("Settings", 10734950309)
