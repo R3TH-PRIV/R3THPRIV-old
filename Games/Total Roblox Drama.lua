@@ -16,10 +16,10 @@ local TimeStart = tick()
 
 if R3TH_Device == nil then -- if you want to directly execute the script
     R3TH_Device = "PC" -- PC / Mobile
-    R3TH_hookfunction = "Supported" -- Supported / Unsupported
-    R3TH_getnamecallmethod = "Supported"
     R3TH_Drawingnew = "Supported"
 end
+
+R3TH_hookfunction = (type(hookmetamethod) == "function" and type(getnamecallmethod) == "function") and "Supported" or "Unsupported" -- Seperate undetected check before executing bypass
 
 for i,v in pairs(game.ReplicatedStorage:GetDescendants())do
     if v.Name == "OfficialLobby" then
@@ -37,7 +37,7 @@ print("[ R3TH PRIV ]: " ..MapName .." detected")
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
-if R3TH_getnamecallmethod == "Supported" then
+if R3TH_hookfunction == "Supported" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
 end
 
@@ -495,7 +495,7 @@ local destinations = {
 }
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
-if R3TH_getnamecallmethod == "Supported" then
+if R3TH_hookfunction == "Supported" then
     LocalPlayer.Idled:connect(function()
         if ChangeAntiAFK then
             VirtualUser:CaptureController()
