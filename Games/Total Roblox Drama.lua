@@ -35,10 +35,11 @@ print("[ R3TH PRIV ]: " ..MapName .." detected")
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
-wait()
-
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+if R3TH_getnamecallmethod == "Supported" then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
+end
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
 local R3TH = library.new("R3TH PRIV | .gg/pethicial")
@@ -494,12 +495,14 @@ local destinations = {
 }
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
-LocalPlayer.Idled:connect(function()
-    if ChangeAntiAFK then
-        VirtualUser:CaptureController()
-        VirtualUser:ClickButton2(Vector2.new())
-    end
-end)
+if R3TH_getnamecallmethod == "Supported" then
+    LocalPlayer.Idled:connect(function()
+        if ChangeAntiAFK then
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end
+    end)
+end
 
 local playerlist = {}
 
