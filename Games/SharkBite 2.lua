@@ -417,14 +417,6 @@ function SitCheck()
     end
 end
 
-local function WaitForChildWhichIsA(instance, classtype)
-    local target = instance:FindFirstChildWhichIsA(classtype)
-    while not target or not target:IsA(classtype) do
-        target = instance.ChildAdded:Wait()
-    end
-    return target
-end
-
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
 LocalPlayer.Idled:connect(function()
     if ChangeAntiAFK then
@@ -1765,7 +1757,7 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-Main:addDropdown("Select Boat", {"SmallWoodenSailboat", "DuckyBoat", "FishingBoat", "UnicornBoat", "BlueWoodenMotorboat", "DoubleDoughnutTubeBoat", "VikingLongship", "SmallDinghyMotorboat", "HoverBike", "Sloop", "TourBoat", "TugBoat", "CanopyMotorboat", "SharkCageBoat", "Catamaran", "Duckmarine", "Lifeboat", "ViperSpeedBoat", "JetSki", "PartyBoat", "Marlin", "PyroTank", "CombatBoat", "MilitarySubmarine", "Wildfire", "CruiseShip", "HydroTank", "Sleigh2022", "GingerbreadSteamBoat", "Snowmobile", "TheGoldenDucky"}, function(Value)
+Main:addDropdown("Select Boat", {"SmallWoodenSailboat", "DuckyBoat", "FishingBoat", "UnicornBoat", "BlueWoodenMotorboat", "DoubleDoughnutTubeBoat", "VikingLongship", "SmallDinghyMotorboat", "HoverBike", "Sloop", "TourBoat", "TugBoat", "CanopyMotorboat", "SharkCageBoat", "Catamaran", "Duckmarine", "Lifeboat", "ViperSpeedBoat", "JetSki", "PartyBoat", "Marlin", "PyroTank", "CombatBoat", "MilitarySubmarine", "Wildfire", "CruiseShip", "HydroTank", "Sleigh2022", "Sleigh2023", "UFO", "RGBTurretSleigh", "Titanic", "GingerbreadSteamBoat", "StealthBoat", "Snowmobile", "GingerBoatMan", "SnowmobileLime", "SeaBreacher", "RedCanopyMotorboat", "ModernOilRig", "MagicWandBoat", "LightBike", "JetskiBoat", "HoverHeart", "EggSpeedBoat", "DuckyBoatBeta", "CoffinBoat", "BabyDuckTrail", "HMHSBritannic", "TheGoldenDucky"}, function(Value)
     ReplicatedStorage.EventsFolder.BoatSelection.UpdateHostBoat:FireServer(Value)
 end)
 
