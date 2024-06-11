@@ -7,6 +7,8 @@
         pethicial
 ]]
 
+-- this script currently lacks all the options still but works on every executor
+
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
