@@ -417,10 +417,6 @@ function SitCheck()
     end
 end
 
-function SelectBoat(Boat)
-    ReplicatedStorage.EventsFolder.BoatSelection.UpdateHostBoat:FireServer(Boat)
-end
-
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
 LocalPlayer.Idled:connect(function()
     if ChangeAntiAFK then
@@ -1761,16 +1757,6 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-Main:addParagraph(nil, "Boat Picker") -- credit to seth0001. for making this
-
-for i,v in pairs (ReplicatedStorage.ClientViewportObjects.Boats:GetChildren()) do
-    if v ~= "Play Shark Sound" then
-        Main:addButton(v.Name, function()
-            SelectBoat(v.Name)
-        end)
-    end
-end
-
 Main:addToggle("Safe AFK Farm", false, function(Value)
     ChangeSafeAFKFarm = Value
     while ChangeSafeAFKFarm and task.wait() do
@@ -1812,6 +1798,16 @@ Main:addButton("Remove Lobby Barriers", function()
         end
     end
 end)
+
+Main:addParagraph(nil, "Boat Picker") -- credit to seth0001. for making this
+
+for i,v in pairs (ReplicatedStorage.ClientViewportObjects.Boats:GetChildren()) do
+    if v ~= "Play Shark Sound" then
+        Main:addButton(v.Name, function()
+            ReplicatedStorage.EventsFolder.BoatSelection.UpdateHostBoat:FireServer(v.Name)
+        end)
+    end
+end
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
 Settings:addToggle("Anti Afk", true, function(Value)
