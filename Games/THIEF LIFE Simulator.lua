@@ -421,6 +421,28 @@ function TeleportPlayer(Position, Offset)
     HumanoidRootPart.CFrame = Position * Offset
 end
 
+function firebutton(button)
+    if button ~= nil then
+        for i,signal in pairs(getconnections(button.MouseButton1Click)) do
+            signal:Fire()
+        end
+        for i,signal in pairs(getconnections(button.MouseButton1Down)) do
+            signal:Fire()
+        end
+        for i,signal in pairs(getconnections(button.Activated)) do
+            signal:Fire()
+        end
+    end
+end
+
+function CollectAllLoot()
+    for v, i in pairs(LocalPlayer.PlayerGui.LootGUI.LootWindow.Loot:GetChildren()) do
+        if i:IsA("Frame") then
+            firebutton(i.Button)
+        end
+    end
+end
+
 --------------------------------------------------------------------------------------LIST----------------------------------------------------------------------------------------
 local teleportLocations = {
     ["Pet Shop"] = CFrame.new(-1367, 13, 65),
@@ -1787,7 +1809,7 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-Main:addDropdown("Teleport", teleportLocationsKeys, function(Value)
+Main:addDropdown("Teleport", teleportLocationsKeys, function(Value) -- source isnt the best as im just gonna make a multi dropdown eventually then it will be updated
     TeleportPlayer(teleportLocations[Value], CFrame.new(0,3.5,0))
 end)
 
@@ -1823,6 +1845,13 @@ Main:addToggle("Kill All Police", false, function(Value)
     end
 end)
 
+Main:addToggle("Auto Collect Loot", false, function(Value)
+    ChangeAutoCollectLoot = Value
+    while ChangeAutoCollectLoot and task.wait() do
+        CollectAllLoot()
+    end
+end)
+
 Main:addTextbox("Request Loot Level", "0 - 500", function(Value, focusLost)
     local LootLevel = tonumber(Value)
     if focusLost then
@@ -1834,8 +1863,14 @@ Main:addTextbox("Request Loot Level", "0 - 500", function(Value, focusLost)
     end
 end)
 
-Farm:addDropdown("Select Method", {"Small Money Farm (requires 100$)", "Big Money Farm (requires 95000$)"}, function(Value)
-    if Value == "Small Money Farm (requires 100$)" then
+Main:addButton("Search for Keycard", function()
+    ReplicatedStorage.Events.Loot.RequestLoot:FireServer(math.random(378, 388))
+end)
+
+Farm:addDropdown("Select Method", {"Bad Money Farm (free)", "Small Money Farm (requires 100$)", "Big Money Farm (requires 95000$)"}, function(Value)
+    if Value == "Bad Money Farm (free)" then
+        ChangeSelectMethod = "Free"
+    elseif Value == "Small Money Farm (requires 100$)" then
         ChangeSelectMethod = "VIPAK47"
     else
         ChangeSelectMethod = "RareM4A1"
@@ -1846,8 +1881,14 @@ Farm:addToggle("Start Money Farm", false, function(Value)
     if ChangeSelectMethod == nil then sendnotification("You need to select a method first.", true) return end
     ChangeStartMoneyFarm = Value
     while ChangeStartMoneyFarm and task.wait() do
-        ReplicatedStorage.Events.GunShop.RequestBuy:FireServer(ChangeSelectMethod)
-        ReplicatedStorage.Events.Shop.RequestSellItem:FireServer(1)
+        if ChangeSelectMethod == "Free" then
+            ReplicatedStorage.Events.Loot.RequestLoot:FireServer(math.random(495, 500))
+            CollectAllLoot()
+            ReplicatedStorage.Events.Shop.RequestSellItem:FireServer(1)
+        else
+            ReplicatedStorage.Events.GunShop.RequestBuy:FireServer(ChangeSelectMethod)
+            ReplicatedStorage.Events.Shop.RequestSellItem:FireServer(1)
+        end
     end
 end)
 
@@ -1889,6 +1930,21 @@ Target00:addToggle("Kill Player", false, function(Value)
             end
         end
         pcall(ChangeKillPlayerFix)
+    end
+end)
+
+Target00:addToggle("Force Trade Player", false, function(Value)
+    ChangeForceTradePlayer = Value
+    while ChangeForceTradePlayer and task.wait() do
+        if ChangeGameTarget == "All" then
+            for i,v in pairs(Players:GetChildren()) do
+                if v ~= LocalPlayer then
+                    ReplicatedStorage.Events.Trade.AcceptTrade:FireServer(v.UserId)
+                end
+            end
+        else
+            ReplicatedStorage.Events.Trade.AcceptTrade:FireServer(Players[ChangeGameTarget].UserId)
+        end
     end
 end)
 
