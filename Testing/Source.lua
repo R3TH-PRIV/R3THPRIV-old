@@ -1866,50 +1866,58 @@ do
 
     function section:addMultiDropdown(title, list, callback)
         local dropdown = self:addDropdown(title, list, callback)
+        
+        local selectedOptions = {} -- Track selected options
     
-        local selectedOptions = {}
+        local selectedDisplay = utility:Create("TextLabel", {
+            Name = "SelectedDisplay",
+            Parent = dropdown,
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 0, 1, 2),
+            Size = UDim2.new(1, 0, 0, 16),
+            ZIndex = 3,
+            Font = Enum.Font.Gotham,
+            Text = "",
+            TextColor3 = themes.TextColor,
+            TextSize = 12,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextTransparency = 0.5
+        })
     
-        dropdown.SelectMultiple = function(optionText, selected)
+        local function updateSelectedDisplay()
+            selectedDisplay.Text = table.concat(selectedOptions, ", ")
+        end
+    
+        local function toggleOption(option)
+            local selected = dropdown.selected[option]
+    
             if selected then
-                table.insert(selectedOptions, optionText)
-            else
-                for i, option in ipairs(selectedOptions) do
-                    if option == optionText then
+                dropdown.selected[option] = nil
+                for i, value in ipairs(selectedOptions) do
+                    if value == option then
                         table.remove(selectedOptions, i)
                         break
                     end
                 end
+            else
+                dropdown.selected[option] = true
+                table.insert(selectedOptions, option)
             end
     
-            local displayText = ""
-            for i, option in ipairs(selectedOptions) do
-                if i > 1 then
-                    displayText = displayText .. ", "
-                end
-                displayText = displayText .. option
-            end
-            dropdown.Search.TextBox.Text = displayText
+            updateSelectedDisplay()
+            callback(selectedOptions)
+        end
     
-            for _, button in ipairs(dropdown.List.Frame:GetChildren()) do
-                if button:IsA("ImageButton") then
-                    local buttonText = button.TextLabel.Text
-                    if table.find(selectedOptions, buttonText) then
-                        button.TextLabel.Font = Enum.Font.GothamSemibold
-                    else
-                        button.TextLabel.Font = Enum.Font.Gotham
-                    end
-                end
+        for i, button in pairs(dropdown.List.Frame:GetChildren()) do
+            if button:IsA("ImageButton") then
+                button.MouseButton1Click:Connect(function()
+                    local optionText = button.TextLabel.Text
+                    toggleOption(optionText)
+                end)
             end
         end
     
-        dropdown.Search.Button.MouseButton1Click:Connect(function()
-            dropdown.SelectMultiple(dropdown.Search.TextBox.Text, not dropdown.Selected)
-            if callback then
-                callback(dropdown.Search.TextBox.Text, not dropdown.Selected)
-            end
-        end)
-    
-        return dropdown
+        return dropdown, selectedOptions
     end
 
 	-- class functions
@@ -2283,5 +2291,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by ")
 return library
