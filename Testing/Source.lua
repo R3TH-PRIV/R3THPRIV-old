@@ -1868,15 +1868,11 @@ do
         local dropdown = utility:Create("Frame", {
             Name = "Dropdown",
             Parent = self.container,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- Set background color
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 30),
             ZIndex = 2,
         }, {
-            utility:Create("UIListLayout", {
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDim.new(0, 4)
-            }),
             utility:Create("TextLabel", {
                 Name = "Title",
                 BackgroundTransparency = 1,
@@ -1890,11 +1886,28 @@ do
                 TextTransparency = 0.1,
                 TextXAlignment = Enum.TextXAlignment.Left
             }),
-            utility:Create("Frame", { -- Background for the options
-                Name = "OptionsBackground",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- Set background color
+            utility:Create("TextButton", {
+                Name = "Button",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BorderSizePixel = 0,
-                Size = UDim2.new(1, 0, 1, -16),
+                Position = UDim2.new(1, -22, 0, 0),
+                Size = UDim2.new(0, 22, 0, 22),
+                ZIndex = 3,
+                Font = Enum.Font.SourceSans,
+                Text = ">",
+                TextColor3 = themes.TextColor,
+                TextSize = 14,
+            }, {
+                utility:Create("UIAspectRatioConstraint", {
+                    AspectRatio = 1,
+                }),
+            }),
+            utility:Create("Frame", {
+                Name = "OptionsBackground",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BorderSizePixel = 0,
+                Position = UDim2.new(0, 0, 1, 0),
+                Size = UDim2.new(1, 0, 0, 0),
                 ZIndex = 2,
             }, {
                 utility:Create("UIListLayout", {
@@ -1904,55 +1917,64 @@ do
             })
         })
         
-        -- Track selected options
         local selectedOptions = {}
         
         for i, optionText in ipairs(list) do
             local option = utility:Create("TextButton", {
                 Name = "Option",
                 Parent = dropdown.OptionsBackground,
-                BackgroundColor3 = Color3.fromRGB(240, 240, 240), -- Set background color for options
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, 0, 0, 16),
-                ZIndex = 2,
+                ZIndex = 3,
                 Font = Enum.Font.Gotham,
                 Text = optionText,
                 TextColor3 = themes.TextColor,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
+                TextTransparency = 0.1,
             })
             
-            -- Add tick indicator
             local tick = utility:Create("TextLabel", {
                 Name = "Tick",
                 Parent = option,
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 4, 0.5, -8),
+                Position = UDim2.new(1, -20, 0.5, -6),
                 Size = UDim2.new(0, 12, 0, 12),
                 ZIndex = 3,
                 Font = Enum.Font.SourceSansBold,
                 Text = "✔",
-                TextColor3 = Color3.fromRGB(0, 255, 0), -- Set tick color
+                TextColor3 = Color3.fromRGB(0, 255, 0),
                 TextSize = 12,
-                Visible = false, -- Initially hidden
+                Visible = false,
             })
             
             option.MouseButton1Click:Connect(function()
-                option.Selected = not option.Selected -- Toggle selection
+                option.Selected = not option.Selected
                 if option.Selected then
                     selectedOptions[optionText] = true
-                    option.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Change color to indicate selection
-                    tick.Visible = true -- Show tick
+                    option.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+                    tick.Visible = true
                 else
                     selectedOptions[optionText] = nil
-                    option.BackgroundColor3 = Color3.fromRGB(240, 240, 240) -- Restore original color
-                    tick.Visible = false -- Hide tick
+                    option.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                    tick.Visible = false
                 end
                 if callback then
                     callback(optionText, option.Selected)
                 end
             end)
         end
+        
+        local isOpen = false
+        dropdown.Button.MouseButton1Click:Connect(function()
+            isOpen = not isOpen
+            if isOpen then
+                dropdown.OptionsBackground:TweenSize(UDim2.new(1, 0, 0, dropdown.OptionsBackground.UIListLayout.AbsoluteContentSize.Y), "Out", "Quad", 0.2, true)
+            else
+                dropdown.OptionsBackground:TweenSize(UDim2.new(1, 0, 0, 0), "Out", "Quad", 0.2, true)
+            end
+        end)
         
         table.insert(self.modules, dropdown)
         return dropdown
@@ -2329,5 +2351,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial we")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial over")
 return library
