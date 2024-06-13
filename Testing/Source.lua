@@ -1863,6 +1863,110 @@ do
 	
 		return paragraphContainer, paragraph
 	end
+
+	function section:addMultiDropdown(title, options, callback)
+        local multiDropdown = utility:Create("Frame", {
+            Name = "MultiDropdown",
+            Parent = self.container,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 30),
+            ClipsDescendants = true
+        })
+    
+        local titleLabel = utility:Create("TextLabel", {
+            Name = "TitleLabel",
+            Parent = multiDropdown,
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 10, 0, 0),
+            Size = UDim2.new(1, -20, 0, 20),
+            Font = Enum.Font.GothamSemibold,
+            Text = title,
+            TextColor3 = themes.TextColor,
+            TextSize = 12,
+            TextWrapped = true,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+    
+        local dropdownButton = utility:Create("TextButton", {
+            Name = "DropdownButton",
+            Parent = multiDropdown,
+            BackgroundTransparency = 1,
+            Position = UDim2.new(0, 10, 0, 20),
+            Size = UDim2.new(1, -20, 0, 10),
+            Font = Enum.Font.Gotham,
+            Text = "Select Options",
+            TextColor3 = themes.TextColor,
+            TextSize = 12,
+            TextXAlignment = Enum.TextXAlignment.Left
+        })
+    
+        local tickContainer = utility:Create("Frame", {
+            Name = "TickContainer",
+            Parent = multiDropdown,
+            BackgroundTransparency = 1,
+            Position = UDim2.new(1, -70, 0, 0),
+            Size = UDim2.new(0, 60, 1, 0)
+        })
+    
+        local function createOption(optionText, index)
+            local optionFrame = utility:Create("Frame", {
+                Name = "OptionFrame",
+                Parent = multiDropdown,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0, 30 + index * 20),
+                Size = UDim2.new(1, -20, 0, 20)
+            })
+    
+            local tick = utility:Create("TextLabel", {
+                Name = "Tick",
+                Parent = optionFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -15, 0, 0),
+                Size = UDim2.new(0, 10, 1, 0),
+                Font = Enum.Font.SourceSansBold,
+                Text = "✔",
+                TextColor3 = Color3.fromRGB(0, 170, 0),
+                TextSize = 14,
+                TextWrapped = true,
+                Visible = false
+            })
+    
+            local optionButton = utility:Create("TextButton", {
+                Name = "OptionButton",
+                Parent = optionFrame,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 0, 0, 0),
+                Size = UDim2.new(1, -25, 1, 0),
+                Font = Enum.Font.Gotham,
+                Text = optionText,
+                TextColor3 = themes.TextColor,
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Left
+            })
+    
+            optionButton.MouseButton1Click:Connect(function()
+                tick.Visible = not tick.Visible
+                if callback then
+                    callback(optionText, tick.Visible)
+                end
+            end)
+        end
+    
+        for i, option in ipairs(options) do
+            createOption(option, i - 1)
+        end
+    
+        dropdownButton.MouseButton1Click:Connect(function()
+            for _, child in ipairs(multiDropdown:GetChildren()) do
+                if child:IsA("Frame") and child.Name == "OptionFrame" then
+                    child.Visible = not child.Visible
+                end
+            end
+        end)
+    
+        return multiDropdown
+    end
+
 	
 	-- class functions
 	
@@ -2235,5 +2339,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial ye")
 return library
