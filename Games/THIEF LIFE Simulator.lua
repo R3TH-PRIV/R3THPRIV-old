@@ -1,6 +1,6 @@
 --[[
     R3TH PRIV THIEF LIFE SIMULATOR SOURCE
-
+    a little rushed in the update as i was just spending a bit of time on it
     .gg/pethicial
 
     Credits:
@@ -48,6 +48,7 @@ local Server = Universal:addSection("Server")
 local Main0 = R3TH:addPage("Main", 10709782154)
 local Main = Main0:addSection("Main")
 local Farm = Main0:addSection("Farm")
+local Building = Main0:addSection("Building")
 local Target00 = Main0:addSection("Target")
 
 local Shop = R3TH:addPage("Shop", 5012537936)
@@ -113,6 +114,7 @@ local FlySpeedSlider = 50
 local ChangeAntiAFK = true
 local CircleSpeedSlider = 5
 local CircleRadiusSlider = 10
+local ChangeFloor = 0
 
 if R3TH_Drawingnew == "Supported" then
     FOVCircle = Drawing.new("Circle")
@@ -126,6 +128,7 @@ if R3TH_Drawingnew == "Supported" then
 end
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
+local BuildingList = {}
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
 local function ToggleUI()
     local Toggle = false
@@ -443,6 +446,44 @@ function CollectAllLoot()
     end
 end
 
+function PlaceBuild(Section, Building, Vector3)
+    ReplicatedStorage.Events.House.RequestBuild:FireServer(Section, Building, Vector3, ChangeFloor)
+end
+
+local function snapToGrid(position)
+    return Vector3.new(
+        math.floor(position.X / 5 + 1) * 5,
+        position.Y,
+        math.floor(position.Z / 5 + 1) * 5
+    )
+end
+
+local function createGrid()
+    for x = -50, 50, 5 do
+        for z = -50, 50, 5 do
+            PlacementGrid = Instance.new("Part")
+            PlacementGrid.Shape = Enum.PartType.Block
+            PlacementGrid.Size = Vector3.new(10, 0.1, 10)
+            PlacementGrid.Color = Color3.new(1, 1, 1)
+            PlacementGrid.Transparency = 0.5
+            PlacementGrid.Anchored = true
+            PlacementGrid.CanCollide = false
+            PlacementGrid.Position = Vector3.new(x, 0, z)
+            PlacementGrid.Parent = game.Workspace
+        end
+    end
+end
+
+local function updateObjectPosition()
+    if Humanoid then
+        local playerPosition = Character.PrimaryPart.Position + Humanoid.RootPart.CFrame.LookVector * 10
+        local snappedPosition = snapToGrid(playerPosition)
+        PlacementSquare.Position = snappedPosition + Vector3.new(0, 0.1, 0)
+    else
+        warn("Player or humanoid not found!")
+    end
+end
+
 --------------------------------------------------------------------------------------LIST----------------------------------------------------------------------------------------
 local teleportLocations = {
     ["Pet Shop"] = CFrame.new(-1367, 13, 65),
@@ -467,6 +508,15 @@ local teleportLocations = {
 local teleportLocationsKeys = {}
 for key,_ in pairs(teleportLocations) do
     table.insert(teleportLocationsKeys, key)
+end
+
+for i,v in pairs(ReplicatedStorage.HouseObjects:GetChildren()) do
+    if v.Name ~= "UI" then
+        local FolderName = v.Name
+        for i,v in pairs(v:GetChildren()) do
+            table.insert(BuildingList, (FolderName .. "|" .. v.Name))
+        end
+    end
 end
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
@@ -1896,6 +1946,56 @@ Farm:addToggle("XP Farm", false, function(Value)
     ChangeXPFarm = Value
     while ChangeXPFarm and task.wait() do
         ReplicatedStorage.Events.Loot.RequestLoot:FireServer(0)
+    end
+end)
+
+BuildingContainer, BuildingText = Building:addParagraph(nil, "This lets you build objects that aren't available anymore.")
+
+Building:addDropdown("Objects", BuildingList, function(Value)
+    local parts = string.split(Value, "|")
+    ChangeBuildingParent = parts[1]
+    ChangeBuildingPart = parts[2]
+end)
+
+Building:addDropdown("Floor", {"1", "2", "3"}, function(Value)
+    ChangeFloor = Value
+end)
+rotationAngle = 0
+Building:addButton("Rotate Object", function()
+    if PlacementSquare then
+        rotationAngle = rotationAngle + 90
+
+        if rotationAngle >= 360 then
+            rotationAngle = 0
+        end
+
+        PlacementSquare.CFrame = PlacementSquare.CFrame * CFrame.Angles(0, math.rad(rotationAngle), 0)
+    else
+        warn("Square part not found!")
+    end
+end)
+
+Building:addButton("Build Object", function()
+    local ObjectPosition = Character.PrimaryPart.Position + Humanoid.RootPart.CFrame.LookVector * 10 - Vector3.new(0, 2.6, 0)
+    PlaceBuild(ChangeBuildingParent, ChangeBuildingPart, ObjectPosition)
+end)
+
+Building:addToggle("Show Placement", false, function(Value)
+    if Value then
+        createGrid()
+        PlacementSquare = Instance.new("Part")
+        PlacementSquare.Shape = Enum.PartType.Block
+        PlacementSquare.Size = Vector3.new(10, 5, 10)
+        PlacementSquare.Color = Color3.new(1, 1, 1)
+        PlacementSquare.Transparency = 0.7
+        PlacementSquare.Anchored = true
+        PlacementSquare.CanCollide = false
+        PlacementSquare.Parent = game.Workspace
+        ChangeObjectPosition = game:GetService("RunService").Heartbeat:Connect(updateObjectPosition)
+    else
+        ChangeObjectPosition:Disconnect()
+        PlacementSquare:Destroy()
+        PlacementGrid:Destroy()
     end
 end)
 
