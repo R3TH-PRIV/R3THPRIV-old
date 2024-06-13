@@ -192,10 +192,28 @@ do
 
 	end
 	
-	function utility:DraggingEnded(callback)
-		table.insert(self.ended, callback)
-	end
-	
+    local function onTouchStart(input)
+        dragging = true
+        
+        while dragging do
+            utility:Tween(circle, {ImageTransparency = 0}, 0.1)
+            
+            value = self:updateSlider(slider, nil, nil, min, max, value)
+            callback(value)
+            
+            utility:Wait()
+        end
+        
+        wait(0.5)
+        utility:Tween(circle, {ImageTransparency = 1}, 0.2)
+    end
+    
+    local function onTouchEnd(input)
+        dragging = false
+    end
+    
+    slider.TouchStarted:Connect(onTouchStart)
+    slider.TouchEnded:Connect(onTouchEnd)
 end
 
 -- classes
@@ -2128,7 +2146,7 @@ do
 		end
 		
 		local bar = slider.Slider.Bar
-		local percent = (mouse.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X
+		local percent = (input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X
 		
 		if value then -- support negative ranges
 			percent = (value - min) / (max - min)
@@ -2235,5 +2253,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial gggg")
 return library
