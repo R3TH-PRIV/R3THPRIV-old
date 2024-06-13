@@ -1865,59 +1865,117 @@ do
 	end
 
     function section:addMultiDropdown(title, list, callback)
-        local dropdown = self:addDropdown(title, list, callback)
+        local dropdown = utility:Create("Frame", {
+            Name = "MultiDropdown",
+            Parent = self.container,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 30),
+            ClipsDescendants = true
+        }, {
+            utility:Create("UIListLayout", {
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 4)
+            })
+        })
         
-        local selectedOptions = {} -- Track selected options
-    
-        local selectedDisplay = utility:Create("TextLabel", {
-            Name = "SelectedDisplay",
+        local dropdownTitle = utility:Create("TextLabel", {
+            Name = "DropdownTitle",
             Parent = dropdown,
             BackgroundTransparency = 1,
-            Position = UDim2.new(0, 0, 1, 2),
+            Position = UDim2.new(0, 0, 0, 0),
             Size = UDim2.new(1, 0, 0, 16),
             ZIndex = 3,
             Font = Enum.Font.Gotham,
-            Text = "",
+            Text = title,
             TextColor3 = themes.TextColor,
             TextSize = 12,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            TextTransparency = 0.5
+            TextTransparency = 0.10000000149012,
+            TextXAlignment = Enum.TextXAlignment.Left
         })
-    
-        local function updateSelectedDisplay()
-            selectedDisplay.Text = table.concat(selectedOptions, ", ")
+        
+        local dropdownButton = utility:Create("ImageButton", {
+            Name = "DropdownButton",
+            Parent = dropdown,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 14),
+            ZIndex = 3,
+            Image = "rbxassetid://5028857472",
+            ImageColor3 = themes.DarkContrast,
+            ScaleType = Enum.ScaleType.Slice,
+            SliceCenter = Rect.new(2, 2, 298, 298)
+        }, {
+            utility:Create("ImageLabel", {
+                Name = "DropdownArrow",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(1, -14, 0.5, -7),
+                Size = UDim2.new(0, 14, 0, 14),
+                ZIndex = 3,
+                Image = "rbxassetid://5012539403",
+                ImageColor3 = themes.TextColor,
+                SliceCenter = Rect.new(2, 2, 298, 298)
+            })
+        })
+        
+        local dropdownList = utility:Create("Frame", {
+            Name = "DropdownList",
+            Parent = dropdown,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 0),
+            ZIndex = 3
+        })
+        
+        local function createOption(optionText)
+            local option = utility:Create("ImageButton", {
+                Name = "Option",
+                Parent = dropdownList,
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 20),
+                ZIndex = 3
+            }, {
+                utility:Create("TextLabel", {
+                    Name = "OptionText",
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 20, 0, 0),
+                    Size = UDim2.new(1, -20, 1, 0),
+                    ZIndex = 3,
+                    Font = Enum.Font.Gotham,
+                    Text = optionText,
+                    TextColor3 = themes.TextColor,
+                    TextSize = 12,
+                    TextTransparency = 0.10000000149012,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                }),
+                utility:Create("ImageLabel", {
+                    Name = "Tick",
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 4, 0.5, -7),
+                    Size = UDim2.new(0, 14, 0, 14),
+                    ZIndex = 3,
+                    Image = "rbxassetid://5012539403",
+                    ImageColor3 = themes.TextColor,
+                    SliceCenter = Rect.new(2, 2, 298, 298),
+                    Visible = false
+                })
+            })
+            
+            return option
         end
-    
-        local function toggleOption(option)
-            local selected = dropdown.selected[option]
-    
-            if selected then
-                dropdown.selected[option] = nil
-                for i, value in ipairs(selectedOptions) do
-                    if value == option then
-                        table.remove(selectedOptions, i)
-                        break
-                    end
-                end
-            else
-                dropdown.selected[option] = true
-                table.insert(selectedOptions, option)
-            end
-    
-            updateSelectedDisplay()
-            callback(selectedOptions)
+        
+        local options = {}
+        
+        for i, optionText in ipairs(list) do
+            local option = createOption(optionText)
+            options[i] = option
+            option.MouseButton1Click:Connect(function()
+                option.Tick.Visible = not option.Tick.Visible
+            end)
         end
-    
-        for i, button in pairs(dropdown.List.Frame:GetChildren()) do
-            if button:IsA("ImageButton") then
-                button.MouseButton1Click:Connect(function()
-                    local optionText = button.TextLabel.Text
-                    toggleOption(optionText)
-                end)
-            end
-        end
-    
-        return dropdown, selectedOptions
+        
+        dropdownButton.MouseButton1Click:Connect(function()
+            dropdownList.Size = UDim2.new(1, 0, 0, #list * 20)
+        end)
+        
+        return dropdown
     end
 
 	-- class functions
@@ -2291,5 +2349,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by ")
+print("[ R3TH PRIV ]: Venyx  Fixed and Improved by Pethicial")
 return library
