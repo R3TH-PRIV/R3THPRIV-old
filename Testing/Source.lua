@@ -1872,109 +1872,145 @@ do
             Size = UDim2.new(1, 0, 0, 30),
             ClipsDescendants = true
         }, {
-            utility:Create("UIListLayout", {
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDim.new(0, 4)
-            })
+    		utility:Create("UIListLayout", {
+    			SortOrder = Enum.SortOrder.LayoutOrder,
+    			Padding = UDim.new(0, 4)
+    		}),
+    		utility:Create("ImageLabel", {
+    			Name = "Search",
+    			BackgroundTransparency = 1,
+    			BorderSizePixel = 0,
+    			Size = UDim2.new(1, 0, 0, 30),
+    			ZIndex = 2,
+    			Image = "rbxassetid://5028857472",
+    			ImageColor3 = themes.DarkContrast,
+    			ScaleType = Enum.ScaleType.Slice,
+    			SliceCenter = Rect.new(2, 2, 298, 298)
+    		}, {
+    			utility:Create("TextBox", {
+    				Name = "TextBox",
+    				AnchorPoint = Vector2.new(0, 0.5),
+    				BackgroundTransparency = 1,
+    				TextTruncate = Enum.TextTruncate.AtEnd,
+    				Position = UDim2.new(0, 10, 0.5, 1),
+    				Size = UDim2.new(1, -42, 1, 0),
+    				ZIndex = 3,
+    				Font = Enum.Font.Gotham,
+    				Text = title,
+    				TextColor3 = themes.TextColor,
+    				TextSize = 12,
+    				TextTransparency = 0.10000000149012,
+    				TextXAlignment = Enum.TextXAlignment.Left
+    			}),
+    			utility:Create("ImageButton", {
+    				Name = "Button",
+    				BackgroundTransparency = 1,
+    				BorderSizePixel = 0,
+    				Position = UDim2.new(1, -28, 0.5, -9),
+    				Size = UDim2.new(0, 18, 0, 18),
+    				ZIndex = 3,
+    				Image = "rbxassetid://5012539403",
+    				ImageColor3 = themes.TextColor,
+    				SliceCenter = Rect.new(2, 2, 298, 298)
+    			})
+    		}),
+    		utility:Create("ImageLabel", {
+    			Name = "List",
+    			BackgroundTransparency = 1,
+    			BorderSizePixel = 0,
+    			Size = UDim2.new(1, 0, 1, -34),
+    			ZIndex = 2,
+    			Image = "rbxassetid://5028857472",
+    			ImageColor3 = themes.Background,
+    			ScaleType = Enum.ScaleType.Slice,
+    			SliceCenter = Rect.new(2, 2, 298, 298)
+    		}, {
+    			utility:Create("ScrollingFrame", {
+    				Name = "Frame",
+    				Active = true,
+    				BackgroundTransparency = 1,
+    				BorderSizePixel = 0,
+    				Position = UDim2.new(0, 4, 0, 4),
+    				Size = UDim2.new(1, -8, 1, -8),
+    				CanvasPosition = Vector2.new(0, 28),
+    				CanvasSize = UDim2.new(0, 0, 0, 120),
+    				ZIndex = 2,
+    				ScrollBarThickness = 3,
+    				ScrollBarImageColor3 = themes.DarkContrast
+    			}, {
+    				utility:Create("UIListLayout", {
+    					SortOrder = Enum.SortOrder.LayoutOrder,
+    					Padding = UDim.new(0, 4)
+    				})
+    			})
+    		})
         })
-        
-        local dropdownTitle = utility:Create("TextLabel", {
-            Name = "DropdownTitle",
-            Parent = dropdown,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 0, 0, 0),
-            Size = UDim2.new(1, 0, 0, 16),
-            ZIndex = 3,
-            Font = Enum.Font.Gotham,
-            Text = title,
-            TextColor3 = themes.TextColor,
-            TextSize = 12,
-            TextTransparency = 0.10000000149012,
-            TextXAlignment = Enum.TextXAlignment.Left
-        })
-        
-        local dropdownButton = utility:Create("ImageButton", {
-            Name = "DropdownButton",
-            Parent = dropdown,
-            BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 0, 14),
-            ZIndex = 3,
-            Image = "rbxassetid://5028857472",
-            ImageColor3 = themes.DarkContrast,
-            ScaleType = Enum.ScaleType.Slice,
-            SliceCenter = Rect.new(2, 2, 298, 298)
-        }, {
-            utility:Create("ImageLabel", {
-                Name = "DropdownArrow",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(1, -14, 0.5, -7),
-                Size = UDim2.new(0, 14, 0, 14),
-                ZIndex = 3,
-                Image = "rbxassetid://5012539403",
-                ImageColor3 = themes.TextColor,
-                SliceCenter = Rect.new(2, 2, 298, 298)
-            })
-        })
-        
-        local dropdownList = utility:Create("Frame", {
-            Name = "DropdownList",
-            Parent = dropdown,
-            BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 0, 0),
-            ZIndex = 3
-        })
-        
-        local function createOption(optionText)
-            local option = utility:Create("ImageButton", {
-                Name = "Option",
-                Parent = dropdownList,
-                BackgroundTransparency = 1,
-                Size = UDim2.new(1, 0, 0, 20),
-                ZIndex = 3
-            }, {
-                utility:Create("TextLabel", {
-                    Name = "OptionText",
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 20, 0, 0),
-                    Size = UDim2.new(1, -20, 1, 0),
-                    ZIndex = 3,
-                    Font = Enum.Font.Gotham,
-                    Text = optionText,
-                    TextColor3 = themes.TextColor,
-                    TextSize = 12,
-                    TextTransparency = 0.10000000149012,
-                    TextXAlignment = Enum.TextXAlignment.Left
-                }),
-                utility:Create("ImageLabel", {
+    
+        table.insert(self.modules, dropdown)
+    
+        local selectedItems = {}
+    
+        local function updateTick(itemFrame, selected)
+            if selected then
+                local tick = utility:Create("ImageLabel", {
                     Name = "Tick",
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 4, 0.5, -7),
-                    Size = UDim2.new(0, 14, 0, 14),
-                    ZIndex = 3,
-                    Image = "rbxassetid://5012539403",
-                    ImageColor3 = themes.TextColor,
-                    SliceCenter = Rect.new(2, 2, 298, 298),
-                    Visible = false
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Position = UDim2.new(1, -20, 0.5, -8),
+                    AnchorPoint = Vector2.new(1, 0.5),
+                    Image = "rbxassetid://10709790644",
+                    Parent = itemFrame
                 })
-            })
-            
-            return option
+            else
+                local tick = itemFrame.Tick
+                if tick then
+                    tick:Destroy()
+                end
+            end
         end
-        
-        local options = {}
-        
-        for i, optionText in ipairs(list) do
-            local option = createOption(optionText)
-            options[i] = option
-            option.MouseButton1Click:Connect(function()
-                option.Tick.Visible = not option.Tick.Visible
-            end)
+    
+        local function updateDropdown()
+            for _, item in ipairs(dropdown.List.Frame:GetChildren()) do
+                if item:IsA("TextButton") then
+                    item:Destroy()
+                end
+            end
+    
+            for index, itemData in ipairs(list) do
+                local itemFrame = utility:Create("TextButton", {
+                    Name = "Item" .. index,
+                    Parent = dropdown.List.Frame,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 24),
+                    Font = Enum.Font.Gotham,
+                    Text = itemData,
+                    TextColor3 = themes.TextColor,
+                    TextSize = 12,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+    
+                itemFrame.MouseButton1Click:Connect(function()
+                    if not selectedItems[itemData] then
+                        selectedItems[itemData] = true
+                        updateTick(itemFrame, true)
+                    else
+                        selectedItems[itemData] = nil
+                        updateTick(itemFrame, false)
+                    end
+    
+                    callback(table.concat(selectedItems, ", "))
+                end)
+    
+                updateTick(itemFrame, selectedItems[itemData])
+            end
         end
-        
-        dropdownButton.MouseButton1Click:Connect(function()
-            dropdownList.Size = UDim2.new(1, 0, 0, #list * 20)
+
+        updateDropdown()
+    
+        dropdown:GetPropertyChangedSignal("Size"):Connect(function()
+            self:Resize()
         end)
-        
+    
         return dropdown
     end
 
@@ -2349,5 +2385,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx  Fixed and Improved by Pethicial")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
 return library
