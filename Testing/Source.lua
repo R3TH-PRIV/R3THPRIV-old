@@ -1865,118 +1865,50 @@ do
 	end
 
     function section:addMultiDropdown(title, list, callback)
-        local dropdown = utility:Create("Frame", {
-            Name = "Dropdown",
-            Parent = self.container,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            BorderSizePixel = 0,
-            Size = UDim2.new(1, 0, 0, 30),
-            ZIndex = 2,
-        }, {
-            utility:Create("TextLabel", {
-                Name = "Title",
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 0),
-                Size = UDim2.new(1, -10, 0, 16),
-                ZIndex = 3,
-                Font = Enum.Font.Gotham,
-                Text = title,
-                TextColor3 = themes.TextColor,
-                TextSize = 12,
-                TextTransparency = 0.1,
-                TextXAlignment = Enum.TextXAlignment.Left
-            }),
-            utility:Create("TextButton", {
-                Name = "Button",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BorderSizePixel = 0,
-                Position = UDim2.new(1, -22, 0, 0),
-                Size = UDim2.new(0, 22, 0, 22),
-                ZIndex = 3,
-                Font = Enum.Font.SourceSans,
-                Text = ">",
-                TextColor3 = themes.TextColor,
-                TextSize = 14,
-            }, {
-                utility:Create("UIAspectRatioConstraint", {
-                    AspectRatio = 1,
-                }),
-            }),
-            utility:Create("Frame", {
-                Name = "OptionsBackground",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BorderSizePixel = 0,
-                Position = UDim2.new(0, 0, 1, 0),
-                Size = UDim2.new(1, 0, 0, 0),
-                ZIndex = 2,
-            }, {
-                utility:Create("UIListLayout", {
-                    SortOrder = Enum.SortOrder.LayoutOrder,
-                    Padding = UDim.new(0, 4)
-                }),
-            })
-        })
-        
+        local dropdown = self:addDropdown(title, list, callback)
+    
         local selectedOptions = {}
-        
-        for i, optionText in ipairs(list) do
-            local option = utility:Create("TextButton", {
-                Name = "Option",
-                Parent = dropdown.OptionsBackground,
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                BorderSizePixel = 0,
-                Size = UDim2.new(1, 0, 0, 16),
-                ZIndex = 3,
-                Font = Enum.Font.Gotham,
-                Text = optionText,
-                TextColor3 = themes.TextColor,
-                TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                TextTransparency = 0.1,
-            })
-            
-            local tick = utility:Create("TextLabel", {
-                Name = "Tick",
-                Parent = option,
-                BackgroundTransparency = 1,
-                Position = UDim2.new(1, -20, 0.5, -6),
-                Size = UDim2.new(0, 12, 0, 12),
-                ZIndex = 3,
-                Font = Enum.Font.SourceSansBold,
-                Text = "✔",
-                TextColor3 = Color3.fromRGB(0, 255, 0),
-                TextSize = 12,
-                Visible = false,
-            })
-            
-            option.MouseButton1Click:Connect(function()
-                option.Selected = not option.Selected
-                if option.Selected then
-                    selectedOptions[optionText] = true
-                    option.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-                    tick.Visible = true
-                else
-                    selectedOptions[optionText] = nil
-                    option.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-                    tick.Visible = false
-                end
-                if callback then
-                    callback(optionText, option.Selected)
-                end
-            end)
-        end
-        
-        local isOpen = false
-        dropdown.Button.MouseButton1Click:Connect(function()
-            isOpen = not isOpen
-            if isOpen then
-                dropdown.OptionsBackground:TweenSize(UDim2.new(1, 0, 0, dropdown.OptionsBackground.UIListLayout.AbsoluteContentSize.Y), "Out", "Quad", 0.2, true)
+    
+        dropdown.SelectMultiple = function(optionText, selected)
+            if selected then
+                table.insert(selectedOptions, optionText)
             else
-                dropdown.OptionsBackground:TweenSize(UDim2.new(1, 0, 0, 0), "Out", "Quad", 0.2, true)
+                for i, option in ipairs(selectedOptions) do
+                    if option == optionText then
+                        table.remove(selectedOptions, i)
+                        break
+                    end
+                end
+            end
+    
+            local displayText = ""
+            for i, option in ipairs(selectedOptions) do
+                if i > 1 then
+                    displayText = displayText .. ", "
+                end
+                displayText = displayText .. option
+            end
+            dropdown.Search.TextBox.Text = displayText
+    
+            for _, button in ipairs(dropdown.List.Frame:GetChildren()) do
+                if button:IsA("ImageButton") then
+                    local buttonText = button.TextLabel.Text
+                    if table.find(selectedOptions, buttonText) then
+                        button.TextLabel.Font = Enum.Font.GothamSemibold
+                    else
+                        button.TextLabel.Font = Enum.Font.Gotham
+                    end
+                end
+            end
+        end
+    
+        dropdown.Search.Button.MouseButton1Click:Connect(function()
+            dropdown.SelectMultiple(dropdown.Search.TextBox.Text, not dropdown.Selected)
+            if callback then
+                callback(dropdown.Search.TextBox.Text, not dropdown.Selected)
             end
         end)
-        
-        table.insert(self.modules, dropdown)
+    
         return dropdown
     end
 
@@ -2351,5 +2283,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial over")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
 return library
