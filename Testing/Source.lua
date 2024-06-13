@@ -1864,110 +1864,99 @@ do
 		return paragraphContainer, paragraph
 	end
 
-	function section:addMultiDropdown(title, options, callback)
-        local multiDropdown = utility:Create("Frame", {
-            Name = "MultiDropdown",
+    function section:addMultiDropdown(title, list, callback)
+        local dropdown = utility:Create("Frame", {
+            Name = "Dropdown",
             Parent = self.container,
-            BackgroundTransparency = 1,
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 30),
-            ClipsDescendants = true
-        })
-    
-        local titleLabel = utility:Create("TextLabel", {
-            Name = "TitleLabel",
-            Parent = multiDropdown,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 10, 0, 0),
-            Size = UDim2.new(1, -20, 0, 20),
-            Font = Enum.Font.GothamSemibold,
-            Text = title,
-            TextColor3 = themes.TextColor,
-            TextSize = 12,
-            TextWrapped = true,
-            TextXAlignment = Enum.TextXAlignment.Left
-        })
-    
-        local dropdownButton = utility:Create("TextButton", {
-            Name = "DropdownButton",
-            Parent = multiDropdown,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 10, 0, 20),
-            Size = UDim2.new(1, -20, 0, 10),
-            Font = Enum.Font.Gotham,
-            Text = "Select Options",
-            TextColor3 = themes.TextColor,
-            TextSize = 12,
-            TextXAlignment = Enum.TextXAlignment.Left
-        })
-    
-        local tickContainer = utility:Create("Frame", {
-            Name = "TickContainer",
-            Parent = multiDropdown,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(1, -70, 0, 0),
-            Size = UDim2.new(0, 60, 1, 0)
-        })
-    
-        local function createOption(optionText, index)
-            local optionFrame = utility:Create("Frame", {
-                Name = "OptionFrame",
-                Parent = multiDropdown,
+            Clipping = Enum.ClippingMode.ClipDescendants,
+            ZIndex = 2,
+        }, {
+            utility:Create("UIListLayout", {
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 4)
+            }),
+            utility:Create("TextLabel", {
+                Name = "Title",
                 BackgroundTransparency = 1,
-                Position = UDim2.new(0, 10, 0, 30 + index * 20),
-                Size = UDim2.new(1, -20, 0, 20)
+                Position = UDim2.new(0, 10, 0, 0),
+                Size = UDim2.new(1, -10, 0, 16),
+                ZIndex = 3,
+                Font = Enum.Font.Gotham,
+                Text = title,
+                TextColor3 = themes.TextColor,
+                TextSize = 12,
+                TextTransparency = 0.1,
+                TextXAlignment = Enum.TextXAlignment.Left
+            }),
+            utility:Create("Frame", {
+                Name = "OptionsBackground",
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 1, -16),
+                ZIndex = 2,
+            }, {
+                utility:Create("UIListLayout", {
+                    SortOrder = Enum.SortOrder.LayoutOrder,
+                    Padding = UDim.new(0, 4)
+                }),
             })
-    
-            local tick = utility:Create("TextLabel", {
-                Name = "Tick",
-                Parent = optionFrame,
-                BackgroundTransparency = 1,
-                Position = UDim2.new(1, -15, 0, 0),
-                Size = UDim2.new(0, 10, 1, 0),
-                Font = Enum.Font.SourceSansBold,
-                Text = "✔",
-                TextColor3 = Color3.fromRGB(0, 170, 0),
-                TextSize = 14,
-                TextWrapped = true,
-                Visible = false
-            })
-    
-            local optionButton = utility:Create("TextButton", {
-                Name = "OptionButton",
-                Parent = optionFrame,
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 0, 0, 0),
-                Size = UDim2.new(1, -25, 1, 0),
+        })
+        
+        local selectedOptions = {}
+        
+        for i, optionText in ipairs(list) do
+            local option = utility:Create("TextButton", {
+                Name = "Option",
+                Parent = dropdown.OptionsBackground,
+                BackgroundColor3 = Color3.fromRGB(240, 240, 240),
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 0, 16),
+                ZIndex = 2,
                 Font = Enum.Font.Gotham,
                 Text = optionText,
                 TextColor3 = themes.TextColor,
                 TextSize = 12,
-                TextXAlignment = Enum.TextXAlignment.Left
+                TextXAlignment = Enum.TextXAlignment.Left,
             })
-    
-            optionButton.MouseButton1Click:Connect(function()
-                tick.Visible = not tick.Visible
+            
+            local tick = utility:Create("TextLabel", {
+                Name = "Tick",
+                Parent = option,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 4, 0.5, -8),
+                Size = UDim2.new(0, 12, 0, 12),
+                ZIndex = 3,
+                Font = Enum.Font.SourceSansBold,
+                Text = "✔",
+                TextColor3 = Color3.fromRGB(0, 255, 0),
+                TextSize = 12,
+                Visible = false,
+            })
+            
+            option.MouseButton1Click:Connect(function()
+                option.Selected = not option.Selected
+                if option.Selected then
+                    selectedOptions[optionText] = true
+                    option.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+                    tick.Visible = true
+                else
+                    selectedOptions[optionText] = nil
+                    option.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
+                    tick.Visible = false
+                end
                 if callback then
-                    callback(optionText, tick.Visible)
+                    callback(optionText, option.Selected)
                 end
             end)
         end
-    
-        for i, option in ipairs(options) do
-            createOption(option, i - 1)
-        end
-    
-        dropdownButton.MouseButton1Click:Connect(function()
-            for _, child in ipairs(multiDropdown:GetChildren()) do
-                if child:IsA("Frame") and child.Name == "OptionFrame" then
-                    child.Visible = not child.Visible
-                end
-            end
-        end)
-    
-        return multiDropdown
+        
+        table.insert(self.modules, dropdown)
+        return dropdown
     end
 
-	
 	-- class functions
 	
 	function library:SelectPage(page, toggle)
@@ -2339,5 +2328,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial ye")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
 return library
