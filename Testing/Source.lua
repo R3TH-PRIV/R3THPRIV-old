@@ -1868,10 +1868,9 @@ do
         local dropdown = utility:Create("Frame", {
             Name = "Dropdown",
             Parent = self.container,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- Set background color
             BorderSizePixel = 0,
             Size = UDim2.new(1, 0, 0, 30),
-            Clipping = Enum.ClippingMode.ClipDescendants,
             ZIndex = 2,
         }, {
             utility:Create("UIListLayout", {
@@ -1891,9 +1890,9 @@ do
                 TextTransparency = 0.1,
                 TextXAlignment = Enum.TextXAlignment.Left
             }),
-            utility:Create("Frame", {
+            utility:Create("Frame", { -- Background for the options
                 Name = "OptionsBackground",
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                BackgroundColor3 = Color3.fromRGB(255, 255, 255), -- Set background color
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, 0, 1, -16),
                 ZIndex = 2,
@@ -1905,13 +1904,14 @@ do
             })
         })
         
+        -- Track selected options
         local selectedOptions = {}
         
         for i, optionText in ipairs(list) do
             local option = utility:Create("TextButton", {
                 Name = "Option",
                 Parent = dropdown.OptionsBackground,
-                BackgroundColor3 = Color3.fromRGB(240, 240, 240),
+                BackgroundColor3 = Color3.fromRGB(240, 240, 240), -- Set background color for options
                 BorderSizePixel = 0,
                 Size = UDim2.new(1, 0, 0, 16),
                 ZIndex = 2,
@@ -1922,6 +1922,7 @@ do
                 TextXAlignment = Enum.TextXAlignment.Left,
             })
             
+            -- Add tick indicator
             local tick = utility:Create("TextLabel", {
                 Name = "Tick",
                 Parent = option,
@@ -1931,21 +1932,21 @@ do
                 ZIndex = 3,
                 Font = Enum.Font.SourceSansBold,
                 Text = "✔",
-                TextColor3 = Color3.fromRGB(0, 255, 0),
+                TextColor3 = Color3.fromRGB(0, 255, 0), -- Set tick color
                 TextSize = 12,
-                Visible = false,
+                Visible = false, -- Initially hidden
             })
             
             option.MouseButton1Click:Connect(function()
-                option.Selected = not option.Selected
+                option.Selected = not option.Selected -- Toggle selection
                 if option.Selected then
                     selectedOptions[optionText] = true
-                    option.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-                    tick.Visible = true
+                    option.BackgroundColor3 = Color3.fromRGB(200, 200, 200) -- Change color to indicate selection
+                    tick.Visible = true -- Show tick
                 else
                     selectedOptions[optionText] = nil
-                    option.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
-                    tick.Visible = false
+                    option.BackgroundColor3 = Color3.fromRGB(240, 240, 240) -- Restore original color
+                    tick.Visible = false -- Hide tick
                 end
                 if callback then
                     callback(optionText, option.Selected)
@@ -2328,5 +2329,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial we")
 return library
