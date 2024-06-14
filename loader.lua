@@ -68,7 +68,7 @@ if getgenv().r3thexecuted then
 end
 getgenv().r3thexecuted = true
 
-sendnotification("R3TH PRIV Loader executed.", false)
+sendnotification("Loader executed.", false)
 
 --------------------------------------------------------------------------------------SUPPORTCHECK----------------------------------------------------------------------------------------
 local function getGlobal(path)
