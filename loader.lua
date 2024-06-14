@@ -63,6 +63,7 @@ if getgenv().r3thexecuted then
     return
 end
 getgenv().r3thexecuted = true
+getgenv().Key = "R3TH PRIV"
 
 print("[ R3TH PRIV ]: R3TH PRIV Loader executed.")
 
