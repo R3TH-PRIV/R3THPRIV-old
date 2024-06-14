@@ -114,7 +114,7 @@ local FlySpeedSlider = 50
 local ChangeAntiAFK = true
 local CircleSpeedSlider = 5
 local CircleRadiusSlider = 10
-local ChangeFloor = 0
+local ChangeRotation = 0
 
 if R3TH_Drawingnew == "Supported" then
     FOVCircle = Drawing.new("Circle")
@@ -447,7 +447,7 @@ function CollectAllLoot()
 end
 
 function PlaceBuild(Section, Building, Vector3)
-    ReplicatedStorage.Events.House.RequestBuild:FireServer(Section, Building, Vector3, ChangeFloor)
+    ReplicatedStorage.Events.House.RequestBuild:FireServer(Section, Building, Vector3, ChangeRotation)
 end
 
 local function snapToGrid(position)
@@ -1428,7 +1428,7 @@ end
 ESP:addToggle("Enable ESP", false, function(Value)
     if EnableESPFirst ~= true then -- Improves performance if you're not using ESP.
         EnableESPFirst = true
-        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-V2/main/OtherScripts/ESP.lua'))()
+        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/ESP.lua'))()
         ESPP.BoxType = "Corner Box Esp"
     end
     ESPP.Enabled = Value
@@ -1957,21 +1957,11 @@ Building:addDropdown("Objects", BuildingList, function(Value)
     ChangeBuildingPart = parts[2]
 end)
 
-Building:addDropdown("Floor", {"1", "2", "3"}, function(Value)
-    ChangeFloor = Value
-end)
-rotationAngle = 0
 Building:addButton("Rotate Object", function()
-    if PlacementSquare then
-        rotationAngle = rotationAngle + 90
+    ChangeRotation = ChangeRotation + 90
 
-        if rotationAngle >= 360 then
-            rotationAngle = 0
-        end
-
-        PlacementSquare.CFrame = PlacementSquare.CFrame * CFrame.Angles(0, math.rad(rotationAngle), 0)
-    else
-        warn("Square part not found!")
+    if ChangeRotation >= 360 then
+        ChangeRotation = 0
     end
 end)
 
