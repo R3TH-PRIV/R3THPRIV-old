@@ -1512,33 +1512,10 @@ do
 			debounce = false
 		end
 		
-		local isTouchDevice = game:GetService("UserInputService").TouchEnabled
-		
-		local colorPickerActive = false
-
-        local toggleTab = function()
-            print("Toggling color picker")
-            tab.Visible = not tab.Visible
-            colorPickerActive = tab.Visible
-        end
+        print("Color picker added successfully")
     
         colorpicker.InputBegan:Connect(function(input)
-            if (isTouchDevice and input.UserInputType == Enum.UserInputType.Touch) or (not isTouchDevice and input.UserInputType == Enum.UserInputType.MouseButton1) then
-                toggleTab()
-            end
-        end)
-    
-        tab.Container.Button.InputBegan:Connect(function(input)
-            if colorPickerActive and ((isTouchDevice and input.UserInputType == Enum.UserInputType.Touch) or (not isTouchDevice and input.UserInputType == Enum.UserInputType.MouseButton1)) then
-                animate()
-            end
-        end)
-    
-        tab.Close.InputBegan:Connect(function(input)
-            if colorPickerActive and ((isTouchDevice and input.UserInputType == Enum.UserInputType.Touch) or (not isTouchDevice and input.UserInputType == Enum.UserInputType.MouseButton1)) then
-                self:updateColorPicker(colorpicker, nil, lastColor)
-                animate()
-            end
+            print("Input began on color picker")
         end)
 
 		return colorpicker
@@ -2256,5 +2233,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 1")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
 return library
