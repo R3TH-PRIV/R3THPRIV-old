@@ -10,6 +10,10 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
+if Key == nil then
+    getgenv().Key = "R3TH PRIV"
+end
+
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 local StarterGui = game:GetService("StarterGui")
@@ -40,18 +44,18 @@ local games = {
 
 function sendnotification(message, type)
     if type == false or type == nil then
-        print("[ R3TH PRIV ]: " .. message)
+        print("[ " .. Key .. " ]: " .. message)
     end
     if type == true or type == nil then
         if R3TH_Device == "Mobile" then
             StarterGui:SetCore("SendNotification", {
-                Title = "R3TH PRIV";
+                Title = Key;
                 Text = message;
                 Duration = 7;
             })
         else
             Notification:Notify(
-                {Title = "R3TH PRIV", Description = message},
+                {Title = Key, Description = message},
                 {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
             )
         end
@@ -64,11 +68,7 @@ if getgenv().r3thexecuted then
 end
 getgenv().r3thexecuted = true
 
-if Key == nil then
-    getgenv().Key = "R3TH PRIV"
-end
-
-print("[ R3TH PRIV ]: R3TH PRIV Loader executed.")
+sendnotification("R3TH PRIV Loader executed.", false)
 
 --------------------------------------------------------------------------------------SUPPORTCHECK----------------------------------------------------------------------------------------
 local function getGlobal(path)
