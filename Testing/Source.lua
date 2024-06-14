@@ -1668,6 +1668,16 @@ do
             dragging = false
         end)
     
+        local function updateSliderFromTouch(touchPosition)
+            local relativeX = math.clamp(touchPosition.X - circle.AbsolutePosition.X, 0, circle.AbsoluteSize.X)
+            local newValue = min + ((relativeX / circle.AbsoluteSize.X) * (max - min))
+            
+            newValue = math.clamp(newValue, min, max)
+            
+            value = self:updateSlider(slider, nil, newValue, min, max)
+            callback(value)
+        end
+    
         local function updateSlider()
             utility:Tween(circle, {ImageTransparency = 0}, 0.1)
             
@@ -1683,13 +1693,21 @@ do
         slider.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 dragging = true
-                updateSlider()
+                if input.UserInputType == Enum.UserInputType.Touch then
+                    updateSliderFromTouch(input.Position)
+                else
+                    updateSlider()
+                end
             end
         end)
     
         slider.InputChanged:Connect(function(input)
             if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                updateSlider()
+                if input.UserInputType == Enum.UserInputType.Touch then
+                    updateSliderFromTouch(input.Position)
+                else
+                    updateSlider()
+                end
             end
         end)
     
@@ -2269,5 +2287,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 3")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
 return library
