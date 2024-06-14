@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
-print("[ R3TH PRIV ]: R3TH PRIV Bloxy Bingo loading...")
+print("[ " .. Key .. " ]: Bloxy Bingo loading...")
 
 local TimeStart = tick()
 
@@ -58,7 +58,7 @@ local Sniper = Target0:addSection("Sniper")
 local Webhook = Target0:addSection("Webhook")
 
 local Scripts = R3TH:addPage("Scripts", 10723356507)
-local R3THPRIVV1 = Scripts:addSection("R3TH PRIV V1")
+local R3THPRIVV1 = Scripts:addSection(Key)
 
 local FAQ0 = R3TH:addPage("FAQ", 10723435515)
 local FAQ = FAQ0:addSection("FAQ")
@@ -165,18 +165,18 @@ end
 
 local function sendnotification(message, type)
     if type == false or type == nil then
-        print("[ R3TH PRIV ]: " .. message)
+        print("[ " .. Key .. " ]: " .. message)
     end
     if type == true or type == nil then
         if R3TH_Device == "Mobile" then
             StarterGui:SetCore("SendNotification", {
-                Title = "R3TH PRIV";
+                Title = Key;
                 Text = message;
                 Duration = 7;
             })
         else
             Notification:Notify(
-                {Title = "R3TH PRIV", Description = message},
+                {Title = Key, Description = message},
                 {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
             )
         end
@@ -1948,9 +1948,9 @@ Container10, Text10 = R3THPRIVV1:addParagraph(nil, "Tower of Hell: " .. R3THPRIV
 Container11, Text11 = R3THPRIVV1:addParagraph(nil, "Universal: " .. R3THPRIVV1_Universal)
 
 --------------------------------------------------------------------------------------FAQ----------------------------------------------------------------------------------------
-Container13, Text13 = FAQ:addParagraph("Why should I use R3TH PRIV?", "At the moment, R3TH PRIV is completely free and without a key system, in contrast to competitors that charge up to $20 for a skidded script.")
+Container13, Text13 = FAQ:addParagraph("Why should I use " .. Key .. "?", "At the moment, " .. Key .. " is completely free and without a key system, in contrast to competitors that charge up to $20 for a skidded script.")
 
-Container14, Text14 = FAQ:addParagraph("Does R3TH PRIV log anything?", "No, it's a common misconception that I log users just because the script is free. R3TH PRIV is trusted by over 10,000 individuals; as such, we will never gather information about you without your knowledge.")
+Container14, Text14 = FAQ:addParagraph("Does " .. Key .. " log anything?", "No, it's a common misconception that I log users just because the script is free. " .. Key .. " is trusted by over 10,000 individuals; as such, we will never gather information about you without your knowledge.")
 
 Container15, Text15 = FAQ:addParagraph("Why are the scripts all free to use?", "Despite the fact that I have encountered other script owners attempting to remove my script, I will not stop producing free scripts since it has always been my goal to provide all of my users with the greatest experience possible at no price.")
 
