@@ -1515,9 +1515,13 @@ do
 		local toggleTab = function()
 			animate(not toggle)
 		end
-		
+
 		if game:GetService("UserInputService").TouchEnabled then
-			button.MouseButton1Down:Connect(toggleTab)
+			button.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.Touch then
+					toggleTab()
+				end
+			end)
 		else
 			button.MouseButton1Click:Connect(toggleTab)
 		end
@@ -2248,5 +2252,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 9")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 10")
 return library
