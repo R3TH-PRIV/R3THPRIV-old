@@ -1315,7 +1315,7 @@ end
 ESP:addToggle("Enable ESP", false, function(Value)
     if EnableESPFirst ~= true then -- Improves performance if you're not using ESP.
         EnableESPFirst = true
-        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-V2/main/OtherScripts/ESP.lua'))()
+        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/ESP.lua'))()
         ESPP.BoxType = "Corner Box Esp"
     end
     ESPP.Enabled = Value
@@ -1775,7 +1775,6 @@ for theme, color in pairs(Themes) do
 	end)
 end
 
-
 Credits:addButton("Pethicial", function()
 end)
 
@@ -1856,15 +1855,14 @@ Webhook:addToggle("Spam Webhook", false, function(Value) -- I am not liable for 
     ChangeSpamWebhook = Value
     while ChangeSpamWebhook and task.wait() do
         function ChangeSpamWebhookFix()
-        local response = request({
-            Url = ChangeWebhookUrl,
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
-        })
-    end
-    wait()
-    pcall(ChangeSpamWebhookFix)
+            local response = request({
+                Url = ChangeWebhookUrl,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
+            })
+        end
+        pcall(ChangeSpamWebhookFix)
     end
 end)
 
