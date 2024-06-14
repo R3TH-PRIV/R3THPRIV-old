@@ -1556,7 +1556,7 @@ do
 		
 		return colorpicker
 	end
-	
+
     function section:addSlider(title, default, min, max, callback)
         local slider = utility:Create("ImageButton", {
             Name = "Slider",
@@ -2269,5 +2269,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 2")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 3")
 return library
