@@ -1656,28 +1656,40 @@ do
         local value = default or min
         local dragging
         
-        local function updateSliderFromTouch(touchPosition)
-            local relativeX = touchPosition.X - circle.AbsolutePosition.X
-            local newValue = min + ((relativeX / circle.AbsoluteSize.X) * (max - min))
+        local callback = function(value)
+            if callback then
+                callback(value, function(...)
+                    self:updateSlider(slider, ...)
+                end)
+            end
+        end
+        
+        utility:DraggingEnded(function()
+            dragging = false
+        end)
+    
+        local function updateSlider()
+            utility:Tween(circle, {ImageTransparency = 0}, 0.1)
             
-            newValue = math.clamp(newValue, min, max)
-            
-            value = self:updateSlider(slider, nil, newValue, min, max)
+            value = self:updateSlider(slider, nil, nil, min, max, value)
             callback(value)
+            
+            utility:Wait()
+            
+            wait(0.5)
+            utility:Tween(circle, {ImageTransparency = 1}, 0.2)
         end
     
         slider.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 dragging = true
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    updateSliderFromTouch(input.Position)
-                end
+                updateSlider()
             end
         end)
     
         slider.InputChanged:Connect(function(input)
-            if dragging and input.UserInputType == Enum.UserInputType.Touch then
-                updateSliderFromTouch(input.Position)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                updateSlider()
             end
         end)
     
@@ -2257,5 +2269,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by ")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
 return library
