@@ -1006,7 +1006,7 @@ do
 		
 		return keybind
 	end
-	
+
 	function section:addColorPicker(title, default, callback)
 		local colorpicker = utility:Create("ImageButton", {
 			Name = "ColorPicker",
@@ -1365,7 +1365,7 @@ do
 			end
 		end
 		
-		for i, container in pairs(tab.Container.Inputs:GetChildren()) do -- i know what you are about to say, so shut up
+		for i, container in pairs(tab.Container.Inputs:GetChildren()) do
 			if container:IsA("ImageLabel") then
 				local textbox = container.Textbox
 				local focused
@@ -1400,76 +1400,50 @@ do
 			end
 		end
 		
-        canvas.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                draggingCanvas = true
-                
-                repeat
-                    local x, y
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        x, y = mouse.X, mouse.Y
-                    elseif input.UserInputType == Enum.UserInputType.Touch then
-                        local touch = input.Touch
-                        if touch then
-                            x, y = touch.Position.X, touch.Position.Y
-                        end
-                    end
-                    
-                    if x and y then
-                        sat = math.clamp((x - canvasPosition.X) / canvasSize.X, 0, 1)
-                        brightness = 1 - math.clamp((y - canvasPosition.Y) / canvasSize.Y, 0, 1)
-                        
-                        color3 = Color3.fromHSV(hue, sat, brightness)
-                        
-                        for i, prop in pairs({"r", "g", "b"}) do
-                            rgb[prop] = color3[prop:upper()] * 255
-                        end
-                        
-                        self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
-                        utility:Tween(canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness, 0)}, 0.1) -- overwrite
-                        
-                        callback(color3)
-                    end
-                    utility:Wait()
-                until not draggingCanvas
-            end
-        end)
-
-        color.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                draggingColor = true
-                
-                repeat
-                    local x
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        x = mouse.X
-                    elseif input.UserInputType == Enum.UserInputType.Touch then
-                        if input.UserInputType == Enum.UserInputType.Touch then
-                            local touch = input.Touch
-                            if touch then
-                                x = touch.Position.X
-                            end
-                        end
-                    end
-                    
-                    if x then
-                        hue = 1 - math.clamp(1 - ((x - colorPosition.X) / colorSize.X), 0, 1)
-                        color3 = Color3.fromHSV(hue, sat, brightness)
-                        
-                        for i, prop in pairs({"r", "g", "b"}) do
-                            rgb[prop] = color3[prop:upper()] * 255
-                        end
-                        
-                        local x = hue -- hue is updated
-                        self:updateColorPicker(colorpicker, nil, {hue, sat, brightness})
-                        utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(x, 0, 0, 0)}, 0.1)
-                        
-                        callback(color3)
-                    end
-                    utility:Wait()
-                until not draggingColor
-            end
-        end)
+		canvas.MouseButton1Down:Connect(function()
+			draggingCanvas = true
+			
+			while draggingCanvas do
+				
+				local x, y = mouse.X, mouse.Y
+				
+				sat = math.clamp((x - canvasPosition.X) / canvasSize.X, 0, 1)
+				brightness = 1 - math.clamp((y - canvasPosition.Y) / canvasSize.Y, 0, 1)
+				
+				color3 = Color3.fromHSV(hue, sat, brightness)
+				
+				for i, prop in pairs({"r", "g", "b"}) do
+					rgb[prop] = color3[prop:upper()] * 255
+				end
+				
+				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness})
+				utility:Tween(canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness, 0)}, 0.1) -- overwrite
+				
+				callback(color3)
+				utility:Wait()
+			end
+		end)
+		
+		color.MouseButton1Down:Connect(function()
+			draggingColor = true
+			
+			while draggingColor do
+			
+				hue = 1 - math.clamp(1 - ((mouse.X - colorPosition.X) / colorSize.X), 0, 1)
+				color3 = Color3.fromHSV(hue, sat, brightness)
+				
+				for i, prop in pairs({"r", "g", "b"}) do
+					rgb[prop] = color3[prop:upper()] * 255
+				end
+				
+				local x = hue -- hue is updated
+				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness})
+				utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(x, 0, 0, 0)}, 0.1) -- overwrite
+				
+				callback(color3)
+				utility:Wait()
+			end
+		end)
 		
 		-- click events
 		local button = colorpicker.Button
@@ -1542,14 +1516,14 @@ do
 			animate(not toggle)
 		end
 		
-		button.MouseButton1Click:Connect(toggleTab)
-		colorpicker.MouseButton1Click:Connect(toggleTab)
+		button.MouseButton1Down:Connect(toggleTab)
+		colorpicker.MouseButton1Down:Connect(toggleTab)
 		
-		tab.Container.Button.MouseButton1Click:Connect(function()
+		tab.Container.Button.MouseButton1Down:Connect(function()
 			animate()
 		end)
 		
-		tab.Close.MouseButton1Click:Connect(function()
+		tab.Close.MouseButton1Down:Connect(function()
 			self:updateColorPicker(colorpicker, nil, lastColor)
 			animate()
 		end)
@@ -2269,5 +2243,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 5")
 return library
