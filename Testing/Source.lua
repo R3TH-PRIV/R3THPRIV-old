@@ -1656,20 +1656,8 @@ do
         local value = default or min
         local dragging
         
-        local callback = function(value)
-            if callback then
-                callback(value, function(...)
-                    self:updateSlider(slider, ...)
-                end)
-            end
-        end
-        
-        utility:DraggingEnded(function()
-            dragging = false
-        end)
-    
         local function updateSliderFromTouch(touchPosition)
-            local relativeX = math.clamp(touchPosition.X - circle.AbsolutePosition.X, 0, circle.AbsoluteSize.X)
+            local relativeX = touchPosition.X - circle.AbsolutePosition.X
             local newValue = min + ((relativeX / circle.AbsoluteSize.X) * (max - min))
             
             newValue = math.clamp(newValue, min, max)
@@ -1678,36 +1666,18 @@ do
             callback(value)
         end
     
-        local function updateSlider()
-            utility:Tween(circle, {ImageTransparency = 0}, 0.1)
-            
-            value = self:updateSlider(slider, nil, nil, min, max, value)
-            callback(value)
-            
-            utility:Wait()
-            
-            wait(0.5)
-            utility:Tween(circle, {ImageTransparency = 1}, 0.2)
-        end
-    
         slider.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 dragging = true
                 if input.UserInputType == Enum.UserInputType.Touch then
                     updateSliderFromTouch(input.Position)
-                else
-                    updateSlider()
                 end
             end
         end)
     
         slider.InputChanged:Connect(function(input)
-            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                if input.UserInputType == Enum.UserInputType.Touch then
-                    updateSliderFromTouch(input.Position)
-                else
-                    updateSlider()
-                end
+            if dragging and input.UserInputType == Enum.UserInputType.Touch then
+                updateSliderFromTouch(input.Position)
             end
         end)
     
@@ -2287,5 +2257,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by ")
 return library
