@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
-print("[ " .. Key .. " ]: Abyss World loading...")
+print("[ " .. Key .. " ]: Blade Ball loading...")
 
 local TimeStart = tick()
 
