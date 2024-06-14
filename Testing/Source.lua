@@ -1515,8 +1515,15 @@ do
 		local toggleTab = function()
 			animate(not toggle)
 		end
-		
-		button.MouseButton1Down:Connect(toggleTab)
+
+		local mobileInput = game:GetService("TouchInputService").TouchEnabled
+
+		if mobileInput then
+			button.MouseButton1Down:Connect(toggleTab)
+		else
+			button.MouseButton1Click:Connect(toggleTab)
+		end
+
 		colorpicker.MouseButton1Down:Connect(toggleTab)
 		
 		tab.Container.Button.MouseButton1Down:Connect(function()
@@ -2243,5 +2250,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 5")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 6")
 return library
