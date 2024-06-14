@@ -1557,158 +1557,162 @@ do
 		return colorpicker
 	end
 	
-	function section:addSlider(title, default, min, max, callback)
-		local slider = utility:Create("ImageButton", {
-			Name = "Slider",
-			Parent = self.container,
-			BackgroundTransparency = 1,
-			BorderSizePixel = 0,
-			Position = UDim2.new(0.292817682, 0, 0.299145311, 0),
-			Size = UDim2.new(1, 0, 0, 50),
-			ZIndex = 2,
-			Image = "rbxassetid://5028857472",
-			ImageColor3 = themes.DarkContrast,
-			ScaleType = Enum.ScaleType.Slice,
-			SliceCenter = Rect.new(2, 2, 298, 298)
-		}, {
-			utility:Create("TextLabel", {
-				Name = "Title",
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0, 6),
-				Size = UDim2.new(0.5, 0, 0, 16),
-				ZIndex = 3,
-				Font = Enum.Font.Gotham,
-				Text = title,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextTransparency = 0.10000000149012,
-				TextXAlignment = Enum.TextXAlignment.Left
-			}),
-			utility:Create("TextBox", {
-				Name = "TextBox",
-				BackgroundTransparency = 1,
-				BorderSizePixel = 0,
-				Position = UDim2.new(1, -30, 0, 6),
-				Size = UDim2.new(0, 20, 0, 16),
-				ZIndex = 3,
-				Font = Enum.Font.GothamSemibold,
-				Text = default or min,
-				TextColor3 = themes.TextColor,
-				TextSize = 12,
-				TextXAlignment = Enum.TextXAlignment.Right
-			}),
-			utility:Create("TextLabel", {
-				Name = "Slider",
-				BackgroundTransparency = 1,
-				Position = UDim2.new(0, 10, 0, 28),
-				Size = UDim2.new(1, -20, 0, 16),
-				ZIndex = 3,
-				Text = "",
-			}, {
-				utility:Create("ImageLabel", {
-					Name = "Bar",
-					AnchorPoint = Vector2.new(0, 0.5),
-					BackgroundTransparency = 1,
-					Position = UDim2.new(0, 0, 0.5, 0),
-					Size = UDim2.new(1, 0, 0, 4),
-					ZIndex = 3,
-					Image = "rbxassetid://5028857472",
-					ImageColor3 = themes.LightContrast,
-					ScaleType = Enum.ScaleType.Slice,
-					SliceCenter = Rect.new(2, 2, 298, 298)
-				}, {
-					utility:Create("ImageLabel", {
-						Name = "Fill",
-						BackgroundTransparency = 1,
-						Size = UDim2.new(0.8, 0, 1, 0),
-						ZIndex = 3,
-						Image = "rbxassetid://5028857472",
-						ImageColor3 = themes.TextColor,
-						ScaleType = Enum.ScaleType.Slice,
-						SliceCenter = Rect.new(2, 2, 298, 298)
-					}, {
-						utility:Create("ImageLabel", {
-							Name = "Circle",
-							AnchorPoint = Vector2.new(0.5, 0.5),
-							BackgroundTransparency = 1,
-							ImageTransparency = 1.000,
-							ImageColor3 = themes.TextColor,
-							Position = UDim2.new(1, 0, 0.5, 0),
-							Size = UDim2.new(0, 10, 0, 10),
-							ZIndex = 3,
-							Image = "rbxassetid://4608020054"
-						})
-					})
-				})
-			})
-		})
-		
-		table.insert(self.modules, slider)
-		--self:Resize()
-		
-		local allowed = {
-			[""] = true,
-			["-"] = true
-		}
-		
-		local textbox = slider.TextBox
-		local circle = slider.Slider.Bar.Fill.Circle
-		
-		local value = default or min
-		local dragging, last
-		
-		local callback = function(value)
-			if callback then
-				callback(value, function(...)
-					self:updateSlider(slider, ...)
-				end)
-			end
-		end
-		
-		self:updateSlider(slider, nil, value, min, max)
-		
-		utility:DraggingEnded(function()
-			dragging = false
-		end)
-
+    function section:addSlider(title, default, min, max, callback)
+        local slider = utility:Create("ImageButton", {
+            Name = "Slider",
+            Parent = self.container,
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Position = UDim2.new(0.292817682, 0, 0.299145311, 0),
+            Size = UDim2.new(1, 0, 0, 50),
+            ZIndex = 2,
+            Image = "rbxassetid://5028857472",
+            ImageColor3 = themes.DarkContrast,
+            ScaleType = Enum.ScaleType.Slice,
+            SliceCenter = Rect.new(2, 2, 298, 298)
+        }, {
+            utility:Create("TextLabel", {
+                Name = "Title",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0, 6),
+                Size = UDim2.new(0.5, 0, 0, 16),
+                ZIndex = 3,
+                Font = Enum.Font.Gotham,
+                Text = title,
+                TextColor3 = themes.TextColor,
+                TextSize = 12,
+                TextTransparency = 0.10000000149012,
+                TextXAlignment = Enum.TextXAlignment.Left
+            }),
+            utility:Create("TextBox", {
+                Name = "TextBox",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Position = UDim2.new(1, -30, 0, 6),
+                Size = UDim2.new(0, 20, 0, 16),
+                ZIndex = 3,
+                Font = Enum.Font.GothamSemibold,
+                Text = default or min,
+                TextColor3 = themes.TextColor,
+                TextSize = 12,
+                TextXAlignment = Enum.TextXAlignment.Right
+            }),
+            utility:Create("TextLabel", {
+                Name = "Slider",
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0, 28),
+                Size = UDim2.new(1, -20, 0, 16),
+                ZIndex = 3,
+                Text = "",
+            }, {
+                utility:Create("ImageLabel", {
+                    Name = "Bar",
+                    AnchorPoint = Vector2.new(0, 0.5),
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0, 0, 0.5, 0),
+                    Size = UDim2.new(1, 0, 0, 4),
+                    ZIndex = 3,
+                    Image = "rbxassetid://5028857472",
+                    ImageColor3 = themes.LightContrast,
+                    ScaleType = Enum.ScaleType.Slice,
+                    SliceCenter = Rect.new(2, 2, 298, 298)
+                }, {
+                    utility:Create("ImageLabel", {
+                        Name = "Fill",
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(0.8, 0, 1, 0),
+                        ZIndex = 3,
+                        Image = "rbxassetid://5028857472",
+                        ImageColor3 = themes.TextColor,
+                        ScaleType = Enum.ScaleType.Slice,
+                        SliceCenter = Rect.new(2, 2, 298, 298)
+                    }, {
+                        utility:Create("ImageLabel", {
+                            Name = "Circle",
+                            AnchorPoint = Vector2.new(0.5, 0.5),
+                            BackgroundTransparency = 1,
+                            ImageTransparency = 1.000,
+                            ImageColor3 = themes.TextColor,
+                            Position = UDim2.new(1, 0, 0.5, 0),
+                            Size = UDim2.new(0, 10, 0, 10),
+                            ZIndex = 3,
+                            Image = "rbxassetid://4608020054"
+                        })
+                    })
+                })
+            })
+        })
+        
+        table.insert(self.modules, slider)
+        
+        local allowed = {
+            [""] = true,
+            ["-"] = true
+        }
+        
+        local textbox = slider.TextBox
+        local circle = slider.Slider.Bar.Fill.Circle
+        
+        local value = default or min
+        local dragging
+        
+        local callback = function(value)
+            if callback then
+                callback(value, function(...)
+                    self:updateSlider(slider, ...)
+                end)
+            end
+        end
+        
+        utility:DraggingEnded(function()
+            dragging = false
+        end)
+    
+        local function updateSlider()
+            utility:Tween(circle, {ImageTransparency = 0}, 0.1)
+            
+            value = self:updateSlider(slider, nil, nil, min, max, value)
+            callback(value)
+            
+            utility:Wait()
+            
+            wait(0.5)
+            utility:Tween(circle, {ImageTransparency = 1}, 0.2)
+        end
+    
         slider.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 dragging = true
-                
-                repeat
-                    utility:Tween(circle, {ImageTransparency = 0}, 0.1)
-                    
-                    value = self:updateSlider(slider, nil, nil, min, max, value)
-                    callback(value)
-                    
-                    utility:Wait()
-                until not dragging
-                
-                wait(0.5)
-                utility:Tween(circle, {ImageTransparency = 1}, 0.2)
+                updateSlider()
             end
         end)
-
-		textbox.FocusLost:Connect(function()
-			if not tonumber(textbox.Text) then
-				value = self:updateSlider(slider, nil, default or min, min, max)
-				callback(value)
-			end
-		end)
-		
-		textbox:GetPropertyChangedSignal("Text"):Connect(function()
-			local text = textbox.Text
-			
-			if not allowed[text] and not tonumber(text) then
-				textbox.Text = text:sub(1, #text - 1)
-			elseif not allowed[text] then	
-				value = self:updateSlider(slider, nil, tonumber(text) or value, min, max)
-				callback(value)
-			end
-		end)
-		
-		return slider
-	end
+    
+        slider.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                updateSlider()
+            end
+        end)
+    
+        textbox.FocusLost:Connect(function()
+            if not tonumber(textbox.Text) then
+                value = self:updateSlider(slider, nil, default or min, min, max)
+                callback(value)
+            end
+        end)
+        
+        textbox:GetPropertyChangedSignal("Text"):Connect(function()
+            local text = textbox.Text
+            
+            if not allowed[text] and not tonumber(text) then
+                textbox.Text = text:sub(1, #text - 1)
+            elseif not allowed[text] then 
+                value = self:updateSlider(slider, nil, tonumber(text) or value, min, max)
+                callback(value)
+            end
+        end)
+        
+        return slider
+    end
 	
 	function section:addDropdown(title, list, callback)
 		local dropdown = utility:Create("Frame", {
@@ -2265,5 +2269,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by ")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 2")
 return library
