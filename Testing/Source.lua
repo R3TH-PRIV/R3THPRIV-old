@@ -1,5 +1,8 @@
 -- init
-print("yeah")
+if Key == nil then
+    getgenv().Key = "R3TH PRIV"
+end
+
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -156,65 +159,45 @@ do
 		return key
 	end
 	
-	function utility:DraggingEnabled(frame, parent)
+    function utility:DraggingEnabled(frame, parent)
+        parent = parent or frame
+        
+        local dragging = false
+        local dragInput, dragStart, startPos
+        
+        frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                startPos = parent.Position
+                dragStart = input.Position
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+    
+        frame.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                dragInput = input
+            end
+        end)
+    
+        game:GetService("UserInputService").InputChanged:Connect(function(input)
+            if input == dragInput and dragging then
+                local delta = input.Position - dragStart
+                parent.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            end
+        end)
+    end
+
 	
-		parent = parent or frame
-		
-		-- stolen from wally or kiriot, kek
-		local dragging = false
-		local dragInput, mousePos, framePos
-
-		frame.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				dragging = true
-				mousePos = input.Position
-				framePos = parent.Position
-				
-				input.Changed:Connect(function()
-					if input.UserInputState == Enum.UserInputState.End then
-						dragging = false
-					end
-				end)
-			end
-		end)
-
-		frame.InputChanged:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement then
-				dragInput = input
-			end
-		end)
-
-		input.InputChanged:Connect(function(input)
-			if input == dragInput and dragging then
-				local delta = input.Position - mousePos
-				parent.Position  = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X, framePos.Y.Scale, framePos.Y.Offset + delta.Y)
-			end
-		end)
-
+	function utility:DraggingEnded(callback)
+		table.insert(self.ended, callback)
 	end
 	
-    local function onTouchStart(input)
-        dragging = true
-        
-        while dragging do
-            utility:Tween(circle, {ImageTransparency = 0}, 0.1)
-            
-            value = self:updateSlider(slider, nil, nil, min, max, value)
-            callback(value)
-            
-            utility:Wait()
-        end
-        
-        wait(0.5)
-        utility:Tween(circle, {ImageTransparency = 1}, 0.2)
-    end
-    
-    local function onTouchEnd(input)
-        dragging = false
-    end
-    
-    slider.TouchStarted:Connect(onTouchStart)
-    slider.TouchEnded:Connect(onTouchEnd)
 end
 
 -- classes
@@ -1417,50 +1400,76 @@ do
 			end
 		end
 		
-		canvas.MouseButton1Down:Connect(function()
-			draggingCanvas = true
-			
-			while draggingCanvas do
-				
-				local x, y = mouse.X, mouse.Y
-				
-				sat = math.clamp((x - canvasPosition.X) / canvasSize.X, 0, 1)
-				brightness = 1 - math.clamp((y - canvasPosition.Y) / canvasSize.Y, 0, 1)
-				
-				color3 = Color3.fromHSV(hue, sat, brightness)
-				
-				for i, prop in pairs({"r", "g", "b"}) do
-					rgb[prop] = color3[prop:upper()] * 255
-				end
-				
-				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
-				utility:Tween(canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness, 0)}, 0.1) -- overwrite
-				
-				callback(color3)
-				utility:Wait()
-			end
-		end)
-		
-		color.MouseButton1Down:Connect(function()
-			draggingColor = true
-			
-			while draggingColor do
-			
-				hue = 1 - math.clamp(1 - ((mouse.X - colorPosition.X) / colorSize.X), 0, 1)
-				color3 = Color3.fromHSV(hue, sat, brightness)
-				
-				for i, prop in pairs({"r", "g", "b"}) do
-					rgb[prop] = color3[prop:upper()] * 255
-				end
-				
-				local x = hue -- hue is updated
-				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
-				utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(x, 0, 0, 0)}, 0.1) -- overwrite
-				
-				callback(color3)
-				utility:Wait()
-			end
-		end)
+        canvas.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                draggingCanvas = true
+                
+                repeat
+                    local x, y
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        x, y = mouse.X, mouse.Y
+                    elseif input.UserInputType == Enum.UserInputType.Touch then
+                        local touch = input.Touch
+                        if touch then
+                            x, y = touch.Position.X, touch.Position.Y
+                        end
+                    end
+                    
+                    if x and y then
+                        sat = math.clamp((x - canvasPosition.X) / canvasSize.X, 0, 1)
+                        brightness = 1 - math.clamp((y - canvasPosition.Y) / canvasSize.Y, 0, 1)
+                        
+                        color3 = Color3.fromHSV(hue, sat, brightness)
+                        
+                        for i, prop in pairs({"r", "g", "b"}) do
+                            rgb[prop] = color3[prop:upper()] * 255
+                        end
+                        
+                        self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
+                        utility:Tween(canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness, 0)}, 0.1) -- overwrite
+                        
+                        callback(color3)
+                    end
+                    utility:Wait()
+                until not draggingCanvas
+            end
+        end)
+
+        color.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                draggingColor = true
+                
+                repeat
+                    local x
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        x = mouse.X
+                    elseif input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.Touch then
+                            local touch = input.Touch
+                            if touch then
+                                x = touch.Position.X
+                            end
+                        end
+                    end
+                    
+                    if x then
+                        hue = 1 - math.clamp(1 - ((x - colorPosition.X) / colorSize.X), 0, 1)
+                        color3 = Color3.fromHSV(hue, sat, brightness)
+                        
+                        for i, prop in pairs({"r", "g", "b"}) do
+                            rgb[prop] = color3[prop:upper()] * 255
+                        end
+                        
+                        local x = hue -- hue is updated
+                        self:updateColorPicker(colorpicker, nil, {hue, sat, brightness})
+                        utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(x, 0, 0, 0)}, 0.1)
+                        
+                        callback(color3)
+                    end
+                    utility:Wait()
+                until not draggingColor
+            end
+        end)
 		
 		-- click events
 		local button = colorpicker.Button
@@ -1662,22 +1671,24 @@ do
 			dragging = false
 		end)
 
-		slider.MouseButton1Down:Connect(function(input)
-			dragging = true
-			
-			while dragging do
-				utility:Tween(circle, {ImageTransparency = 0}, 0.1)
-				
-				value = self:updateSlider(slider, nil, nil, min, max, value)
-				callback(value)
-				
-				utility:Wait()
-			end
-			
-			wait(0.5)
-			utility:Tween(circle, {ImageTransparency = 1}, 0.2)
-		end)
-		
+        slider.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                
+                repeat
+                    utility:Tween(circle, {ImageTransparency = 0}, 0.1)
+                    
+                    value = self:updateSlider(slider, nil, nil, min, max, value)
+                    callback(value)
+                    
+                    utility:Wait()
+                until not dragging
+                
+                wait(0.5)
+                utility:Tween(circle, {ImageTransparency = 1}, 0.2)
+            end
+        end)
+
 		textbox.FocusLost:Connect(function()
 			if not tonumber(textbox.Text) then
 				value = self:updateSlider(slider, nil, default or min, min, max)
@@ -2147,7 +2158,7 @@ do
 		end
 		
 		local bar = slider.Slider.Bar
-		local percent = (input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X
+		local percent = (mouse.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X
 		
 		if value then -- support negative ranges
 			percent = (value - min) / (max - min)
@@ -2254,5 +2265,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by ")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by ")
 return library
