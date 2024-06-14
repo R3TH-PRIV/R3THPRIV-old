@@ -1,4 +1,8 @@
 -- init
+if Key == nil then
+    getgenv().Key = "R3TH PRIV"
+end
+
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -2235,5 +2239,5 @@ do
 	end
 end
 
-print("[ R3TH PRIV ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
 return library
