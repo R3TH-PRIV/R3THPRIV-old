@@ -1365,7 +1365,7 @@ do
 			end
 		end
 		
-		for i, container in pairs(tab.Container.Inputs:GetChildren()) do
+		for i, container in pairs(tab.Container.Inputs:GetChildren()) do -- i know what you are about to say, so shut up
 			if container:IsA("ImageLabel") then
 				local textbox = container.Textbox
 				local focused
@@ -1416,7 +1416,7 @@ do
 					rgb[prop] = color3[prop:upper()] * 255
 				end
 				
-				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness})
+				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
 				utility:Tween(canvas.Cursor, {Position = UDim2.new(sat, 0, 1 - brightness, 0)}, 0.1) -- overwrite
 				
 				callback(color3)
@@ -1437,7 +1437,7 @@ do
 				end
 				
 				local x = hue -- hue is updated
-				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness})
+				self:updateColorPicker(colorpicker, nil, {hue, sat, brightness}) -- roblox is literally retarded
 				utility:Tween(tab.Container.Color.Select, {Position = UDim2.new(x, 0, 0, 0)}, 0.1) -- overwrite
 				
 				callback(color3)
@@ -1512,12 +1512,22 @@ do
 			debounce = false
 		end
 		
-        print("Color picker added successfully")
-    
-        colorpicker.InputBegan:Connect(function(input)
-            print("Input began on color picker")
-        end)
-
+		local toggleTab = function()
+			animate(not toggle)
+		end
+		
+		button.MouseButton1Click:Connect(toggleTab)
+		colorpicker.MouseButton1Click:Connect(toggleTab)
+		
+		tab.Container.Button.MouseButton1Click:Connect(function()
+			animate()
+		end)
+		
+		tab.Close.MouseButton1Click:Connect(function()
+			self:updateColorPicker(colorpicker, nil, lastColor)
+			animate()
+		end)
+		
 		return colorpicker
 	end
 
