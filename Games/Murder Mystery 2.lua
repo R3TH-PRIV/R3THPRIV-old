@@ -7,8 +7,6 @@
         pethicial
 ]]
 
--- this script isnt fully optimized yet and lacks a lot of options but does work on every executor currently
-
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
@@ -1603,7 +1601,7 @@ end
 ESP:addToggle("Enable ESP", false, function(Value)
     if EnableESPFirst ~= true then -- Improves performance if you're not using ESP.
         EnableESPFirst = true
-        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-V2/main/OtherScripts/ESP.lua'))()
+        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/ESP.lua'))()
         ESPP.BoxType = "Corner Box Esp"
     end
     ESPP.Enabled = Value
