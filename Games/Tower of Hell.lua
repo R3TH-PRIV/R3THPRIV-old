@@ -32,7 +32,7 @@ local NotificationHolder = loadstring(game:HttpGet("https://raw.githubuserconten
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
-local R3TH = library.new("R3TH PRIV | .gg/pethicial")
+local R3TH = library.new(Key .. " | .gg/pethicial")
 
 local Themes = {
     Background = Color3.fromRGB(24, 24, 24),
