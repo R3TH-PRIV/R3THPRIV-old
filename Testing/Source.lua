@@ -2141,6 +2141,7 @@ do
         end
         
         local entries = 0
+        local selectedItems = {}  -- Track selected items
         
         utility:Pop(dropdown.Search, 10)
         
@@ -2151,6 +2152,12 @@ do
         end
             
         for i, value in pairs(list or {}) do
+            local isSelected = false
+            
+            if table.find(selectedItems, value) then
+                isSelected = true
+            end
+            
             local frame = utility:Create("Frame", {
                 Parent = dropdown.List.Frame,
                 BackgroundTransparency = 1,
@@ -2158,6 +2165,7 @@ do
                 ZIndex = 2
             }, {
                 utility:Create("ImageButton", {
+                    Name = "Tick",
                     BackgroundTransparency = 1,
                     BorderSizePixel = 0,
                     Size = UDim2.new(0, 18, 0, 18),
@@ -2166,7 +2174,7 @@ do
                     Image = "rbxassetid://5012539403",
                     ImageColor3 = themes.TextColor,
                     SliceCenter = Rect.new(2, 2, 298, 298),
-                    Visible = table.find(selectedItems, value) and true or false
+                    Visible = isSelected
                 }),
                 utility:Create("TextLabel", {
                     BackgroundTransparency = 1,
@@ -2183,7 +2191,8 @@ do
             })
             
             frame.MouseButton1Click:Connect(function()
-                if table.find(selectedItems, value) then
+                if isSelected then
+                    -- Deselect item
                     for i, v in ipairs(selectedItems) do
                         if v == value then
                             table.remove(selectedItems, i)
@@ -2191,11 +2200,12 @@ do
                         end
                     end
                 else
+                    -- Select item
                     table.insert(selectedItems, value)
                 end
                 
-                -- Update visibility of tick mark
-                frame.ImageButton.Visible = table.find(selectedItems, value) and true or false
+                -- Toggle visibility of tick mark
+                frame.Tick.Visible = not frame.Tick.Visible
                 
                 -- If callback is provided, invoke it with updated selected items
                 if callback then
@@ -2239,5 +2249,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 1")
 return library
