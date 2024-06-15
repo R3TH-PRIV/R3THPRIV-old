@@ -10,6 +10,10 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
+if Key == nil then
+    Key = "R3TH PRIV"
+end
+
 print("[ " .. Key .. " ]: THIEF LIFE Simulator loading...")
 
 local TimeStart = tick()
@@ -1829,6 +1833,27 @@ Main:addToggle("Kill All Police", false, function(Value)
             local police = Workspace.Polices:FindFirstChild(policeType)
             if police then
                 ReplicatedStorage.Events.Weapon.RequestHit:FireServer(police)
+            end
+        end
+    end
+end)
+
+Main:addToggle("Kill All NPCs", false, function(Value)
+    ChangeKillAllNPCs = Value
+    while ChangeKillAllNPCs and task.wait() do
+        for _, v in ipairs(Workspace:GetChildren()) do
+            if v.Name == "OwnerLogic" then
+                local NPCs = {
+                    v:FindFirstChild("Home owner"),
+                    v:FindFirstChild("Sailor"),
+                    v:FindFirstChild("Guard"),
+                    v:FindFirstChild("WP member")
+                }
+                for _, NPC in ipairs(NPCs) do
+                    if NPC then
+                        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(NPC)
+                    end
+                end
             end
         end
     end
