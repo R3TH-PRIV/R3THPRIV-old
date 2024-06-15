@@ -861,6 +861,7 @@ function FreeCameraWrap()
         local enabled = false
     
         function ToggleFreecam()
+            if DeviceSupport() then return end
             if enabled then
                 StopFreecam()
             else
