@@ -2190,6 +2190,7 @@ do
                 })
             })
             
+            -- Add event handler to the entire frame
             frame.MouseButton1Click:Connect(function()
                 if isSelected then
                     -- Deselect item
@@ -2249,5 +2250,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial test 1")
+print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
 return library
