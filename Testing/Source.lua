@@ -1815,11 +1815,11 @@ do
 	end
 
     function section:addMultiDropdown(title, list, callback)
-        local multidropdown = utility:Create("Frame", {
+        local dropdown = utility:Create("Frame", {
             Name = "MultiDropdown",
             Parent = self.container,
             BackgroundTransparency = 1,
-            Size = UDim2.new(1, 0, 0, 30),
+            Size = UDim2.new(1, 0, 0, 300),  -- Adjust height as needed
             ClipsDescendants = true
         }, {
             utility:Create("UIListLayout", {
@@ -1888,10 +1888,9 @@ do
                     BorderSizePixel = 0,
                     Position = UDim2.new(0, 4, 0, 4),
                     Size = UDim2.new(1, -8, 1, -8),
-                    CanvasPosition = Vector2.new(0, 28),
-                    CanvasSize = UDim2.new(0, 0, 0, 120),
+                    CanvasSize = UDim2.new(0, 0, 0, 0),  -- Updated dynamically
                     ZIndex = 2,
-                    ScrollBarThickness = 3,
+                    ScrollBarThickness = 6,  -- Increase for visibility
                     ScrollBarImageColor3 = themes.DarkContrast
                 }, {
                     utility:Create("UIListLayout", {
@@ -1902,22 +1901,22 @@ do
             })
         })
         
-        table.insert(self.modules, multidropdown)
-        --self:Resize()
+        table.insert(self.modules, dropdown)
         
-        local search = multidropdown.Search
+        local search = dropdown.Search
         local selectedItems = {}
         
         list = list or {}
         
         local function updateSelectedItems()
-            multidropdown.SelectedItems:ClearAllChildren()
+            dropdown.SelectedItems:ClearAllChildren()
             
             for _, item in ipairs(selectedItems) do
                 local itemFrame = utility:Create("Frame", {
                     Name = "SelectedItem",
-                    Parent = multidropdown.SelectedItems,
-                    BackgroundTransparency = 1,
+                    Parent = dropdown.SelectedItems,
+                    BackgroundTransparency = 0,
+                    BackgroundColor3 = themes.TextColor,  -- Example background color
                     Size = UDim2.new(1, 0, 0, 20)
                 }, {
                     utility:Create("TextLabel", {
@@ -1928,7 +1927,7 @@ do
                         ZIndex = 3,
                         Font = Enum.Font.Gotham,
                         Text = item,
-                        TextColor3 = themes.TextColor,
+                        TextColor3 = themes.DarkContrast,
                         TextSize = 12,
                         TextXAlignment = Enum.TextXAlignment.Left
                     }),
@@ -1939,7 +1938,7 @@ do
                         Size = UDim2.new(0, 20, 0, 20),
                         ZIndex = 3,
                         Image = "rbxassetid://5012539403",
-                        ImageColor3 = themes.TextColor,
+                        ImageColor3 = themes.DarkContrast,
                         SliceCenter = Rect.new(2, 2, 298, 298)
                     })
                 })
@@ -1957,40 +1956,76 @@ do
             end
         end
         
+        local function updateDropdown(searchText)
+            local filteredList = {}
+            
+            if searchText then
+                for _, item in ipairs(list) do
+                    if item:lower():find(searchText:lower(), 1, true) then
+                        table.insert(filteredList, item)
+                    end
+                end
+            else
+                filteredList = list
+            end
+            
+            dropdown.List.Frame:ClearAllChildren()
+            
+            for _, item in ipairs(filteredList) do
+                local listItem = utility:Create("TextButton", {
+                    Name = item,
+                    Parent = dropdown.List.Frame,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 20),
+                    Font = Enum.Font.Gotham,
+                    Text = item,
+                    TextColor3 = themes.TextColor,
+                    TextSize = 12,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+                
+                listItem.MouseButton1Click:Connect(function()
+                    local isSelected = false
+                    for i, selItem in ipairs(selectedItems) do
+                        if selItem == item then
+                            isSelected = true
+                            table.remove(selectedItems, i)
+                            break
+                        end
+                    end
+                    
+                    if not isSelected then
+                        table.insert(selectedItems, item)
+                    end
+                    
+                    updateSelectedItems()
+                    callback(selectedItems)
+                end)
+            end
+            
+            local contentHeight = #filteredList * 24  -- Adjust based on item height and padding
+            dropdown.List.Frame.CanvasSize = UDim2.new(0, 0, 0, contentHeight)
+        end
+        
         search.Button.MouseButton1Click:Connect(function()
             if search.Button.Rotation == 0 then
-                self:updateDropdown(multidropdown, nil, list, callback)
+                updateDropdown(search.TextBox.Text)
+                search.Button.Rotation = 180
             else
-                self:updateDropdown(multidropdown, nil, nil, callback)
+                updateDropdown()
+                search.Button.Rotation = 0
             end
         end)
         
         search.TextBox.Focused:Connect(function()
-            if search.Button.Rotation == 0 then
-                self:updateDropdown(multidropdown, nil, list, callback)
-            end
+            updateDropdown(search.TextBox.Text)
         end)
         
         search.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-            local searchText = search.TextBox.Text:lower()
-            local filteredList = {}
-            
-            for _, item in ipairs(list) do
-                if item:lower():find(searchText, 1, true) then
-                    table.insert(filteredList, item)
-                end
-            end
-            
-            self:updateDropdown(multidropdown, searchText, filteredList, callback)
+            updateDropdown(search.TextBox.Text)
         end)
         
-        multidropdown:GetPropertyChangedSignal("Size"):Connect(function()
-            --self:Resize()
-        end)
-        
-        self:updateDropdown(multidropdown, nil, list, callback)
-        
-        return multidropdown
+        return dropdown
     end
 
 	function section:addParagraph(title, text)
