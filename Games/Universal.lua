@@ -15,7 +15,7 @@ print("[ " .. Key .. " ]: Universal loading...")
 local TimeStart = tick()
 
 if R3TH_Device == nil then -- if you want to directly execute the script
-    R3TH_Device = "PC" -- PC / Mobile
+    R3TH_Device = "Mobile" -- PC / Mobile
     R3TH_hookfunction = "Supported" -- Supported / Unsupported
     R3TH_getnamecallmethod = "Supported"
     R3TH_Drawingnew = "Supported"
@@ -1337,25 +1337,13 @@ Target:addButton("Teleport to Player", function()
     end
 end)
 
-if R3TH_Device == "Mobile" then
-    Target:addTextbox("Circle Radius 0 - 100", 10, function(Value, focusLost)
-        CircleRadiusSlider = Value
-    end)
-else
-    Target:addSlider("Circle Radius", 10, 0, 100, function(Value)
-        CircleRadiusSlider = Value
-    end)
-end
+Target:addSlider("Circle Radius", 10, 0, 100, function(Value)
+    CircleRadiusSlider = Value
+end)
 
-if R3TH_Device == "Mobile" then
-    Target:addTextbox("Circle Speed 0 - 50", 5, function(Value, focusLost)
-        CircleSpeedSlider = Value
-    end)
-else
-    Target:addSlider("Circle Speed", 5, 0, 50, function(Value)
-        CircleSpeedSlider = Value
-    end)
-end
+Target:addSlider("Circle Speed", 5, 0, 50, function(Value)
+    CircleSpeedSlider = Value
+end)
 
 Target:addToggle("Circle Player", false, function(Value)
     if ChangeTarget ~= "All" then
@@ -1390,15 +1378,9 @@ Aimbot:addToggle("Movement Prediction", false, function(Value)
     MovementPredicition = Value
 end)
 
-if R3TH_Device == "Mobile" then
-    Aimbot:addTextbox("Movement Prediction Strength 0 - 20", 1, function(Value, focusLost)
-        MovementPredictionStrength = Value
-    end)
-else
-    Aimbot:addSlider("Movement Prediction Strength", 1, 0, 20, function(Value)
-        MovementPredictionStrength = Value
-    end)
-end
+Aimbot:addSlider("Movement Prediction Strength", 1, 0, 20, function(Value)
+    MovementPredictionStrength = Value
+end)
 
 Aimbot:addToggle("Team Check", false, function(Value)
     TeamCheck = Value
@@ -1408,15 +1390,9 @@ Aimbot:addToggle("Show FOV Circle", false, function(Value)
     ShowFOV = Value
 end)
 
-if R3TH_Device == "Mobile" then
-    Aimbot:addTextbox("Field Of View 0 - 200", 25, function(Value, focusLost)
-        FOV_Size = Value
-    end)
-else
-    Aimbot:addSlider("Field Of View", 25, 0, 200, function(Value)
-        FOV_Size = Value
-    end)
-end
+Aimbot:addSlider("Field Of View", 25, 0, 200, function(Value)
+    FOV_Size = Value
+end)
 
 Aimbot:addToggle("Trigger Bot", false, function(Value)
     ChangeTriggerBot = Value
