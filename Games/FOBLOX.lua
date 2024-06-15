@@ -171,18 +171,10 @@ local function sendnotification(message, type)
         print("[ " .. Key .. " ]: " .. message)
     end
     if type == true or type == nil then
-        if R3TH_Device == "Mobile" then
-            StarterGui:SetCore("SendNotification", {
-                Title = Key;
-                Text = message;
-                Duration = 7;
-            })
-        else
-            Notification:Notify(
-                {Title = Key, Description = message},
-                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
-            )
-        end
+        Notification:Notify(
+            {Title = Key, Description = message},
+            {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
+        )
     end
 end
 
