@@ -168,18 +168,10 @@ local function sendnotification(message, type)
         print("[ " .. Key .. " ]: " .. message)
     end
     if type == true or type == nil then
-        if R3TH_Device == "Mobile" then
-            StarterGui:SetCore("SendNotification", {
-                Title = Key;
-                Text = message;
-                Duration = 7;
-            })
-        else
-            Notification:Notify(
-                {Title = Key, Description = message},
-                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
-            )
-        end
+        Notification:Notify(
+            {Title = Key, Description = message},
+            {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
+        )
     end
 end
 
@@ -399,6 +391,13 @@ end
 local function CancelSearch()
     sendnotification("Search canceled.", nil)
     SniperText.Text = "Join a player by just knowing what game their in!"
+end
+
+local function DeviceSupport()
+    if R3TH_Device == "Mobile" then
+        sendnotification("This only works on PC.")
+        return true
+    end
 end
 
 local function ExecutorSupport(Value)
@@ -889,6 +888,7 @@ function FreeCameraWrap()
         local enabled = false
     
         function ToggleFreecam()
+            if DeviceSupport() then return end
             if enabled then
                 StopFreecam()
             else
@@ -907,7 +907,7 @@ if R3TH_getnamecallmethod == "Supported" then
     setreadonly(mt,false)
     mt.__namecall = newcclosure(function(self,...)
         if getnamecallmethod() == 'FireServer' and tostring(self) == 'FallReport' then
-            if ChangeNoFallDamage == true then
+            if ChangeNoFallDamage then
                 return
             end
         end
@@ -938,6 +938,7 @@ local function JumpPowerFunction()
 end
 
 local function FlyFunction()
+    if DeviceSupport() then return end
     if ChangeFly then
         startFly()
     else
@@ -996,6 +997,7 @@ local function XrayFunction()
 end
 
 local function EnableAimbotFunction()
+    if DeviceSupport() then return end
     if AimbotEnabled then
         FOVCircle.Visible = OriginalShowFOV
         AimbotInputBegan = UserInputService.InputBegan:Connect(function(Input, GPE)
@@ -1244,37 +1246,19 @@ local function FlingFunction()
 end
 
 --------------------------------------------------------------------------------------UNIVERSAL----------------------------------------------------------------------------------------
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Walkspeed", DefaultWalkSpeed, function(Value, focusLost)
-        WalkSpeedSlider = Value
-        if ChangeWalkSpeed then
-            Humanoid.WalkSpeed = WalkSpeedSlider
-        end
-    end)
-else
-    Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
-        WalkSpeedSlider = Value
-        if ChangeWalkSpeed then
-            Humanoid.WalkSpeed = WalkSpeedSlider
-        end
-    end)
-end
+Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
+    WalkSpeedSlider = Value
+    if ChangeWalkSpeed then
+        Humanoid.WalkSpeed = WalkSpeedSlider
+    end
+end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Jumppower", DefaultJumpPower, function(Value, focusLost)
-        JumpPowerSlider = Value
-        if ChangeJumpPower then
-            Humanoid.WalkSpeed = JumpPowerSlider
-        end
-    end)
-else
-    Player:addSlider("Jumppower", DefaultJumpPower, 0, 500, function(Value)
-        JumpPowerSlider = Value
-        if ChangeJumpPower then
-            Humanoid.WalkSpeed = JumpPowerSlider
-        end
-    end)
-end
+Player:addSlider("Jumppower", DefaultJumpPower, 0, 500, function(Value)
+    JumpPowerSlider = Value
+    if ChangeJumpPower then
+        Humanoid.WalkSpeed = JumpPowerSlider
+    end
+end)
 
 Player:addToggle("Enable WalkSpeed", false, function(Value)
     ChangeWalkSpeed = Value
@@ -1286,15 +1270,9 @@ Player:addToggle("Enable JumpPower", false, function(Value)
     JumpPowerFunction()
 end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Fly Speed", 50, function(Value, focusLost)
-        FlySpeedSlider = Value
-    end)
-else
-    Player:addSlider("Fly Speed", 50, 0, 500, function(Value)
-        FlySpeedSlider = Value
-    end)
-end
+Player:addSlider("Fly Speed", 50, 0, 500, function(Value)
+    FlySpeedSlider = Value
+end)
 
 Player:addToggle("Enable Fly", false, function(Value)
     ChangeFly = Value
@@ -1306,21 +1284,12 @@ Player:addToggle("Noclip", false, function(Value)
     NoclipFunction()
 end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Hip Height", DefaultHipHeight, function(Value, focusLost)
-        HipHeightSlider = Value
-        if ChangeHipHeight then
-            Humanoid.HipHeight = HipHeightSlider
-        end
-    end)
-else
-    Player:addSlider("Hip Height", DefaultHipHeight, 0, 100, function(Value)
-        HipHeightSlider = Value
-        if ChangeHipHeight then
-            Humanoid.HipHeight = HipHeightSlider
-        end
-    end)
-end
+Player:addSlider("Hip Height", DefaultHipHeight, 0, 100, function(Value)
+    HipHeightSlider = Value
+    if ChangeHipHeight then
+        Humanoid.HipHeight = HipHeightSlider
+    end
+end)
 
 Player:addToggle("Enable Hip Height", false, function(Value)
     ChangeHipHeight = Value
@@ -1344,15 +1313,9 @@ Player:addToggle("Enable Reset", false, function(Value)
     StarterGui:SetCore("ResetButtonCallback", Value)
 end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("FOV", 70, function(FOV, focusLost)
-        Workspace.Camera.FieldOfView = FOV
-    end)
-else
-    Player:addSlider("FOV", 70, 0, 120, function(FOV)
-        Workspace.Camera.FieldOfView = FOV
-    end)
-end
+Player:addSlider("FOV", 70, 0, 120, function(FOV)
+    Workspace.Camera.FieldOfView = FOV
+end)
 
 ESP:addToggle("Enable ESP", false, function(Value)
     if EnableESPFirst ~= true then -- Improves performance if you're not using ESP.
@@ -1416,25 +1379,13 @@ Target:addButton("Teleport to Player", function()
     end
 end)
 
-if R3TH_Device == "Mobile" then
-    Target:addTextbox("Circle Radius 0 - 100", 10, function(Value, focusLost)
-        CircleRadiusSlider = Value
-    end)
-else
-    Target:addSlider("Circle Radius", 10, 0, 100, function(Value)
-        CircleRadiusSlider = Value
-    end)
-end
+Target:addSlider("Circle Radius", 10, 0, 100, function(Value)
+    CircleRadiusSlider = Value
+end)
 
-if R3TH_Device == "Mobile" then
-    Target:addTextbox("Circle Speed 0 - 50", 5, function(Value, focusLost)
-        CircleSpeedSlider = Value
-    end)
-else
-    Target:addSlider("Circle Speed", 5, 0, 50, function(Value)
-        CircleSpeedSlider = Value
-    end)
-end
+Target:addSlider("Circle Speed", 5, 0, 50, function(Value)
+    CircleSpeedSlider = Value
+end)
 
 Target:addToggle("Circle Player", false, function(Value)
     if ChangeTarget ~= "All" then
@@ -1469,15 +1420,9 @@ Aimbot:addToggle("Movement Prediction", false, function(Value)
     MovementPredicition = Value
 end)
 
-if R3TH_Device == "Mobile" then
-    Aimbot:addTextbox("Movement Prediction Strength 0 - 20", 1, function(Value, focusLost)
-        MovementPredictionStrength = Value
-    end)
-else
-    Aimbot:addSlider("Movement Prediction Strength", 1, 0, 20, function(Value)
-        MovementPredictionStrength = Value
-    end)
-end
+Aimbot:addSlider("Movement Prediction Strength", 1, 0, 20, function(Value)
+    MovementPredictionStrength = Value
+end)
 
 Aimbot:addToggle("Team Check", false, function(Value)
     TeamCheck = Value
@@ -1487,15 +1432,9 @@ Aimbot:addToggle("Show FOV Circle", false, function(Value)
     ShowFOV = Value
 end)
 
-if R3TH_Device == "Mobile" then
-    Aimbot:addTextbox("Field Of View 0 - 200", 25, function(Value, focusLost)
-        FOV_Size = Value
-    end)
-else
-    Aimbot:addSlider("Field Of View", 25, 0, 200, function(Value)
-        FOV_Size = Value
-    end)
-end
+Aimbot:addSlider("Field Of View", 25, 0, 200, function(Value)
+    FOV_Size = Value
+end)
 
 Aimbot:addToggle("Trigger Bot", false, function(Value)
     ChangeTriggerBot = Value
