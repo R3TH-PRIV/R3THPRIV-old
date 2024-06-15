@@ -1,5 +1,5 @@
 R3THPRIVV1_AbyssWorld = "Outdated"
-R3THPRIVV1_BladeBall = "Outdated"
+R3THPRIVV1_BladeBall = "Working"
 R3THPRIVV1_BloxyBingo = "Working"
 R3THPRIVV1_BulkedUp = "Working"
 R3THPRIVV1_FOBLOX = "Working"
