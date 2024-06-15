@@ -198,18 +198,10 @@ local function sendnotification(message, type)
         print("[ " .. Key .. " ]: " .. message)
     end
     if type == true or type == nil then
-        if R3TH_Device == "Mobile" then
-            StarterGui:SetCore("SendNotification", {
-                Title = Key;
-                Text = message;
-                Duration = 7;
-            })
-        else
-            Notification:Notify(
-                {Title = Key, Description = message},
-                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
-            )
-        end
+        Notification:Notify(
+            {Title = Key, Description = message},
+            {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
+        )
     end
 end
 
@@ -429,6 +421,13 @@ end
 local function CancelSearch()
     sendnotification("Search canceled.", nil)
     SniperText.Text = "Join a player by just knowing what game their in!"
+end
+
+function DeviceSupport()
+    if R3TH_Device == "Mobile" then
+        sendnotification("This only works on PC.")
+        return true
+    end
 end
 
 local function ExecutorSupport(Value)
@@ -1148,6 +1147,7 @@ function FreeCameraWrap()
         local enabled = false
     
         function ToggleFreecam()
+            if DeviceSupport() then return end
             if enabled then
                 StopFreecam()
             else
@@ -1182,6 +1182,7 @@ local function JumpPowerFunction()
 end
 
 local function FlyFunction()
+    if DeviceSupport() then return end
     if ChangeFly then
         startFly()
     else
@@ -1240,6 +1241,7 @@ local function XrayFunction()
 end
 
 local function EnableAimbotFunction()
+    if DeviceSupport() then return end
     if AimbotEnabled then
         FOVCircle.Visible = OriginalShowFOV
         AimbotInputBegan = UserInputService.InputBegan:Connect(function(Input, GPE)
@@ -1488,37 +1490,19 @@ local function FlingFunction()
 end
 
 --------------------------------------------------------------------------------------UNIVERSAL----------------------------------------------------------------------------------------
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Walkspeed", DefaultWalkSpeed, function(Value, focusLost)
-        WalkSpeedSlider = Value
-        if ChangeWalkSpeed then
-            Humanoid.WalkSpeed = WalkSpeedSlider
-        end
-    end)
-else
-    Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
-        WalkSpeedSlider = Value
-        if ChangeWalkSpeed then
-            Humanoid.WalkSpeed = WalkSpeedSlider
-        end
-    end)
-end
+Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
+    WalkSpeedSlider = Value
+    if ChangeWalkSpeed then
+        Humanoid.WalkSpeed = WalkSpeedSlider
+    end
+end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Jumppower", DefaultJumpPower, function(Value, focusLost)
-        JumpPowerSlider = Value
-        if ChangeJumpPower then
-            Humanoid.WalkSpeed = JumpPowerSlider
-        end
-    end)
-else
-    Player:addSlider("Jumppower", DefaultJumpPower, 0, 500, function(Value)
-        JumpPowerSlider = Value
-        if ChangeJumpPower then
-            Humanoid.WalkSpeed = JumpPowerSlider
-        end
-    end)
-end
+Player:addSlider("Jumppower", DefaultJumpPower, 0, 500, function(Value)
+    JumpPowerSlider = Value
+    if ChangeJumpPower then
+        Humanoid.WalkSpeed = JumpPowerSlider
+    end
+end)
 
 Player:addToggle("Enable WalkSpeed", false, function(Value)
     ChangeWalkSpeed = Value
@@ -1530,15 +1514,9 @@ Player:addToggle("Enable JumpPower", false, function(Value)
     JumpPowerFunction()
 end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Fly Speed", 50, function(Value, focusLost)
-        FlySpeedSlider = Value
-    end)
-else
-    Player:addSlider("Fly Speed", 50, 0, 500, function(Value)
-        FlySpeedSlider = Value
-    end)
-end
+Player:addSlider("Fly Speed", 50, 0, 500, function(Value)
+    FlySpeedSlider = Value
+end)
 
 Player:addToggle("Enable Fly", false, function(Value)
     ChangeFly = Value
@@ -1550,21 +1528,12 @@ Player:addToggle("Noclip", false, function(Value)
     NoclipFunction()
 end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("Hip Height", DefaultHipHeight, function(Value, focusLost)
-        HipHeightSlider = Value
-        if ChangeHipHeight then
-            Humanoid.HipHeight = HipHeightSlider
-        end
-    end)
-else
-    Player:addSlider("Hip Height", DefaultHipHeight, 0, 100, function(Value)
-        HipHeightSlider = Value
-        if ChangeHipHeight then
-            Humanoid.HipHeight = HipHeightSlider
-        end
-    end)
-end
+Player:addSlider("Hip Height", DefaultHipHeight, 0, 100, function(Value)
+    HipHeightSlider = Value
+    if ChangeHipHeight then
+        Humanoid.HipHeight = HipHeightSlider
+    end
+end)
 
 Player:addToggle("Enable Hip Height", false, function(Value)
     ChangeHipHeight = Value
@@ -1588,15 +1557,9 @@ Player:addToggle("Enable Reset", false, function(Value)
     StarterGui:SetCore("ResetButtonCallback", Value)
 end)
 
-if R3TH_Device == "Mobile" then
-    Player:addTextbox("FOV", 70, function(FOV, focusLost)
-        Workspace.Camera.FieldOfView = FOV
-    end)
-else
-    Player:addSlider("FOV", 70, 0, 120, function(FOV)
-        Workspace.Camera.FieldOfView = FOV
-    end)
-end
+Player:addSlider("FOV", 70, 0, 120, function(FOV)
+    Workspace.Camera.FieldOfView = FOV
+end)
 
 ESP:addToggle("Enable ESP", false, function(Value)
     if EnableESPFirst ~= true then -- Improves performance if you're not using ESP.
@@ -2068,35 +2031,23 @@ Murderer:addToggle("Knife Aura", false, function(Value)
     end
 end)
 
+Murderer:addSlider("Knife Range", 20, 5, 100, function(Value)
+    KnifeAuraSlider = Value
+end)
+
 Murderer:addButton("Fast Knife Throw", function()
     g = hookfunction(wait, function(seconds) return g(0) end)
     visualg = hookfunction(wait, function(seconds) return g(0) end)
 end)
-
-if R3TH_Device == "Mobile" then
-    Murderer:addTextbox("Knife Range", 20, function(Value, focusLost)
-        KnifeAuraSlider = Value
-    end)
-else
-    Murderer:addSlider("Knife Range", 20, 5, 100, function(Value)
-        KnifeAuraSlider = Value
-    end)
-end
 
 Sheriff:addToggle("Gun Silent Aim", false, function(Value)
     if ExecutorSupport("getnamecallmethod") then return end
     ChangeGunSilentAim = Value
 end)
 
-if R3TH_Device == "Mobile" then
-    Sheriff:addTextbox("Aim Accuracy 0 - 100", 25, function(Value, focusLost)
-       GunAccuracySlider = Value
-    end)
-else
-    Sheriff:addSlider("Aim Accuracy", 25, 0, 100, function(Value)
-        GunAccuracySlider = Value
-    end)
-end
+Sheriff:addSlider("Aim Accuracy", 25, 0, 100, function(Value)
+    GunAccuracySlider = Value
+end)
 
 Innocent:addToggle("2 Lifes", false, function(Value)
     Change2Lifes = Value
