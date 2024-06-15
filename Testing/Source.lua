@@ -1814,6 +1814,185 @@ do
 		return dropdown
 	end
 
+    function section:addMultiDropdown(title, list, callback)
+        local multidropdown = utility:Create("Frame", {
+            Name = "MultiDropdown",
+            Parent = self.container,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 30),
+            ClipsDescendants = true
+        }, {
+            utility:Create("UIListLayout", {
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                Padding = UDim.new(0, 4)
+            }),
+            utility:Create("ImageLabel", {
+                Name = "Search",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 0, 30),
+                ZIndex = 2,
+                Image = "rbxassetid://5028857472",
+                ImageColor3 = themes.DarkContrast,
+                ScaleType = Enum.ScaleType.Slice,
+                SliceCenter = Rect.new(2, 2, 298, 298)
+            }, {
+                utility:Create("TextBox", {
+                    Name = "TextBox",
+                    AnchorPoint = Vector2.new(0, 0.5),
+                    BackgroundTransparency = 1,
+                    TextTruncate = Enum.TextTruncate.AtEnd,
+                    Position = UDim2.new(0, 10, 0.5, 1),
+                    Size = UDim2.new(1, -42, 1, 0),
+                    ZIndex = 3,
+                    Font = Enum.Font.Gotham,
+                    Text = title,
+                    TextColor3 = themes.TextColor,
+                    TextSize = 12,
+                    TextTransparency = 0.1,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                }),
+                utility:Create("ImageButton", {
+                    Name = "Button",
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Position = UDim2.new(1, -28, 0.5, -9),
+                    Size = UDim2.new(0, 18, 0, 18),
+                    ZIndex = 3,
+                    Image = "rbxassetid://5012539403",
+                    ImageColor3 = themes.TextColor,
+                    SliceCenter = Rect.new(2, 2, 298, 298)
+                })
+            }),
+            utility:Create("Frame", {
+                Name = "SelectedItems",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 20),
+                ZIndex = 2,
+            }),
+            utility:Create("ImageLabel", {
+                Name = "List",
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                Size = UDim2.new(1, 0, 1, -54),
+                ZIndex = 2,
+                Image = "rbxassetid://5028857472",
+                ImageColor3 = themes.Background,
+                ScaleType = Enum.ScaleType.Slice,
+                SliceCenter = Rect.new(2, 2, 298, 298)
+            }, {
+                utility:Create("ScrollingFrame", {
+                    Name = "Frame",
+                    Active = true,
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Position = UDim2.new(0, 4, 0, 4),
+                    Size = UDim2.new(1, -8, 1, -8),
+                    CanvasPosition = Vector2.new(0, 28),
+                    CanvasSize = UDim2.new(0, 0, 0, 120),
+                    ZIndex = 2,
+                    ScrollBarThickness = 3,
+                    ScrollBarImageColor3 = themes.DarkContrast
+                }, {
+                    utility:Create("UIListLayout", {
+                        SortOrder = Enum.SortOrder.LayoutOrder,
+                        Padding = UDim.new(0, 4)
+                    })
+                })
+            })
+        })
+        
+        table.insert(self.modules, multidropdown)
+        --self:Resize()
+        
+        local search = multidropdown.Search
+        local selectedItems = {}
+        
+        list = list or {}
+        
+        local function updateSelectedItems()
+            multidropdown.SelectedItems:ClearAllChildren()
+            
+            for _, item in ipairs(selectedItems) do
+                local itemFrame = utility:Create("Frame", {
+                    Name = "SelectedItem",
+                    Parent = multidropdown.SelectedItems,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(1, 0, 0, 20)
+                }, {
+                    utility:Create("TextLabel", {
+                        Name = "Text",
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 8, 0, 0),
+                        Size = UDim2.new(1, -30, 1, 0),
+                        ZIndex = 3,
+                        Font = Enum.Font.Gotham,
+                        Text = item,
+                        TextColor3 = themes.TextColor,
+                        TextSize = 12,
+                        TextXAlignment = Enum.TextXAlignment.Left
+                    }),
+                    utility:Create("ImageButton", {
+                        Name = "RemoveButton",
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(1, -24, 0, 0),
+                        Size = UDim2.new(0, 20, 0, 20),
+                        ZIndex = 3,
+                        Image = "rbxassetid://5012539403",
+                        ImageColor3 = themes.TextColor,
+                        SliceCenter = Rect.new(2, 2, 298, 298)
+                    })
+                })
+                
+                itemFrame.RemoveButton.MouseButton1Click:Connect(function()
+                    for i, selItem in ipairs(selectedItems) do
+                        if selItem == item then
+                            table.remove(selectedItems, i)
+                            break
+                        end
+                    end
+                    updateSelectedItems()
+                    callback(selectedItems)
+                end)
+            end
+        end
+        
+        search.Button.MouseButton1Click:Connect(function()
+            if search.Button.Rotation == 0 then
+                self:updateDropdown(multidropdown, nil, list, callback)
+            else
+                self:updateDropdown(multidropdown, nil, nil, callback)
+            end
+        end)
+        
+        search.TextBox.Focused:Connect(function()
+            if search.Button.Rotation == 0 then
+                self:updateDropdown(multidropdown, nil, list, callback)
+            end
+        end)
+        
+        search.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+            local searchText = search.TextBox.Text:lower()
+            local filteredList = {}
+            
+            for _, item in ipairs(list) do
+                if item:lower():find(searchText, 1, true) then
+                    table.insert(filteredList, item)
+                end
+            end
+            
+            self:updateDropdown(multidropdown, searchText, filteredList, callback)
+        end)
+        
+        multidropdown:GetPropertyChangedSignal("Size"):Connect(function()
+            --self:Resize()
+        end)
+        
+        self:updateDropdown(multidropdown, nil, list, callback)
+        
+        return multidropdown
+    end
+
 	function section:addParagraph(title, text)
 		local paragraphContainer = utility:Create("ImageLabel", {
 			Name = "ParagraphContainer",
