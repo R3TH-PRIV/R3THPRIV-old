@@ -1,6 +1,6 @@
 --[[
     R3TH PRIV THIEF LIFE SIMULATOR SOURCE
-    a little rushed in the update as i was just spending a bit of time on it
+
     .gg/pethicial
 
     Credits:
@@ -484,6 +484,50 @@ local function updateObjectPosition()
         PlacementSquare.Position = snappedPosition + Vector3.new(0, 0.1, 0)
     else
         warn("Player or humanoid not found!")
+    end
+end
+
+local function performActionForPlayers(actionFunction)
+    if ChangeGameTarget == "All" then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer then
+                actionFunction(player)
+            end
+        end
+    elseif ChangeGameTarget then
+        actionFunction(ChangeGameTarget)
+    end
+    task.wait()
+end
+
+local function shootPlayerOnce(target)
+    ReplicatedStorage.Events.Weapon.RequestHit:FireServer(target.Character)
+end
+
+local function acceptTrade(target)
+    ReplicatedStorage.Events.Trade.AcceptTrade:FireServer(target.UserId)
+end
+
+local function changeClubTag(target)
+    ReplicatedStorage.Events.Guild.RequestChangeTitle:FireServer({Status = "Request", Name = target.Name, ID = target.UserId}, "Member")
+end
+
+local function sendClubInvite(target)
+    ReplicatedStorage.Events.Guild.SendInvite:FireServer(target)
+    task.wait()
+    changeClubTag(target)
+end
+
+local function spamClubInvite(target)
+    ReplicatedStorage.Events.Guild.SendInvite:FireServer(target)
+end
+
+local function shootPet(target)
+    local pet = Workspace.Pets:FindFirstChild(target.Name .. "_PET")
+    if pet then
+        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(pet)
+    elseif ChangeGameTarget ~= "All" then
+        sendnotification("Target does not have a pet equipped.", true)
     end
 end
 
@@ -1802,7 +1846,7 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-Main:addDropdown("Teleport", teleportLocationsKeys, function(Value) -- source isnt the best as im just gonna make a multi dropdown eventually then it will be updated
+Main:addDropdown("Teleport", teleportLocationsKeys, function(Value)
     TeleportPlayer(teleportLocations[Value], CFrame.new(0,3.5,0))
 end)
 
@@ -1826,14 +1870,33 @@ Main:addButton("Unlock Level Access", function()
     end
 end)
 
-Main:addToggle("Kill All Police", false, function(Value)
-    ChangeKillAllPolice = Value
-    while ChangeKillAllPolice and task.wait() do
-        for _, policeType in ipairs({"Police", "Police2", "Swat"}) do
-            local police = Workspace.Polices:FindFirstChild(policeType)
-            if police then
-                ReplicatedStorage.Events.Weapon.RequestHit:FireServer(police)
+Main:addToggle("Explode All Cars", false, function(Value)
+    ChangeExplodeAllCars = Value
+    while ChangeExplodeAllCars and task.wait() do
+        for i, v in ipairs(Workspace:GetChildren()) do
+            if v.Name == "CarObject" then
+                local Car = v:FindFirstChild("Car")
+                if Car then
+                    ReplicatedStorage.Events.Weapon.RequestHitCar:FireServer(Car)
+                end
             end
+        end
+        for i, v in ipairs(Workspace.Cars:GetChildren()) do
+            if v.Name == "CarObject" then
+                local Car = v:FindFirstChild("Car")
+                if Car then
+                    ReplicatedStorage.Events.Weapon.RequestHitCar:FireServer(Car)
+                end
+            end
+        end
+    end
+end)
+
+Main:addToggle("Kill All Police", false, function(Value)
+    ChangeKillAllPolice = Value --------
+    while ChangeKillAllPolice and task.wait() do
+        for i, v in ipairs(Workspace.Polices:GetChildren()) do
+            ReplicatedStorage.Events.Weapon.RequestHit:FireServer(v)
         end
     end
 end)
@@ -1841,18 +1904,19 @@ end)
 Main:addToggle("Kill All NPCs", false, function(Value)
     ChangeKillAllNPCs = Value
     while ChangeKillAllNPCs and task.wait() do
-        for _, v in ipairs(Workspace:GetChildren()) do
+        for i, v in ipairs(Workspace:GetChildren()) do
             if v.Name == "OwnerLogic" then
                 local NPCs = {
                     v:FindFirstChild("Home owner"),
                     v:FindFirstChild("Sailor"),
                     v:FindFirstChild("Guard"),
-                    v:FindFirstChild("WP member")
+                    v:FindFirstChild("WP member"),
+                    v:FindFirstChild("SantaGuard"),
+                    v:FindFirstChild("SantasHelper"),
+                    v:FindFirstChild("Worker")
                 }
                 for _, NPC in ipairs(NPCs) do
-                    if NPC then
-                        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(NPC)
-                    end
+                    ReplicatedStorage.Events.Weapon.RequestHit:FireServer(NPC)
                 end
             end
         end
@@ -1898,11 +1962,10 @@ Farm:addToggle("Start Money Farm", false, function(Value)
         if ChangeSelectMethod == "Free" then
             ReplicatedStorage.Events.Loot.RequestLoot:FireServer(math.random(495, 500))
             CollectAllLoot()
-            ReplicatedStorage.Events.Shop.RequestSellItem:FireServer(1)
         else
             ReplicatedStorage.Events.GunShop.RequestBuy:FireServer(ChangeSelectMethod)
-            ReplicatedStorage.Events.Shop.RequestSellItem:FireServer(1)
         end
+        ReplicatedStorage.Events.Shop.RequestSellItem:FireServer(1)
     end
 end)
 
@@ -1923,7 +1986,6 @@ end)
 
 Building:addButton("Rotate Object", function()
     ChangeRotation = ChangeRotation + 90
-
     if ChangeRotation >= 360 then
         ChangeRotation = 0
     end
@@ -1958,153 +2020,50 @@ Target00:addDropdown("Select Player", playerlist, function(Value)
 end)
 
 Target00:addButton("Shoot Player Once", function()
-    if ChangeGameTarget == "All" then
-        for i,v in pairs(Players:GetChildren()) do
-            if v ~= LocalPlayer then
-                ReplicatedStorage.Events.Weapon.RequestHit:FireServer(Players:FindFirstChild(v.Name).Character)
-            end
-        end
-    else
-        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(Players:FindFirstChild(ChangeGameTarget).Character)
+    if ChangeGameTarget ~= nil then
+        performActionForPlayers(shootPlayerOnce)
     end
 end)
 
 Target00:addToggle("Kill Player", false, function(Value)
     ChangeKillPlayer = Value
     while ChangeKillPlayer and task.wait() do
-        function ChangeKillPlayerFix()
-            if ChangeGameTarget == "All" then
-                for i,v in pairs(Players:GetChildren()) do
-                    if v ~= LocalPlayer then
-                        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(Players:FindFirstChild(v.Name).Character)
-                    end
-                end
-            else
-                ReplicatedStorage.Events.Weapon.RequestHit:FireServer(Players:FindFirstChild(ChangeGameTarget).Character)
-            end
-        end
-        pcall(ChangeKillPlayerFix)
+        performActionForPlayers(shootPlayerOnce)
     end
 end)
 
 Target00:addToggle("Force Trade Player", false, function(Value)
     ChangeForceTradePlayer = Value
     while ChangeForceTradePlayer and task.wait() do
-        if ChangeGameTarget == "All" then
-            for i,v in pairs(Players:GetChildren()) do
-                if v ~= LocalPlayer then
-                    ReplicatedStorage.Events.Trade.AcceptTrade:FireServer(v.UserId)
-                end
-            end
-        else
-            ReplicatedStorage.Events.Trade.AcceptTrade:FireServer(Players[ChangeGameTarget].UserId)
-        end
+        performActionForPlayers(acceptTrade)
     end
 end)
 
 Target00:addToggle("Club Tag Player", false, function(Value)
     ChangeClubTagPlayer = Value
     while ChangeClubTagPlayer and task.wait() do
-        if ChangeGameTarget == "All" then
-            for i,v in pairs(Players:GetChildren()) do
-                if v ~= LocalPlayer then
-                    local args = {
-                        [1] = {
-                            ["Status"] = "Request",
-                            ["Name"] = v.Name,
-                            ["ID"] = v.UserId
-                        },
-                        [2] = "Member"
-                    }
-                
-                    ReplicatedStorage.Events.Guild.RequestChangeTitle:FireServer(unpack(args))
-                end
-            end
-        else
-            local args = {
-                [1] = {
-                    ["Status"] = "Request",
-                    ["Name"] = Players[ChangeGameTarget],
-                    ["ID"] = Players[ChangeGameTarget].UserId
-                },
-                [2] = "Member"
-            }
-        
-            ReplicatedStorage.Events.Guild.RequestChangeTitle:FireServer(unpack(args))
-        end
+        performActionForPlayers(changeClubTag)
     end
 end)
 
 Target00:addToggle("Force Join Club", false, function(Value)
     ChangeForceJoinClub = Value
-    while ChangeForceJoinClub do
-        if ChangeGameTarget == "All" then
-            for i,v in pairs(Players:GetChildren()) do
-                if v ~= LocalPlayer then
-                    ReplicatedStorage.Events.Guild.SendInvite:FireServer(Players[v.Name])
-                    task.wait()
-                    local args = {
-                        [1] = {
-                            ["Status"] = "Request",
-                            ["Name"] = v.Name,
-                            ["ID"] = v.UserId
-                        },
-                        [2] = "Member"
-                    }
-                
-                    ReplicatedStorage.Events.Guild.RequestChangeTitle:FireServer(unpack(args))
-                end
-            end
-        else
-            ReplicatedStorage.Events.Guild.SendInvite:FireServer(Players[ChangeGameTarget])
-            task.wait()
-            local args = {
-                [1] = {
-                    ["Status"] = "Request",
-                    ["Name"] = game.Players[ChangeGameTarget],
-                    ["ID"] = game.Players[ChangeGameTarget].UserId
-                },
-                [2] = "Member"
-            }
-        
-            ReplicatedStorage.Events.Guild.RequestChangeTitle:FireServer(unpack(args))
-        end
+    while ChangeForceJoinClub and task.wait() do
+        performActionForPlayers(sendClubInvite)
     end
 end)
 
 Target00:addToggle("Spam Invite Player", false, function(Value)
     ChangeSpamInvitePlayer = Value
     while ChangeSpamInvitePlayer and task.wait() do
-        if ChangeGameTarget == "All" then
-            for i,v in pairs(Players:GetChildren()) do
-                if v ~= LocalPlayer then
-                    ReplicatedStorage.Events.Guild.SendInvite:FireServer(Players[v.Name])
-                end
-            end
-        else
-            ReplicatedStorage.Events.Guild.SendInvite:FireServer(Players[ChangeGameTarget])
-        end
+        performActionForPlayers(spamClubInvite)
     end
 end)
 
 Target00:addToggle("Kill Pet", false, function(Value)
     ChangeKillPet = Value
     while ChangeKillPet and task.wait() do
-        if ChangeGameTarget == "All" then
-            for i,v in pairs(Players:GetChildren()) do
-                if v ~= LocalPlayer then
-                    if Workspace.Pets:FindFirstChild(v.Name .."_PET") ~= nil then
-                        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(Workspace.Pets[v.Name .."_PET"])
-                    end
-                end
-            end
-        else
-            if Workspace.Pets:FindFirstChild(ChangeGameTarget .."_PET") ~= nil then
-                ReplicatedStorage.Events.Weapon.RequestHit:FireServer(Workspace.Pets[ChangeGameTarget .."_PET"])
-            else
-                sendnotification("Target does not have a pet equipped.", true)
-            end
-        end
+        performActionForPlayers(shootPet)
     end
 end)
 
