@@ -1893,7 +1893,7 @@ Main:addToggle("Explode All Cars", false, function(Value)
 end)
 
 Main:addToggle("Kill All Police", false, function(Value)
-    ChangeKillAllPolice = Value --------
+    ChangeKillAllPolice = Value
     while ChangeKillAllPolice and task.wait() do
         for i, v in ipairs(Workspace.Polices:GetChildren()) do
             ReplicatedStorage.Events.Weapon.RequestHit:FireServer(v)
@@ -1903,25 +1903,30 @@ end)
 
 Main:addToggle("Kill All NPCs", false, function(Value)
     ChangeKillAllNPCs = Value
-    while ChangeKillAllNPCs and task.wait() do
-        for i, v in ipairs(Workspace:GetChildren()) do
+    while ChangeKillAllNPCs do
+        for _, v in ipairs(Workspace:GetChildren()) do
             if v.Name == "OwnerLogic" then
-                local NPCs = {
-                    v:FindFirstChild("Home owner"),
-                    v:FindFirstChild("Sailor"),
-                    v:FindFirstChild("Guard"),
-                    v:FindFirstChild("WP member"),
-                    v:FindFirstChild("SantaGuard"),
-                    v:FindFirstChild("SantasHelper"),
-                    v:FindFirstChild("Worker")
+                local NPCtypes = {
+                    "Home owner",
+                    "Sailor",
+                    "Guard",
+                    "WP member",
+                    "SantaGuard",
+                    "SantasHelper",
+                    "Worker"
                 }
-                for _, NPC in ipairs(NPCs) do
-                    ReplicatedStorage.Events.Weapon.RequestHit:FireServer(NPC)
+                for _, npcType in ipairs(NPCtypes) do
+                    local NPC = v:FindFirstChild(npcType)
+                    if NPC then
+                        ReplicatedStorage.Events.Weapon.RequestHit:FireServer(NPC)
+                    end
                 end
             end
         end
+        task.wait()
     end
 end)
+
 
 Main:addToggle("Auto Collect Loot", false, function(Value)
     ChangeAutoCollectLoot = Value
