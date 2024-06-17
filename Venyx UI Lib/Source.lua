@@ -1,7 +1,3 @@
-if Key == nil then
-    Key = "R3TH PRIV"
-end
-
 local player = game.Players.LocalPlayer
 local mouse = player:GetMouse()
 
@@ -2207,5 +2203,5 @@ do
 	end
 end
 
-print("[ " .. Key .. " ]: Venyx UI Fixed and Improved by Pethicial")
+print("Venyx UI Fixed and Improved by Pethicial")
 return library
