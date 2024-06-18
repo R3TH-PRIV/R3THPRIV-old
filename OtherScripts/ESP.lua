@@ -49,7 +49,6 @@ local VERTICES = {
 	Vector3.new(1, -1, 1)
 };
 
--- functions
 local function isBodyPart(name)
 	return name == "Head" or name:find("Torso") or name:find("Leg") or name:find("Arm");
 end
@@ -531,7 +530,7 @@ local EspInterface = {
 		textSize = 13,
 		textFont = 2,
 		limitDistance = false,
-		maxDistance = 150,
+		maxDistance = 999999999,
 		useTeamColor = false
 	},
 	teamSettings = {
