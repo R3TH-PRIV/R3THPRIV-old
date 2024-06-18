@@ -71,6 +71,7 @@ task.defer(function()
 	print("⛔ " .. fails .. " tests failed")
 	print("⚠️ " .. undefined .. " globals are missing aliases")
 end)
+task.wait()
 
 -- Cache
 
@@ -109,6 +110,7 @@ test("compareinstances", {}, function()
 	assert(part ~= clone, "Clone should not be equal to original")
 	assert(compareinstances(part, clone), "Clone should be equal to original when using compareinstances()")
 end)
+task.wait()
 
 -- Closures
 
@@ -217,6 +219,7 @@ test("newcclosure", {}, function()
 	assert(test ~= testC, "New C closure should not be same as the original")
 	assert(iscclosure(testC), "New C closure should be a C closure")
 end)
+task.wait()
 
 -- Console
 
@@ -231,6 +234,7 @@ test("rconsoleinput", {"consoleinput"})
 test("rconsoleprint", {"consoleprint"})
 
 test("rconsolesettitle", {"rconsolename", "consolesettitle"})
+task.wait()
 
 -- Crypt
 
@@ -275,6 +279,7 @@ test("crypt.hash", {}, function()
 		assert(hash, "crypt.hash on algorithm '" .. algorithm .. "' should return a hash")
 	end
 end)
+task.wait()
 
 --- Debug
 
@@ -409,6 +414,7 @@ test("debug.setupvalue", {}, function()
 	end)
 	assert(test() == "success", "debug.setupvalue did not set the first upvalue")
 end)
+task.wait()
 
 -- Filesystem
 
@@ -497,6 +503,7 @@ test("loadfile", {}, function()
 end)
 
 test("dofile", {})
+task.wait()
 
 -- Input
 
@@ -521,6 +528,7 @@ test("mousemoveabs", {})
 test("mousemoverel", {})
 
 test("mousescroll", {})
+task.wait()
 
 -- Instances
 
@@ -610,6 +618,7 @@ test("setscriptable", {}, function()
 end)
 
 test("setrbxclipboard", {})
+task.wait()
 
 -- Metatable
 
@@ -662,6 +671,7 @@ test("setreadonly", {}, function()
 	object.success = true
 	assert(object.success, "Did not allow the table to be modified")
 end)
+task.wait()
 
 -- Miscellaneous
 
@@ -719,6 +729,7 @@ test("setfpscap", {}, function()
 	local step0 = step()
 	return step60 .. "fps @60 • " .. step0 .. "fps @0"
 end)
+task.wait()
 
 -- Scripts
 
@@ -796,6 +807,7 @@ test("setthreadidentity", {"setidentity", "setthreadcontext"}, function()
 	setthreadidentity(3)
 	assert(getthreadidentity() == 3, "Did not set the thread identity")
 end)
+task.wait()
 
 -- Drawing
 
@@ -846,6 +858,7 @@ end)
 test("cleardrawcache", {}, function()
 	cleardrawcache()
 end)
+task.wait()
 
 -- WebSocket
 
