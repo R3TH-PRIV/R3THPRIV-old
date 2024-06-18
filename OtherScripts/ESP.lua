@@ -1,5 +1,3 @@
--- Synapse X ESP Library for Roblox
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Camera = game.Workspace.CurrentCamera
@@ -16,7 +14,6 @@ ESP.Settings = {
     DistanceEnabled = true,
 }
 
--- Function to draw ESP elements
 function ESP.DrawESP(player)
     local character = player.Character
     if not character then return end
@@ -29,7 +26,6 @@ function ESP.DrawESP(player)
     local onScreen, position = Camera:WorldToViewportPoint(rootPart.Position)
     if not onScreen then return end
     
-    -- Name
     if ESP.Settings.NameEnabled then
         local nameLabel = Drawing.new("Text")
         nameLabel.Text = player.Name
@@ -45,7 +41,6 @@ function ESP.DrawESP(player)
         nameLabel.ZIndex = 2
     end
     
-    -- Box
     if ESP.Settings.BoxEnabled then
         local headPosition, headVisible = Camera:WorldToViewportPoint(head.Position + head.CFrame.UpVector * 2.5)
         local legPosition, legVisible = Camera:WorldToViewportPoint(rootPart.Position - rootPart.CFrame.UpVector * 2)
@@ -62,7 +57,6 @@ function ESP.DrawESP(player)
         end
     end
     
-    -- Health
     if ESP.Settings.HealthEnabled then
         local healthBarPosition, visible = Camera:WorldToViewportPoint(rootPart.Position + Vector3.new(0, 3, 0))
         local healthBarSize = Vector2.new(50, 4)
@@ -82,20 +76,16 @@ function ESP.DrawESP(player)
         end
     end
     
-    -- Team check (example: red for enemies, green for allies)
     if ESP.Settings.TeamCheckEnabled then
         if player.Team ~= Players.LocalPlayer.Team then
-            -- Customize color based on team
         end
     end
     
-    -- Wall check (example: draw line to show if there's a wall between player and camera)
     if ESP.Settings.WallCheckEnabled then
         -- Check for walls between player and camera
         -- Draw line or indicator
     end
     
-    -- Traces (example: draw line from camera to player's head)
     if ESP.Settings.TracesEnabled then
         local headPosition, headVisible = Camera:WorldToViewportPoint(head.Position)
         
@@ -129,7 +119,6 @@ function ESP.DrawESP(player)
     end
 end
 
--- Function to update ESP based on player visibility and settings
 function ESP.Update()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -138,7 +127,6 @@ function ESP.Update()
     end
 end
 
--- Toggle ESP settings
 function ESP.ToggleSetting(settingName)
     if ESP.Settings[settingName] ~= nil then
         ESP.Settings[settingName] = not ESP.Settings[settingName]
@@ -146,36 +134,6 @@ function ESP.ToggleSetting(settingName)
     end
 end
 
--- Example UI toggle buttons (you need to create GUI for these)
-Player:addToggle("Names", true, function(enabled)
-    ESP.ToggleSetting("NameEnabled")
-end)
-
-Player:addToggle("Boxes", true, function(enabled)
-    ESP.ToggleSetting("BoxEnabled")
-end)
-
-Player:addToggle("Health Bars", true, function(enabled)
-    ESP.ToggleSetting("HealthEnabled")
-end)
-
-Player:addToggle("Team Check", true, function(enabled)
-    ESP.ToggleSetting("TeamCheckEnabled")
-end)
-
-Player:addToggle("Wall Check", true, function(enabled)
-    ESP.ToggleSetting("WallCheckEnabled")
-end)
-
-Player:addToggle("Traces", true, function(enabled)
-    ESP.ToggleSetting("TracesEnabled")
-end)
-
-Player:addToggle("Distance", true, function(enabled)
-    ESP.ToggleSetting("DistanceEnabled")
-end)
-
--- Main loop to continuously update ESP visuals
 RunService.RenderStepped:Connect(function()
     ESP.Update()
 end)
