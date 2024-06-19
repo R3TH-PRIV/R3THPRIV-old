@@ -16,7 +16,7 @@ local themes = {
 	LightContrast = Color3.fromRGB(20, 20, 20), 
 	DarkContrast = Color3.fromRGB(14, 14, 14),  
 	TextColor = Color3.fromRGB(255, 255, 255),
-	BackgroundTransparency = 0.5
+	BackgroundTransparency = 0.3
 }
 
 do
@@ -2204,5 +2204,5 @@ do
 	end
 end
 
-print("Venyx UI Fixed and Improved by Pethicial")
+print("Venyx UI Fixed and Improved by Pethicial test")
 return library
