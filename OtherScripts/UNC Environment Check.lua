@@ -71,7 +71,6 @@ task.defer(function()
 	print("⛔ " .. fails .. " tests failed")
 	print("⚠️ " .. undefined .. " globals are missing aliases")
 end)
-task.wait()
 
 -- Cache
 
@@ -95,7 +94,6 @@ test("cache.replace", {}, function()
 	cache.replace(part, fire)
 	assert(part ~= fire, "Part was not replaced with Fire")
 end)
-task.wait()
 
 test("cloneref", {}, function()
 	local part = Instance.new("Part")
@@ -111,7 +109,6 @@ test("compareinstances", {}, function()
 	assert(part ~= clone, "Clone should not be equal to original")
 	assert(compareinstances(part, clone), "Clone should be equal to original when using compareinstances()")
 end)
-task.wait()
 
 -- Closures
 
@@ -184,7 +181,6 @@ test("hookfunction", {"replaceclosure"}, function()
 	assert(ref() == true, "Original function should return true")
 	assert(test ~= ref, "Original function should not be same as the reference")
 end)
-task.wait()
 
 test("iscclosure", {}, function()
 	assert(iscclosure(print) == true, "Function 'print' should be a C closure")
@@ -221,7 +217,6 @@ test("newcclosure", {}, function()
 	assert(test ~= testC, "New C closure should not be same as the original")
 	assert(iscclosure(testC), "New C closure should be a C closure")
 end)
-task.wait()
 
 -- Console
 
@@ -236,7 +231,6 @@ test("rconsoleinput", {"consoleinput"})
 test("rconsoleprint", {"consoleprint"})
 
 test("rconsolesettitle", {"rconsolename", "consolesettitle"})
-task.wait()
 
 -- Crypt
 
@@ -262,7 +256,6 @@ test("crypt.decrypt", {}, function()
 	local decrypted = crypt.decrypt(encrypted, key, iv, "CBC")
 	assert(decrypted == "test", "Failed to decrypt raw string from encrypted data")
 end)
-task.wait()
 
 test("crypt.generatebytes", {}, function()
 	local size = math.random(10, 100)
@@ -282,7 +275,6 @@ test("crypt.hash", {}, function()
 		assert(hash, "crypt.hash on algorithm '" .. algorithm .. "' should return a hash")
 	end
 end)
-task.wait()
 
 --- Debug
 
@@ -366,7 +358,6 @@ test("debug.getprotos", {}, function()
 		end
 	end
 end)
-task.wait()
 
 test("debug.getstack", {}, function()
 	local _ = "a" .. "b"
@@ -418,7 +409,6 @@ test("debug.setupvalue", {}, function()
 	end)
 	assert(test() == "success", "debug.setupvalue did not set the first upvalue")
 end)
-task.wait()
 
 -- Filesystem
 
@@ -473,7 +463,6 @@ test("appendfile", {}, function()
 	appendfile(".tests/appendfile.txt", "ss")
 	assert(readfile(".tests/appendfile.txt") == "success", "Did not append the file")
 end)
-task.wait()
 
 test("isfile", {}, function()
 	writefile(".tests/isfile.txt", "success")
@@ -508,7 +497,6 @@ test("loadfile", {}, function()
 end)
 
 test("dofile", {})
-task.wait()
 
 -- Input
 
@@ -533,7 +521,6 @@ test("mousemoveabs", {})
 test("mousemoverel", {})
 
 test("mousescroll", {})
-task.wait()
 
 -- Instances
 
@@ -597,7 +584,6 @@ end)
 test("gethui", {}, function()
 	assert(typeof(gethui()) == "Instance", "Did not return an Instance")
 end)
-task.wait()
 
 test("getinstances", {}, function()
 	assert(getinstances()[1]:IsA("Instance"), "The first value is not an Instance")
@@ -624,7 +610,6 @@ test("setscriptable", {}, function()
 end)
 
 test("setrbxclipboard", {})
-task.wait()
 
 -- Metatable
 
@@ -677,7 +662,6 @@ test("setreadonly", {}, function()
 	object.success = true
 	assert(object.success, "Did not allow the table to be modified")
 end)
-task.wait()
 
 -- Miscellaneous
 
@@ -735,7 +719,6 @@ test("setfpscap", {}, function()
 	local step0 = step()
 	return step60 .. "fps @60 • " .. step0 .. "fps @0"
 end)
-task.wait()
 
 -- Scripts
 
@@ -789,7 +772,6 @@ test("getscripthash", {}, function()
 	assert(hash ~= newHash, "Did not return a different hash for a modified script")
 	assert(newHash == getscripthash(animate), "Did not return the same hash for a script with the same source")
 end)
-task.wait()
 
 test("getscripts", {}, function()
 	local scripts = getscripts()
@@ -814,7 +796,6 @@ test("setthreadidentity", {"setidentity", "setthreadcontext"}, function()
 	setthreadidentity(3)
 	assert(getthreadidentity() == 3, "Did not set the thread identity")
 end)
-task.wait()
 
 -- Drawing
 
@@ -865,7 +846,6 @@ end)
 test("cleardrawcache", {}, function()
 	cleardrawcache()
 end)
-task.wait()
 
 -- WebSocket
 
