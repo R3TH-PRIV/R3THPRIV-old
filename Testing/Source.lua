@@ -11,12 +11,12 @@ local utility = {}
 local objects = {}
 local themes = {
 	Background = Color3.fromRGB(24, 24, 24), 
-	BackgroundTransparency = 0.5,
 	Glow = Color3.fromRGB(0, 0, 0), 
 	Accent = Color3.fromRGB(10, 10, 10), 
 	LightContrast = Color3.fromRGB(20, 20, 20), 
 	DarkContrast = Color3.fromRGB(14, 14, 14),  
-	TextColor = Color3.fromRGB(255, 255, 255)
+	TextColor = Color3.fromRGB(255, 255, 255),
+	BackgroundTransparency = 0.5
 }
 
 do
@@ -95,7 +95,7 @@ do
 		spawn(function()
 			wait(0.2)
 		
-			object.ImageTransparency = 0
+			object.ImageTransparency = themes.BackgroundTransparency
 			clone:Destroy()
 		end)
 		
@@ -209,7 +209,7 @@ do
 		}, {
 			utility:Create("ImageLabel", {
 				Name = "Main",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0.25, 0, 0.052435593, 0),
 				Size = UDim2.new(0, 511, 0, 428),
 				Image = "rbxassetid://4641149554",
@@ -219,7 +219,7 @@ do
 			}, {
 				utility:Create("ImageLabel", {
 					Name = "Glow",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					Position = UDim2.new(0, -15, 0, -15),
 					Size = UDim2.new(1, 30, 1, 30),
 					ZIndex = 0,
@@ -230,7 +230,7 @@ do
 				}),
 				utility:Create("ImageLabel", {
 					Name = "Pages",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					ClipsDescendants = true,
 					Position = UDim2.new(0, 0, 0, 38),
 					Size = UDim2.new(0, 126, 1, -38),
@@ -243,7 +243,7 @@ do
 					utility:Create("ScrollingFrame", {
 						Name = "Pages_Container",
 						Active = true,
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						Position = UDim2.new(0, 0, 0, 10),
 						Size = UDim2.new(1, 0, 1, -20),
 						CanvasSize = UDim2.new(0, 0, 0, 314),
@@ -257,7 +257,7 @@ do
 				}),
 				utility:Create("ImageLabel", {
 					Name = "TopBar",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					ClipsDescendants = true,
 					Size = UDim2.new(1, 0, 0, 38),
 					ZIndex = 5,
@@ -269,7 +269,7 @@ do
 					utility:Create("TextLabel", {
 						Name = "Title",
 						AnchorPoint = Vector2.new(0, 0.5),
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						Position = UDim2.new(0, 12, 0, 19),
 						Size = UDim2.new(1, -46, 0, 16),
 						ZIndex = 5,
@@ -297,7 +297,7 @@ do
 		local button = utility:Create("TextButton", {
 			Name = title,
 			Parent = library.pagesContainer,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 26),
 			ZIndex = 3,
@@ -309,7 +309,7 @@ do
 			utility:Create("TextLabel", {
 				Name = "Title",
 				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 40, 0.5, 0),
 				Size = UDim2.new(0, 76, 1, 0),
 				ZIndex = 3,
@@ -317,19 +317,19 @@ do
 				Text = title,
 				TextColor3 = themes.TextColor,
 				TextSize = 12,
-				TextTransparency = 0.65,
+				TextTransparency = themes.BackgroundTransparency,
 				TextXAlignment = Enum.TextXAlignment.Left
 			}),
 			icon and utility:Create("ImageLabel", {
 				Name = "Icon", 
 				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 12, 0.5, 0),
 				Size = UDim2.new(0, 16, 0, 16),
 				ZIndex = 3,
 				Image = "rbxassetid://" .. tostring(icon),
 				ImageColor3 = themes.TextColor,
-				ImageTransparency = 0.64
+				ImageTransparency = themes.BackgroundTransparency
 			}) or {}
 		})
 		
@@ -337,7 +337,7 @@ do
 			Name = title,
 			Parent = library.container.Main,
 			Active = true,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Position = UDim2.new(0, 134, 0, 46),
 			Size = UDim2.new(1, -142, 1, -56),
@@ -364,7 +364,7 @@ do
 		local container = utility:Create("ImageLabel", {
 			Name = title,
 			Parent = page.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			Size = UDim2.new(1, -10, 0, 28),
 			ZIndex = 2,
 			Image = "rbxassetid://5028857472",
@@ -376,14 +376,14 @@ do
 			utility:Create("Frame", {
 				Name = "Container",
 				Active = true,
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Position = UDim2.new(0, 8, 0, 8),
 				Size = UDim2.new(1, -16, 1, -16)
 			}, {
 				utility:Create("TextLabel", {
 					Name = "Title",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					Size = UDim2.new(1, 0, 0, 20),
 					ZIndex = 2,
 					Font = Enum.Font.GothamSemibold,
@@ -645,7 +645,7 @@ do
 		local button = utility:Create("ImageButton", {
 			Name = "Button",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
@@ -656,7 +656,7 @@ do
 		}, {
 			utility:Create("TextLabel", {
 				Name = "Title",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Size = UDim2.new(1, 0, 1, 0),
 				ZIndex = 3,
 				Font = Enum.Font.Gotham,
@@ -703,7 +703,7 @@ do
 		local toggle = utility:Create("ImageButton", {
 			Name = "Toggle",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
@@ -715,7 +715,7 @@ do
 			utility:Create("TextLabel", {
 				Name = "Title",
 				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 10, 0.5, 1),
 				Size = UDim2.new(0.5, 0, 1, 0),
 				ZIndex = 3,
@@ -728,7 +728,7 @@ do
 			}),
 			utility:Create("ImageLabel", {
 				Name = "Button",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Position = UDim2.new(1, -50, 0.5, -8),
 				Size = UDim2.new(0, 40, 0, 16),
@@ -740,7 +740,7 @@ do
 			}, {
 				utility:Create("ImageLabel", {
 					Name = "Frame",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					Position = UDim2.new(0, 2, 0.5, -6),
 					Size = UDim2.new(1, -22, 1, -4),
 					ZIndex = 2,
@@ -775,7 +775,7 @@ do
 		local textbox = utility:Create("ImageButton", {
 			Name = "Textbox",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
@@ -787,7 +787,7 @@ do
 			utility:Create("TextLabel", {
 				Name = "Title",
 				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 10, 0.5, 1),
 				Size = UDim2.new(0.5, 0, 1, 0),
 				ZIndex = 3,
@@ -800,7 +800,7 @@ do
 			}),
 			utility:Create("ImageLabel", {
 				Name = "Button",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(1, -110, 0.5, -8),
 				Size = UDim2.new(0, 100, 0, 16),
 				ZIndex = 2,
@@ -811,7 +811,7 @@ do
 			}, {
 				utility:Create("TextBox", {
 					Name = "Textbox", 
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					TextTruncate = Enum.TextTruncate.AtEnd,
 					Position = UDim2.new(0, 5, 0, 0),
 					Size = UDim2.new(1, -10, 1, 0),
@@ -882,7 +882,7 @@ do
 		local keybind = utility:Create("ImageButton", {
 			Name = "Keybind",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
@@ -894,7 +894,7 @@ do
 			utility:Create("TextLabel", {
 				Name = "Title",
 				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 10, 0.5, 1),
 				Size = UDim2.new(1, 0, 1, 0),
 				ZIndex = 3,
@@ -907,7 +907,7 @@ do
 			}),
 			utility:Create("ImageLabel", {
 				Name = "Button",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(1, -110, 0.5, -8),
 				Size = UDim2.new(0, 100, 0, 16),
 				ZIndex = 2,
@@ -918,7 +918,7 @@ do
 			}, {
 				utility:Create("TextLabel", {
 					Name = "Text",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					ClipsDescendants = true,
 					Size = UDim2.new(1, 0, 1, 0),
 					ZIndex = 3,
@@ -986,7 +986,7 @@ do
 		local colorpicker = utility:Create("ImageButton", {
 			Name = "ColorPicker",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			BorderSizePixel = 0,
 			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
@@ -998,7 +998,7 @@ do
 			utility:Create("TextLabel", {
 				Name = "Title",
 				AnchorPoint = Vector2.new(0, 0.5),
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 10, 0.5, 1),
 				Size = UDim2.new(0.5, 0, 1, 0),
 				ZIndex = 3,
@@ -1011,7 +1011,7 @@ do
 			}),
 			utility:Create("ImageButton", {
 				Name = "Button",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Position = UDim2.new(1, -50, 0.5, -7),
 				Size = UDim2.new(0, 40, 0, 14),
@@ -1026,7 +1026,7 @@ do
 		local tab = utility:Create("ImageLabel", {
 			Name = "ColorPicker",
 			Parent = self.page.library.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			Position = UDim2.new(0.75, 0, 0.400000006, 0),
 			Selectable = true,
 			AnchorPoint = Vector2.new(0.5, 0.5),
@@ -1039,7 +1039,7 @@ do
 		}, {
 			utility:Create("ImageLabel", {
 				Name = "Glow",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, -15, 0, -15),
 				Size = UDim2.new(1, 30, 1, 30),
 				ZIndex = 0,
@@ -1050,7 +1050,7 @@ do
 			}),
 			utility:Create("TextLabel", {
 				Name = "Title",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 10, 0, 8),
 				Size = UDim2.new(1, -40, 0, 16),
 				ZIndex = 2,
@@ -1062,7 +1062,7 @@ do
 			}),
 			utility:Create("ImageButton", {
 				Name = "Close",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(1, -26, 0, 8),
 				Size = UDim2.new(0, 16, 0, 16),
 				ZIndex = 2,
@@ -1071,7 +1071,7 @@ do
 			}), 
 			utility:Create("Frame", {
 				Name = "Container",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 8, 0, 32),
 				Size = UDim2.new(1, -18, 1, -40)
 			}, {
@@ -1081,7 +1081,7 @@ do
 				}),
 				utility:Create("ImageButton", {
 					Name = "Canvas",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					BorderColor3 = themes.LightContrast,
 					Size = UDim2.new(1, 0, 0, 60),
 					AutoButtonColor = false,
@@ -1092,14 +1092,14 @@ do
 				}, {
 					utility:Create("ImageLabel", {
 						Name = "White_Overlay",
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 60),
 						Image = "rbxassetid://5107152351",
 						SliceCenter = Rect.new(2, 2, 298, 298)
 					}),
 					utility:Create("ImageLabel", {
 						Name = "Black_Overlay",
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 0, 60),
 						Image = "rbxassetid://5107152095",
 						SliceCenter = Rect.new(2, 2, 298, 298)
@@ -1108,7 +1108,7 @@ do
 						Name = "Cursor",
 						BackgroundColor3 = themes.TextColor,
 						AnchorPoint = Vector2.new(0.5, 0.5),
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1.000,
 						Size = UDim2.new(0, 10, 0, 10),
 						Position = UDim2.new(0, 0, 0, 0),
 						Image = "rbxassetid://5100115962",
@@ -1117,7 +1117,7 @@ do
 				}),
 				utility:Create("ImageButton", {
 					Name = "Color",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Position = UDim2.new(0, 0, 0, 4),
 					Selectable = false,
@@ -1150,7 +1150,7 @@ do
 				}),
 				utility:Create("Frame", {
 					Name = "Inputs",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					Position = UDim2.new(0, 10, 0, 158),
 					Size = UDim2.new(1, 0, 0, 16)
 				}, {
@@ -1161,7 +1161,7 @@ do
 					}),
 					utility:Create("ImageLabel", {
 						Name = "R",
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(0.305, 0, 1, 0),
 						ZIndex = 2,
@@ -1172,7 +1172,7 @@ do
 					}, {
 						utility:Create("TextLabel", {
 							Name = "Text",
-							BackgroundTransparency = themes.BackgroundTransparency,
+							BackgroundTransparency = 1,
 							Size = UDim2.new(0.400000006, 0, 1, 0),
 							ZIndex = 2,
 							Font = Enum.Font.Gotham,
@@ -1182,7 +1182,7 @@ do
 						}),
 						utility:Create("TextBox", {
 							Name = "Textbox",
-							BackgroundTransparency = themes.BackgroundTransparency,
+							BackgroundTransparency = 1,
 							Position = UDim2.new(0.300000012, 0, 0, 0),
 							Size = UDim2.new(0.600000024, 0, 1, 0),
 							ZIndex = 2,
@@ -1195,7 +1195,7 @@ do
 					}),
 					utility:Create("ImageLabel", {
 						Name = "G",
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(0.305, 0, 1, 0),
 						ZIndex = 2,
@@ -1206,7 +1206,7 @@ do
 					}, {
 						utility:Create("TextLabel", {
 							Name = "Text",
-							BackgroundTransparency = themes.BackgroundTransparency,
+							BackgroundTransparency = 1,
 							ZIndex = 2,
 							Size = UDim2.new(0.400000006, 0, 1, 0),
 							Font = Enum.Font.Gotham,
@@ -1216,7 +1216,7 @@ do
 						}),
 						utility:Create("TextBox", {
 							Name = "Textbox",
-							BackgroundTransparency = themes.BackgroundTransparency,
+							BackgroundTransparency = 1,
 							Position = UDim2.new(0.300000012, 0, 0, 0),
 							Size = UDim2.new(0.600000024, 0, 1, 0),
 							ZIndex = 2,
@@ -1228,7 +1228,7 @@ do
 					}),
 					utility:Create("ImageLabel", {
 						Name = "B",
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Size = UDim2.new(0.305, 0, 1, 0),
 						ZIndex = 2,
@@ -1239,7 +1239,7 @@ do
 					}, {
 						utility:Create("TextLabel", {
 							Name = "Text",
-							BackgroundTransparency = themes.BackgroundTransparency,
+							BackgroundTransparency = 1,
 							Size = UDim2.new(0.400000006, 0, 1, 0),
 							ZIndex = 2,
 							Font = Enum.Font.Gotham,
@@ -1249,7 +1249,7 @@ do
 						}),
 						utility:Create("TextBox", {
 							Name = "Textbox",
-							BackgroundTransparency = themes.BackgroundTransparency,
+							BackgroundTransparency = 1,
 							Position = UDim2.new(0.300000012, 0, 0, 0),
 							Size = UDim2.new(0.600000024, 0, 1, 0),
 							ZIndex = 2,
@@ -1262,7 +1262,7 @@ do
 				}),
 				utility:Create("ImageButton", {
 					Name = "Button",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Size = UDim2.new(1, 0, 0, 20),
 					ZIndex = 2,
@@ -1273,7 +1273,7 @@ do
 				}, {
 					utility:Create("TextLabel", {
 						Name = "Text",
-						BackgroundTransparency = themes.BackgroundTransparency,
+						BackgroundTransparency = 1,
 						Size = UDim2.new(1, 0, 1, 0),
 						ZIndex = 3,
 						Font = Enum.Font.Gotham,
@@ -1507,7 +1507,7 @@ do
         local slider = utility:Create("ImageButton", {
             Name = "Slider",
             Parent = self.container,
-            BackgroundTransparency = themes.BackgroundTransparency,
+            BackgroundTransparency = 1,
             BorderSizePixel = 0,
             Position = UDim2.new(0.292817682, 0, 0.299145311, 0),
             Size = UDim2.new(1, 0, 0, 50),
@@ -1519,7 +1519,7 @@ do
         }, {
             utility:Create("TextLabel", {
                 Name = "Title",
-                BackgroundTransparency = themes.BackgroundTransparency,
+                BackgroundTransparency = 1,
                 Position = UDim2.new(0, 10, 0, 6),
                 Size = UDim2.new(0.5, 0, 0, 16),
                 ZIndex = 3,
@@ -1532,7 +1532,7 @@ do
             }),
             utility:Create("TextBox", {
                 Name = "TextBox",
-                BackgroundTransparency = themes.BackgroundTransparency,
+                BackgroundTransparency = 1,
                 BorderSizePixel = 0,
                 Position = UDim2.new(1, -30, 0, 6),
                 Size = UDim2.new(0, 20, 0, 16),
@@ -1545,7 +1545,7 @@ do
             }),
             utility:Create("TextLabel", {
                 Name = "Slider",
-                BackgroundTransparency = themes.BackgroundTransparency,
+                BackgroundTransparency = 1,
                 Position = UDim2.new(0, 10, 0, 28),
                 Size = UDim2.new(1, -20, 0, 16),
                 ZIndex = 3,
@@ -1554,7 +1554,7 @@ do
                 utility:Create("ImageLabel", {
                     Name = "Bar",
                     AnchorPoint = Vector2.new(0, 0.5),
-                    BackgroundTransparency = themes.BackgroundTransparency,
+                    BackgroundTransparency = 1,
                     Position = UDim2.new(0, 0, 0.5, 0),
                     Size = UDim2.new(1, 0, 0, 4),
                     ZIndex = 3,
@@ -1565,7 +1565,7 @@ do
                 }, {
                     utility:Create("ImageLabel", {
                         Name = "Fill",
-                        BackgroundTransparency = themes.BackgroundTransparency,
+                        BackgroundTransparency = 1,
                         Size = UDim2.new(0.8, 0, 1, 0),
                         ZIndex = 3,
                         Image = "rbxassetid://5028857472",
@@ -1576,7 +1576,7 @@ do
                         utility:Create("ImageLabel", {
                             Name = "Circle",
                             AnchorPoint = Vector2.new(0.5, 0.5),
-                            BackgroundTransparency = themes.BackgroundTransparency,
+                            BackgroundTransparency = 1,
                             ImageTransparency = 1.000,
                             ImageColor3 = themes.TextColor,
                             Position = UDim2.new(1, 0, 0.5, 0),
@@ -1664,7 +1664,7 @@ do
 		local dropdown = utility:Create("Frame", {
 			Name = "Dropdown",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 0, 30),
 			ClipsDescendants = true
 		}, {
@@ -1674,7 +1674,7 @@ do
 			}),
 			utility:Create("ImageLabel", {
 				Name = "Search",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Size = UDim2.new(1, 0, 0, 30),
 				ZIndex = 2,
@@ -1686,7 +1686,7 @@ do
 				utility:Create("TextBox", {
 					Name = "TextBox",
 					AnchorPoint = Vector2.new(0, 0.5),
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					TextTruncate = Enum.TextTruncate.AtEnd,
 					Position = UDim2.new(0, 10, 0.5, 1),
 					Size = UDim2.new(1, -42, 1, 0),
@@ -1700,7 +1700,7 @@ do
 				}),
 				utility:Create("ImageButton", {
 					Name = "Button",
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Position = UDim2.new(1, -28, 0.5, -9),
 					Size = UDim2.new(0, 18, 0, 18),
@@ -1712,7 +1712,7 @@ do
 			}),
 			utility:Create("ImageLabel", {
 				Name = "List",
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Size = UDim2.new(1, 0, 1, -34),
 				ZIndex = 2,
@@ -1724,7 +1724,7 @@ do
 				utility:Create("ScrollingFrame", {
 					Name = "Frame",
 					Active = true,
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					BorderSizePixel = 0,
 					Position = UDim2.new(0, 4, 0, 4),
 					Size = UDim2.new(1, -8, 1, -8),
@@ -1789,7 +1789,7 @@ do
 		local paragraphContainer = utility:Create("ImageLabel", {
 			Name = "ParagraphContainer",
 			Parent = self.container,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 0, 30),
 			ZIndex = 2,
 			Image = "rbxassetid://5028857472",
@@ -1802,7 +1802,7 @@ do
 			local titleLabel = utility:Create("TextLabel", {
 				Name = "TitleLabel",
 				Parent = paragraphContainer,
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				Position = UDim2.new(0, 10, 0, 5),
 				Size = UDim2.new(1, -20, 0, 16),
 				ZIndex = 3,
@@ -1822,7 +1822,7 @@ do
 		local paragraph = utility:Create("TextLabel", {
 			Name = "Paragraph",
 			Parent = paragraphContainer,
-			BackgroundTransparency = themes.BackgroundTransparency,
+			BackgroundTransparency = 1,
 			Position = positionOffset,
 			Size = sizeOffset,
 			ZIndex = 3,
@@ -2136,7 +2136,7 @@ do
 		for i, value in pairs(list or {}) do
 			local button = utility:Create("ImageButton", {
 				Parent = dropdown.List.Frame,
-				BackgroundTransparency = themes.BackgroundTransparency,
+				BackgroundTransparency = 1,
 				BorderSizePixel = 0,
 				Size = UDim2.new(1, 0, 0, 30),
 				ZIndex = 2,
@@ -2146,7 +2146,7 @@ do
 				SliceCenter = Rect.new(2, 2, 298, 298)
 			}, {
 				utility:Create("TextLabel", {
-					BackgroundTransparency = themes.BackgroundTransparency,
+					BackgroundTransparency = 1,
 					Position = UDim2.new(0, 10, 0, 0),
 					Size = UDim2.new(1, -10, 1, 0),
 					ZIndex = 3,
