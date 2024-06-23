@@ -47,18 +47,10 @@ function sendnotification(message, type)
         print("[ " .. Key .. " ]: " .. message)
     end
     if type == true or type == nil then
-        if R3TH_Device == "Mobile" then
-            StarterGui:SetCore("SendNotification", {
-                Title = Key;
-                Text = message;
-                Duration = 7;
-            })
-        else
-            Notification:Notify(
-                {Title = Key, Description = message},
-                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
-            )
-        end
+        Notification:Notify(
+            {Title = Key, Description = message},
+            {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 7, Type = "default"}
+        )
     end
 end
 
@@ -172,6 +164,8 @@ getgenv().R3TH_Device = Touchscreen and "Mobile" or "PC"
 sendnotification(R3TH_Device .. " detected.", false)
 
 sendnotification("Script loading, this may take a while depending on your device.", nil)
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Particles.lua'))()
 
 if games[game.PlaceId] then
     sendnotification("Game Supported!", false)
