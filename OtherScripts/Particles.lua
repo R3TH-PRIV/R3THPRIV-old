@@ -17,7 +17,7 @@ function AddParticles(player)
             local particle = Instance.new("ParticleEmitter")
             particle.Texture = "http://www.roblox.com/asset/?id=11839269455"
             particle.Parent = v
-            particle.Rate = 2.5
+            particle.Rate = 10
             particle.Size = NumberSequence.new(0.5)
         end
     end
