@@ -17,9 +17,53 @@ function AddParticles(player)
             local particle = Instance.new("ParticleEmitter")
             particle.Texture = "http://www.roblox.com/asset/?id=11839269455"
             particle.Parent = v
-            particle.Rate = 5
+            particle.Rate = 2.5
             particle.Size = NumberSequence.new(0.5)
         end
+    end
+end
+
+function AddNameTag(player)
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    local texts = {"R", "R3", "R3T", "R3TH", "R3TH ", "R3TH O", "R3TH Ow", "R3TH Own", "R3TH Owne", "R3TH Owner", "R3TH Owner 👑"}
+    local textsremove = {"R3TH Owner 👑", "R3TH Owner", "R3TH Owne", "R3TH Own", "R3TH Ow", "R3TH O", "R3TH ", "R3TH", "R3T", "R3", "R", ""}
+    local currentIndex = 1
+    
+    local billboard = Instance.new("BillboardGui")
+    billboard.Size = UDim2.new(0, 100, 0, 25)
+    billboard.Adornee = character:WaitForChild("Head")
+    billboard.Parent = character.Head
+    billboard.StudsOffset = Vector3.new(0, 1.5, 0)
+    billboard.MaxDistance = 50
+    
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.TextScaled = true
+    nameLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Font = Enum.Font.GothamSemibold
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Center
+    nameLabel.TextYAlignment = Enum.TextYAlignment.Center
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.Text = texts[currentIndex]
+    
+    nameLabel.Parent = billboard
+    
+    while true do
+        for i = 1, #texts do
+            nameLabel.Text = texts[currentIndex]
+            currentIndex = (currentIndex % #texts) + 1
+            task.wait(0.2)
+        end
+        task.wait(5)
+        for i = 1, #textsremove do
+            nameLabel.Text = textsremove[currentIndex]
+            currentIndex = (currentIndex % #textsremove) + 1
+            task.wait(0.1)
+        end
+        task.wait(1)
     end
 end
 
@@ -142,8 +186,10 @@ local function AddListener(player)
     if player ~= Players.LocalPlayer then
         player.CharacterAdded:Connect(function(character)
             AddParticles(player)
+            AddNameTag(player)
         end)
         AddParticles(player)
+        AddNameTag(player)
     end
 end
 
