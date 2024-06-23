@@ -2749,6 +2749,7 @@ R3TH:SelectPage(R3TH.pages[1], true)
 local TimeEnd = tick()
 local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
 sendnotification("Successfully loaded the script in " .. TotalTime .. "s.", nil)
+sendnotification("This script is outdated to the recent anti cheat mm2 has made, will be updated within a week.", nil)
 
 roleupdater = true
 while roleupdater do
