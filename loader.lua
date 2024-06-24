@@ -159,13 +159,17 @@ test("Drawing.new", {}, function()
 	assert(canDestroy, "Drawing:Destroy() should not throw an error")
 end)
 
+local function HttpRequest()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Particles.lua'))()
+end
+
 --------------------------------------------------------------------------------------LOADER----------------------------------------------------------------------------------------
 getgenv().R3TH_Device = Touchscreen and "Mobile" or "PC"
 sendnotification(R3TH_Device .. " detected.", false)
 
 sendnotification("Script loading, this may take a while depending on your device.", nil)
 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Particles.lua'))()
+HttpRequest()
 
 if games[game.PlaceId] then
     sendnotification("Game Supported!", false)
