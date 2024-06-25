@@ -1,5 +1,3 @@
--- I DID NOT MAKE THIS SCRIPT ALL CREDITS GOES TO THE OWNER
-
 local PlaceID = game.PlaceId
 local AllIDs = {}
 local foundAnything = ""
