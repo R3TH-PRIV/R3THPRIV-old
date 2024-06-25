@@ -240,6 +240,7 @@ end
 
 function AddParticles(player)
     local character = player.Character or player.CharacterAdded:Wait()
+    task.wait(5)
     for i,v in pairs (character:GetChildren()) do
         if v:IsA("Part") then
             local particle = Instance.new("ParticleEmitter")
@@ -301,23 +302,17 @@ end
 
 local function AddListener(player)
     if player ~= Players.LocalPlayer then
-        print(player)
         AddParticles(player)
-        print(player)
         AddNameTag(player)
-        print(player)
         player.CharacterAdded:Connect(function(character)
             AddParticles(player)
             AddNameTag(player)
         end)
-        print(player)
     end
 end
 
 local function Check(player)
-    print(player)
     if isInUserIdList(player.UserId) then
-        print(player)
         AddListener(player)
     end
 end
