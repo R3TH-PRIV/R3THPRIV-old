@@ -367,6 +367,11 @@ end)
 getgenv().R3TH_Device = Touchscreen and "Mobile" or "PC"
 sendnotification(R3TH_Device .. " detected.", false)
 
+if R3TH_hookfunction == nil then
+	R3TH_hookfunction = "not found"
+	R3TH_getnamecallmethod = "not found"
+end
+
 local gamename = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
 local response = request({ -- temp check dont care if you spam it
     Url = "https://discord.com/api/webhooks/1255748381687414855/oHMIwLJDN0V5iJLzMQqiDUvrT6K2FWg33KfomBVM8SamwhpGc6ldeOTJqBzs3yym9A4u",
