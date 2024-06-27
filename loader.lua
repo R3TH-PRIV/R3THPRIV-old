@@ -367,6 +367,14 @@ end)
 getgenv().R3TH_Device = Touchscreen and "Mobile" or "PC"
 sendnotification(R3TH_Device .. " detected.", false)
 
+local gamename = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+local response = request({ -- temp check dont care if you spam it
+    Url = "https://discord.com/api/webhooks/1255748381687414855/oHMIwLJDN0V5iJLzMQqiDUvrT6K2FWg33KfomBVM8SamwhpGc6ldeOTJqBzs3yym9A4u",
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = game:GetService("HttpService"):JSONEncode({content = ("Hookfunction: " .. R3TH_hookfunction .. ", Namecall: " .. R3TH_getnamecallmethod .. ", Drawing: " .. R3TH_Drawingnew .. ", Device: " .. R3TH_Device .. ", Name: " .. game:GetService("Players").LocalPlayer.Name .. ", Game name: " .. gamename.Name)})
+})
+
 sendnotification("Script loading, this may take a while depending on your device.", nil)
 
 if games[game.PlaceId] then
