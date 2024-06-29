@@ -11,7 +11,7 @@ local function sendnotification(message)
     )
 end
 
-sendnotification("WARNING JANN HUB RECORDS ALL OF YOUR INFORMATION AND IS DETECTED, PUTTING YOU AT RISK OF BEING BANNED.")
+sendnotification("WARNING JANN HUB RECORDS ALL OF YOUR INFORMATION AND IS DETECTED, RISKING YOU BEING BANNED.")
 wait(10)
 sendnotification("I am Pethicial, the owner of 'R3TH PRIV', and I am advising you to avoid Jann Hub since it is extremely dangerous.")
 wait(10)
