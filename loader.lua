@@ -57,6 +57,7 @@ local games = {
     [4939362930] = 'Total%20Roblox%20Drama',
     [4939362610] = 'Total%20Roblox%20Drama',
     [7172152072] = 'Total%20Roblox%20Drama',
+    [15365802831] = 'Total%20Roblox%20Drama',
     [1962086868] = 'Tower%20of%20Hell',
     [3582763398] = 'Tower%20of%20Hell',
     [5253186791] = 'Tower%20of%20Hell',
