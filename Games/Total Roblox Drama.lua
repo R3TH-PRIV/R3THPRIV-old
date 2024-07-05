@@ -2241,7 +2241,7 @@ else
         ChangeAnswerDelay = Value
     end)
 
-    Farm:addToggle("Auto Answer Math Triva", false, function(Value)
+    Farm:addToggle("Auto Answer Math Trivia", false, function(Value)
         ChangeAutoMathTriva = Value
         while ChangeAutoMathTriva and task.wait() do
             if Assets:FindFirstChild("Math Mania") or Assets:FindFirstChild("Math Trivia") or Assets:FindFirstChild("Singapore") then
