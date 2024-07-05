@@ -2231,10 +2231,6 @@ else
         end
     end)
 
-    Game0:addButton("Remove barriers", function()
-
-    end)
-
     Game0:addTextbox("Change Confession", "", function(Value, focusLost)
         if focusLost then
             ReplicatedStorage.Events.Confessional:FireServer(Value)
