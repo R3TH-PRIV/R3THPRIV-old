@@ -7,8 +7,14 @@
         pethicial
 ]]
 
+-- My code is still messy, but I'm not going to clean it up because most of this script will be patched soon anyway.
+-- dont use the source yet its not finished
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
+
+if Key == nil then
+    Key = "R3TH PRIV"
+end
 
 print("[ " .. Key .. " ]: Total Roblox Drama loading...")
 
@@ -21,17 +27,18 @@ end
 
 R3TH_hookfunction = (type(hookmetamethod) == "function" and type(getnamecallmethod) == "function") and "Supported" or "Unsupported" -- Seperate undetected check before executing bypass
 
-for i,v in pairs(game.ReplicatedStorage:GetDescendants())do
-    if v.Name == "OfficialLobby" then
-        MapName = "Lobby"
-        break
-    elseif v.Name == "Map" and v.ClassName == "StringValue" then
-        MapName = v.Value
-        break
-    end
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+if ReplicatedStorage:FindFirstChild("OfficialLobby") then
+    ChangeMapname = "Lobby"
+elseif ReplicatedStorage:FindFirstChild("Map") then
+    ChangeMapname = ReplicatedStorage.Map.Value
+    ChangeIngame = true
+else
+    ChangeMapname = "Practice"
 end
 
-print("[ " .. Key .. " ]: " ..MapName .." detected")
+print("[ " .. Key .. " ]: " ..ChangeMapname .." detected")
 
 --------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
@@ -39,6 +46,8 @@ local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/
 
 if R3TH_hookfunction == "Supported" then
     loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
+else
+    print("[ " .. Key .. " ]: You run the risk of being kicked because Adonis Anti-Cheat Bypass isn't supported on your executor.")
 end
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
@@ -62,20 +71,25 @@ local Anti = Universal:addSection("Anti")
 local Server = Universal:addSection("Server")
 
 local Main0 = R3TH:addPage("Main", 10709782154)
-if MapName ~= "Lobby" then
+local Information0 = R3TH:addPage("Information", 10709818996)
+local PlayerInformation = Information0:addSection("Player Information")
+if ChangeMapname == "Lobby" then
+    Main = Main0:addSection("Main")
+elseif ChangeMapname == "Practice" then
+    Abuse = Main0:addSection("Abuse")
+else
     Teleports = Main0:addSection("Teleports")
     Characters = Main0:addSection("Characters")
-    Votes = Main0:addSection("Votes")
     Game0 = Main0:addSection("Game")
     Farm = Main0:addSection("Farm")
-else
-    Main = Main0:addSection("Main")
+    Votes = Information0:addSection("Votes")
+    StoredVotes = Information0:addSection("Stored Votes")
 end
 
 local Settings0 = R3TH:addPage("Settings", 10734950309)
+local Credits = Settings0:addSection("Credits")
 local Settings = Settings0:addSection("Settings")
 local Theme = Settings0:addSection("Theme")
-local Credits = Settings0:addSection("Credits")
 
 local Target0 = R3TH:addPage("Target", 10734977012)
 local Sniper = Target0:addSection("Sniper")
@@ -92,11 +106,12 @@ local UniversalKeybind = Keybinds:addSection("Universal")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local Backpack = LocalPlayer:WaitForChild("Backpack")
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local Torso = Character:WaitForChild("Torso")
 local Workspace = game:GetService("Workspace")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
 local Lighting = game:GetService("Lighting")
 local VirtualUser = game:GetService("VirtualUser")
@@ -107,9 +122,11 @@ local RunService = game:GetService("RunService")
 local ContextActionService = game:GetService("ContextActionService")
 local HttpService = game:GetService("HttpService")
 local Mouse = LocalPlayer:GetMouse()
+local Assets = Workspace:FindFirstChild("Assets") and Workspace.Assets or nil
+local InformationList = "Username: %s\nUser Id: %s\nAccount Age: %s days old\nCoins: %s\nGames Played: %s\nConfessional: %s\nOfficialWins: %s\nCamp Wins: %s\nMovies Wins: %s\nExpedition Wins: %s\nChallenge Wins: %s\nComeback Wins: %s\nIdols Found: %s"
 
-local DefaultWalkSpeed = Humanoid.WalkSpeed
-local DefaultJumpPower = Humanoid.JumpPower
+local DefaultWalkSpeed = 16
+local DefaultJumpPower = 50
 local DefaultHipHeight= Humanoid.HipHeight
 local WalkSpeedSlider = DefaultWalkSpeed
 local JumpPowerSlider = DefaultJumpPower
@@ -144,6 +161,166 @@ if R3TH_Drawingnew == "Supported" then
 end
 
 local buttons = {W = false, S = false, A = false, D = false, Moving = false}
+
+--------------------------------------------------------------------------------------LIST----------------------------------------------------------------------------------------
+local Config = {
+    Camp = {
+        Camp = CFrame.new(147, -16, -414),
+        Exile = CFrame.new(-77, -15, -158),
+        Voting = CFrame.new(-10, 93, -530),
+        Game = CFrame.new(143, -16, -231),
+        Spectators = CFrame.new(36, -17, 8),
+        SwordMap = "Sword Fight",
+        SwordName = "Sword",
+        SpleefPath = "Spleef",
+        Food = "Pancake Eating"
+    },
+    Movies = {
+        Camp = CFrame.new(-21, 52, 4),
+        Voting = CFrame.new(59, 56, -172),
+        Game = CFrame.new(292, 52, -206),
+        SwordMap = "Beach",
+        SwordName = "Pool Noodle",
+        Spectators = CFrame.new(-672, -67, -619),
+        Food = "Prison"
+    },
+    Expedition = {
+        Camp = CFrame.new(42, 97, -36),
+        Voting = CFrame.new(-120, 97, -29),
+        Game = CFrame.new(-70, 276, 317),
+        Spectators = CFrame.new(-65, -28, -891),
+        SwordMap = "Greece",
+        SwordName = "Sword",
+        SpleefPath = "Amazon",
+        Food = "dk"
+    }
+}
+
+local NameSymbols = {
+    ["Swastika"] = [[
+    ████╗░░░████████████╗
+    ████║░░░████████████║
+    ████║░░░████╔═══════╝
+    ████║░░░████║░░░░░░░░
+    ████████████████████╗
+    ████████████████████║
+    ╚═══════████╔═══████║
+    ░░░░░░░░████║░░░████║
+    ████████████║░░░████║
+    ████████████║░░░████║
+    ╚═══════════╝░░░╚═══╝
+    ]],
+    ["Skull"] = [[
+    ███████████████████████████
+    ███████▀▀▀░░░░░░░▀▀▀███████
+    ████▀░░░░░░░░░░░░░░░░░▀████
+    ███│░░░░░░░░░░░░░░░░░░░│███
+    ██▌│░░░░░░░░░░░░░░░░░░░│▐██
+    ██░└┐░░░░░░░░░░░░░░░░░┌┘░██
+    ██░░└┐░░░░░░░░░░░░░░░┌┘░░██
+    ██░░┌┘▄▄▄▄▄░░░░░▄▄▄▄▄└┐░░██
+    ██▌░│██████▌░░░▐██████│░▐██
+    ███░│▐███▀▀░░▄░░▀▀███▌│░███
+    ██▀─┘░░░░░░░▐█▌░░░░░░░└─▀██
+    ██▄░░░▄▄▄▓░░▀█▀░░▓▄▄▄░░░▄██
+    ████▄─┘██▌░░░░░░░▐██└─▄████
+    █████░░▐█─┬┬┬┬┬┬┬─█▌░░█████
+    ████▌░░░▀┬┼┼┼┼┼┼┼┬▀░░░▐████
+    █████▄░░░└┴┴┴┴┴┴┴┘░░░▄█████
+    ███████▄░░░░░░░░░░░▄███████
+    ██████████▄▄▄▄▄▄▄██████████
+    ███████████████████████████
+    ]],
+    ["Guy"] = [[
+    ───────▄▀▀▀▀▀▀▀▀▀▀▄▄
+    ────▄▀▀░░░░░░░░░░░░░▀▄
+    ──▄▀░░░░░░░░░░░░░░░░░░▀▄
+    ──█░░░░░░░░░░░░░░░░░░░░░▀▄
+    ─▐▌░░░░░░░░▄▄▄▄▄▄▄░░░░░░░▐▌
+    ─█░░░░░░░░░░░▄▄▄▄░░▀▀▀▀▀░░█
+    ▐▌░░░░░░░▀▀▀▀░░░░░▀▀▀▀▀░░░▐▌
+    █░░░░░░░░░▄▄▀▀▀▀▀░░░░▀▀▀▀▄░█
+    █░░░░░░░░░░░░░░░░▀░░░▐░░░░░▐▌
+    ▐▌░░░░░░░░░▐▀▀██▄░░░░░░▄▄▄░▐▌
+    ─█░░░░░░░░░░░▀▀▀░░░░░░▀▀██░░█
+    ─▐▌░░░░▄░░░░░░░░░░░░░▌░░░░░░█
+    ──▐▌░░▐░░░░░░░░░░░░░░▀▄░░░░░█
+    ───█░░░▌░░░░░░░░▐▀░░░░▄▀░░░▐▌
+    ───▐▌░░▀▄░░░░░░░░▀░▀░▀▀░░░▄▀
+    ───▐▌░░▐▀▄░░░░░░░░░░░░░░░░█
+    ───▐▌░░░▌░▀▄░░░░▀▀▀▀▀▀░░░█
+    ───█░░░▀░░░░▀▄░░░░░░░░░░▄▀
+    ──▐▌░░░░░░░░░░▀▄░░░░░░▄▀
+    ─▄▀░░░▄▀░░░░░░░░▀▀▀▀█▀
+    ▀░░░▄▀░░░░░░░░░░▀░░░▀▀▀▀▄▄▄▄▄
+    ]],
+    ["Hacker"] = [[
+    ███████████████████████████████
+    ████╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬████
+    ██╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬██
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    █╬╬╬███████╬╬╬╬╬╬╬╬╬███████╬╬╬█
+    █╬╬██╬╬╬╬███╬╬╬╬╬╬╬███╬╬╬╬██╬╬█
+    █╬██╬╬╬╬╬╬╬██╬╬╬╬╬██╬╬╬╬╬╬╬██╬█
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    █╬╬╬╬█████╬╬╬╬╬╬╬╬╬╬╬█████╬╬╬╬█
+    █╬╬█████████╬╬╬╬╬╬╬█████████╬╬█
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬╬█╬╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬╬█╬╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬╬█╬╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    █╬╬╬▓▓▓▓╬╬╬╬╬╬╬█╬╬╬╬╬╬╬▓▓▓▓╬╬╬█
+    █╬╬▓▓▓▓▓▓╬╬█╬╬╬█╬╬╬█╬╬▓▓▓▓▓▓╬╬█
+    █╬╬╬▓▓▓▓╬╬██╬╬╬█╬╬╬██╬╬▓▓▓▓╬╬╬█
+    █╬╬╬╬╬╬╬╬██╬╬╬╬█╬╬╬╬██╬╬╬╬╬╬╬╬█
+    █╬╬╬╬╬████╬╬╬╬███╬╬╬╬████╬╬╬╬╬█
+    █╬╬╬╬╬╬╬╬╬╬╬╬╬███╬╬╬╬╬╬╬╬╬╬╬╬╬█
+    ██╬╬█╬╬╬╬╬╬╬╬█████╬╬╬╬╬╬╬╬█╬╬██
+    ██╬╬██╬╬╬╬╬╬███████╬╬╬╬╬╬██╬╬██
+    ██╬╬▓███╬╬╬████╬████╬╬╬███▓╬╬██
+    ███╬╬▓▓███████╬╬╬███████▓▓╬╬███
+    ███╬╬╬╬▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓╬╬╬╬███
+    ████╬╬╬╬╬╬╬╬╬╬███╬╬╬╬╬╬╬╬╬╬████
+    █████╬╬╬╬╬╬╬╬╬╬█╬╬╬╬╬╬╬╬╬╬█████
+    ██████╬╬╬╬╬╬╬╬███╬╬╬╬╬╬╬╬██████
+    ███████╬╬╬╬╬╬╬███╬╬╬╬╬╬╬███████
+    ████████╬╬╬╬╬╬███╬╬╬╬╬╬████████
+    █████████╬╬╬╬╬███╬╬╬╬╬█████████
+    ███████████╬╬╬╬█╬╬╬╬███████████
+    ███████████████████████████████
+    ]],
+    ["Middle Finger"] = [[
+    ________________$$$$$
+    ______________$$____$$
+    ______________$$____$$
+    ______________$$____$$
+    ______________$$____$$
+    ______________$$____$$
+    __________$$$$$$____$$$$$$
+    ________$$____$$____$$____$$$$
+    ________$$____$$____$$____$$__$$
+    $$$$$$__$$____$$____$$____$$____$$
+    $$____$$$$________________$$____$$
+    $$______$$______________________$$
+    __$$____$$______________________$$
+    ___$$$__$$______________________$$
+    ____$$__________________________$$
+    _____$$$________________________$$
+    ______$$______________________$$$
+    _______$$$____________________$$
+    ________$$____________________$$
+    _________$$$________________$$$
+    __________$$________________$$
+    __________$$$$$$$$$$$$$$$$$$$$
+   ]]
+}
+
+local NameSymbolsDropdown = {}
+
+for i, v in pairs(NameSymbols) do
+    table.insert(NameSymbolsDropdown, i)
+end
+
 --------------------------------------------------------------------------------------FUNCTIONS----------------------------------------------------------------------------------------
 local function ToggleUI()
     local Toggle = false
@@ -414,7 +591,7 @@ local function getUserAvatarsByTokens(playerTokens)
 end
 
 local function CancelSearch()
-    sendnotification("Search canceled.", nil)
+    sendnotification("Search canceled.", true)
     SniperText.Text = "Join a player by just knowing what game their in!"
 end
 
@@ -470,28 +647,145 @@ function FireButtonClick(button)
     end
 end
 
---------------------------------------------------------------------------------------LIST----------------------------------------------------------------------------------------
-local destinations = {
-    Camp = {
-        Camp = CFrame.new(147, -16, -414),
-        Exile = CFrame.new(-77, -15, -158),
-        Voting = CFrame.new(-10, 93, -530),
-        Game = CFrame.new(143, -16, -231),
-        Spectators = CFrame.new(36, -17, 8)
-    },
-    Movies = {
-        Camp = CFrame.new(-21, 52, 4),
-        Voting = CFrame.new(59, 56, -172),
-        Game = CFrame.new(292, 52, -206),
-        Spectators = CFrame.new(-672, -67, -619)
-    },
-    Expedition = {
-        Camp = CFrame.new(42, 97, -36),
-        Voting = CFrame.new(-120, 97, -29),
-        Game = CFrame.new(-70, 276, 317),
-        Spectators = CFrame.new(-65, -28, -891)
-    }
-}
+function EquipTool(Sword)
+    if Backpack:FindFirstChild(Sword) then
+        Backpack[Sword].Parent = Character
+    end
+end
+
+function HasTool(World, Check)
+    if Check then
+        if Backpack:FindFirstChild(Config[World].SwordName) then
+            return true
+        elseif Character:FindFirstChild(Config[World].SwordName) then
+            return true
+        else
+            return false
+        end
+    else
+        return false
+    end
+end
+
+function HitPlayer(Player)
+    if Player and Player:FindFirstChild("Humanoid") and Player.Humanoid.Health > 0 and Player:FindFirstChild("HumanoidRootPart") then
+        local tool = Character and Character:FindFirstChildOfClass("Tool")
+        if tool and tool:FindFirstChild("Handle") then
+            for i,v in next, Player:GetChildren() do
+                if v:IsA("BasePart") then
+                    for i = 1, 3 do
+                        tool:Activate()
+                        firetouchinterest(tool.Handle,v,0)
+                        firetouchinterest(tool.Handle,v,1)
+                    end
+                end
+            end
+        end
+    end
+end
+
+function KillAll(Method, Sword)
+    EquipTool(Sword)
+    task.wait()
+    if Character:FindFirstChild(Sword) then
+        if Method then
+            for i,v in pairs(Players:GetPlayers()) do
+                HitPlayer(Players[v.Name].Character)
+            end
+        else
+            HitPlayer(Players[ChangeAbuseTarget].Character)
+        end
+    end
+end
+
+function GetSword(World, Map, Check)
+    if not HasTool(World, Check) then
+        if Character then
+            local currentPosition = HumanoidRootPart.Position
+            task.wait()
+            ReplicatedStorage.Events.PracticeMap:FireServer(World, Map)
+            task.wait(1)
+            TeleportPlayer(CFrame.new(currentPosition), CFrame.new(0,0,0))
+        end
+    end
+end
+
+function TouchAll(Method, TouchAllPath, Obby)
+    pcall(function()
+        if not Method then TouchAllPath = Assets:FindFirstChild(TouchAllPath) end
+        if TouchAllPath or Method then
+            if not Method then TouchAllPath = Assets end
+            for _,v in pairs(TouchAllPath:GetDescendants()) do
+                if v:IsA("TouchTransmitter") then
+                    if v.Parent.Name == "Finish" or not Obby then
+                        firetouchinterest(HumanoidRootPart, v.Parent, 0)
+                        task.wait()
+                        firetouchinterest(HumanoidRootPart, v.Parent, 1)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+function BuyCharacter(Name)
+    ReplicatedStorage.Events.Buy:FireServer("Character", Name)
+end
+
+function UpdateInformation(Player)
+    local Player = Players[Player]
+    local DataStore = Player.DataStore
+    InformationText.Text = string.format(InformationList, Player.Name, Player.UserId, Player.AccountAge, DataStore.Coins.Value, DataStore.GamesPlayed.Value, DataStore.Confessional.Value, DataStore.OfficialWins.Value, DataStore.CampWins.Value, DataStore.MoviesWins.Value, DataStore.ExpeditionWins.Value, DataStore.ChallengeWins.Value, DataStore.ComebackWins.Value, DataStore.IdolsFound.Value)
+end
+
+function CheckUI(Check)
+    if LocalPlayer.PlayerGui.Game.Background.MainText.Text == "GO!" and Check then
+        return true
+    elseif not LocalPlayer.PlayerGui:FindFirstChild("RoleBuying") and not Check then
+        sendnotification("You must do this while in the character menu at the beginning of the game.")
+        return true
+    else
+        return false
+    end
+end
+
+local UnanchoredList = {}
+local MoversList = {}
+
+function MoveUnanchored(Toggle, Path)
+    if Toggle then
+        UnanchoredList = {}
+        MoversList = {}
+
+        for _, v in pairs(Path:GetDescendants()) do
+            if v:IsA("BasePart") and not v.Anchored and not v:IsDescendantOf(Character) then
+                table.insert(UnanchoredList, v)
+                v.Massless = true
+                v.CanCollide = false
+                local bodyPosition = v:FindFirstChildOfClass("BodyPosition")
+                if bodyPosition then
+                    bodyPosition:Destroy()
+                end
+            end
+        end
+
+        for _, v in pairs(UnanchoredList) do
+            local mover = Instance.new("BodyPosition", v)
+            table.insert(MoversList, mover)
+            mover.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        end
+    else
+        for _, v in ipairs(MoversList) do
+            v:Destroy()
+        end
+    end
+end
+
+function MoveObject(Move)
+    for i, v in pairs(MoversList) do
+        v.Position = Move
+    end
+end
 
 --------------------------------------------------------------------------------------CONNECTIONS----------------------------------------------------------------------------------------
 if R3TH_hookfunction == "Supported" then
@@ -531,6 +825,8 @@ LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     Character = newCharacter
     Humanoid = Character:WaitForChild("Humanoid")
     HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+    Torso = Character:WaitForChild("Torso")
+    Backpack = LocalPlayer:WaitForChild("Backpack")
 end)
 
 -- Free Camera --
@@ -964,19 +1260,17 @@ function FreeCameraWrap()
 end
 coroutine.resume(coroutine.create(FreeCameraWrap))
 
-if MapName ~= "Lobby" then
+if ChangeIngame then
     ReplicatedStorage.Season.Voting.Votes.ChildAdded:Connect(function(v)
-        local PlayerVoted = ReplicatedStorage.Season.Players[v.Value].Value
-        local PlayerPicked = ReplicatedStorage.Season.Players[v.Name].Value
-        local message = PlayerVoted .." voted for " ..PlayerPicked
+        local message = ReplicatedStorage.Season.Players[v.Value].Value .." voted for " ..ReplicatedStorage.Season.Players[v.Name].Value
+        if ChangeExposeVotes then
+            ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+        end
         if ChangeNotifyVotes then
             sendnotification(message, true)
         end
-        if ChangePrintVotes then
-            sendnotification(message, false)
-        end
-        if ChangeExposeVotes then
-            ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+        if ChangeStoredVotes then
+            StoredVotes:addParagraph(nil, message)
         end
     end)
 end
@@ -1321,7 +1615,7 @@ end)
 Player:addSlider("Jumppower", DefaultJumpPower, 0, 500, function(Value)
     JumpPowerSlider = Value
     if ChangeJumpPower then
-        Humanoid.WalkSpeed = JumpPowerSlider
+        Humanoid.JumpPower = JumpPowerSlider
     end
 end)
 
@@ -1792,45 +2086,101 @@ Server:addButton("Serverhop", function()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
-if MapName ~= "Lobby" then
+InformationContainer, InformationText = PlayerInformation:addParagraph(nil, InformationList)
+
+PlayerInformation:addDropdown("View Information", playerlist, function(Value)
+    if Value ~= "All" then
+        UpdateInformation(Value, true)
+    end
+end)
+
+if ChangeMapname == "Lobby" then
+    Main:addParagraph("Why aren't there any scripts?", "You are in the lobby; when you join a game, the scripts will load automatically based on your game mode.")
+elseif ChangeMapname == "Practice" then
+    Abuse:addDropdown("Target", playerlist, function(Value)
+        ChangeAbuseTarget = Value
+    end)
+
+    Abuse:addToggle("Kill Target", false, function(Value)
+        ChangeKillTarget = Value
+        while ChangeKillTarget and task.wait(0.1) do
+            GetSword("Camp", "Sword Fight", true)
+            task.wait()
+            if ChangeAbuseTarget == "All" then
+                KillAll(true, "Sword")
+            else
+                KillAll(false, "Sword")
+            end
+        end
+    end)
+
+    Abuse:addToggle("Break Spleef", false, function(Value)
+        if Value then
+            ChangeBreakSpleef = RunService.Heartbeat:Connect(function()
+                TouchAll(true, Workspace.Maps.Camp.Spleef.Spleef.SpleefBlocks, false)
+                TouchAll(true, Workspace.Maps.Expedition.Amazon.Amazon.SpleefBlocks, false)
+            end)
+        else
+            ChangeBreakSpleef:Disconnect()
+        end
+    end)
+
+    Abuse:addToggle("Steal push blocks", false, function(Value)
+        ChangeBreakpushblocks = Value
+        MoveUnanchored(true, Workspace.Maps.Camp["Block Push"])
+        while ChangeBreakpushblocks and task.wait() do
+            if ChangeBreakpushblocks then
+                MoveObject(HumanoidRootPart.CFrame:PointToWorldSpace(Vector3.new(0, 0, 5)))
+            else
+                MoveUnanchored(false)
+            end
+        end
+    end)
+
+    Abuse:addButton("Get Pool Noodle", function()
+        GetSword("Movies", "Beach")
+    end)
+
+    Abuse:addButton("Get Sword", function()
+        GetSword("Camp", "Sword Fight")
+    end)
+else
     Teleports:addButton("Teleport to Camp", function()
-        TeleportPlayer(destinations[MapName]["Camp"], CFrame.new(0,0,0))
+        TeleportPlayer(Config[ChangeMapname]["Camp"], CFrame.new(0,0,0))
     end)
 
     Teleports:addButton("Teleport to Voting", function()
-        TeleportPlayer(destinations[MapName]["Voting"], CFrame.new(0,0,0))
+        TeleportPlayer(Config[ChangeMapname]["Voting"], CFrame.new(0,0,0))
     end)
     
     Teleports:addButton("Teleport to Game", function()
-        TeleportPlayer(destinations[MapName]["Game"], CFrame.new(0,0,0))
+        TeleportPlayer(Config[ChangeMapname]["Game"], CFrame.new(0,0,0))
     end)
 
     Teleports:addButton("Teleport to Spectators", function()
-        TeleportPlayer(destinations[MapName]["Spectators"], CFrame.new(0,0,0))
+        TeleportPlayer(Config[ChangeMapname]["Spectators"], CFrame.new(0,0,0))
     end)
 
     Characters:addTextbox("Custom character name", "", function(Value, focusLost)
-        ChangeCustomcharactername = Value
+        if focusLost then
+            ChangeCustomcharactername = Value
+        end
     end)
 
     Characters:addButton("Buy Custom character", function()
-        ReplicatedStorage.Events.Buy:FireServer("Character", ChangeCustomcharactername)
+        if CheckUI(false) then return end
+        BuyCharacter(ChangeCustomcharactername)
     end)
 
-    Characters:addButton("Break server name", function()
-        ReplicatedStorage.Events.Buy:FireServer("Character", "R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIVR3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIVR3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIVR3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIVR3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV R3THPRIV")
+    Characters:addButton("Buy Never-ending character name", function()
+        if CheckUI(false) then return end
+        sendnotification("To avoid frame drops, I recommend using 'Hide your name' while using this.", true)
+        BuyCharacter("Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all. Hello while you read my never-ending name, I'm here to tell you how R3TH PRIV is the best fucking exploit for this game, which you can get at discord.gg/pethicial, you can do anything you imagine with this, from auto-winning any gamemode to seeing who votes for who or even exposing all the votes made, and best of all changing your character's name to anything you want, including swear words, and there's just so much more you can do, but check it out for yourself to see it all.")
     end)
 
-    Votes:addToggle("Notify Votes", false, function(Value)
-        ChangeNotifyVotes = Value
-    end)
-
-    Votes:addToggle("Print Votes", false, function(Value)
-        ChangePrintVotes = Value
-    end)
-
-    Votes:addToggle("Expose Votes", false, function(Value)
-        ChangeExposeVotes = Value
+    Characters:addDropdown("Buy symbol character name", NameSymbolsDropdown, function(Value)
+        if CheckUI(false) then return end
+        BuyCharacter(NameSymbols[Value])
     end)
 
     Game0:addToggle("Hide Players", false, function(Value)
@@ -1852,6 +2202,18 @@ if MapName ~= "Lobby" then
         end
     end)
 
+    Game0:addToggle("Notify if purge", false, function(Value)
+        ChangeNotifyifpurge = Value
+        while ChangeNotifyifpurge and task.wait() do
+            if Assets:FindFirstChild("PURGE") and ChangePurge == nil then
+                ChangePurge = true
+                sendnotification("Purge has been detected.")
+            elseif not Assets:FindFirstChild("PURGE") and ChangePurge then
+                ChangePurge = nil
+            end
+        end
+    end)
+
     Game0:addToggle("Force Move", false, function(Value)
         ChangeForceMove = Value
         while ChangeForceMove and task.wait() do
@@ -1863,16 +2225,20 @@ if MapName ~= "Lobby" then
 
     Game0:addToggle("Walk on Water", false, function(Value)
         for i,v in pairs (Workspace:GetDescendants()) do
-            if v.Name == "Water" then
-                v.CanCollide = Value
-            elseif v.Name == "water" then
-                v.CanCollide = Value
+            if v.Name == "Water" or v.Name == "water" then
+                v.CanCollide = true
             end
         end
     end)
 
+    Game0:addButton("Remove barriers", function()
+        BuyCharacter(ChangeCustomcharactername)
+    end)
+
     Game0:addTextbox("Change Confession", "", function(Value, focusLost)
-        ReplicatedStorage.Events.Confessional:FireServer(Value)
+        if focusLost then
+            ReplicatedStorage.Events.Confessional:FireServer(Value)
+        end
     end)
 
     Farm:addSlider("Answer Delay", 0, 0, 10, function(Value)
@@ -1881,17 +2247,30 @@ if MapName ~= "Lobby" then
 
     Farm:addToggle("Auto Answer Math Triva", false, function(Value)
         ChangeAutoMathTriva = Value
-        while ChangeAutoMathTriva do
-            LoopCount = 0
-            for i = 1, 10 do
-                if not ChangeAutoMathTriva then break end
-                LoopCount = LoopCount + 1
-                local QuizText = LocalPlayer.PlayerGui.MathMania[LoopCount].MainText.Text
-                local RemovedExtra = QuizText:gsub("[=? ]","")
-                local SolvedAnswer = loadstring("return " .. RemovedExtra)()
-                LocalPlayer.PlayerGui.MathMania[LoopCount].Box.Text = SolvedAnswer
-                FireButtonClick(LocalPlayer.PlayerGui.MathMania[LoopCount].Enter)
-                task.wait(ChangeAnswerDelay)
+        while ChangeAutoMathTriva and task.wait() do
+            if Assets:FindFirstChild("Math Mania") or Assets:FindFirstChild("Math Trivia") or Assets:FindFirstChild("Singapore") then
+                LoopCount = 0
+                for i = 1, 10 do
+                    if not ChangeAutoMathTriva then break end
+                    function ChangeAutoMathTrivaFix()
+                        LoopCount = LoopCount + 1
+                        local SolvedAnswer = loadstring("return " .. LocalPlayer.PlayerGui.MathMania[LoopCount].MainText.Text:gsub("[=? ]",""))()
+                        LocalPlayer.PlayerGui.MathMania[LoopCount].Box.Text = SolvedAnswer
+                        FireButtonClick(LocalPlayer.PlayerGui.MathMania[LoopCount].Enter)
+                        task.wait(ChangeAnswerDelay)
+                    end
+                    pcall(ChangeAutoMathTrivaFix)
+                end
+            end
+        end
+    end)
+
+    Farm:addToggle("Collect Safety Statue", false, function(Value)
+        sendnotification("The Safety Statue does not have a 100% spawn rate, so you may not receive it while using this.", true)
+        ChangeAutoGetTrophy = Value
+        while ChangeAutoGetTrophy and task.wait() do
+            if #Workspace.Idols:GetChildren() ~= 0 then
+                TouchAll(true, Workspace.Idols, false)
             end
         end
     end)
@@ -1899,36 +2278,163 @@ if MapName ~= "Lobby" then
     Farm:addToggle("Win Obbys", false, function(Value)
         ChangeAutoWinObbys = Value
         while ChangeAutoWinObbys and task.wait() do
-            for i,v in pairs (Workspace:GetDescendants()) do
-                if v.Name == "Finish" then
-                    v.CanCollide = false
-                    v.Transparency = 1
-                    v.Position = Character.Torso.Position
+            if #Assets:GetChildren() ~= 0 then
+                TouchAll(true, Assets, true)
+            end
+        end
+    end)
+
+    Farm:addToggle("Sword All", false, function(Value)
+        ChangeSwordAll = Value
+        while ChangeSwordAll and task.wait() do
+            if Assets:FindFirstChild(Config[ChangeMapname].SwordMap) then
+                KillAll(true, Config[ChangeMapname].SwordName)
+            end
+        end
+    end)
+
+    Farm:addToggle("Eat Food", false, function(Value)
+        ChangeEatPancake = Value
+        while ChangeEatPancake and task.wait(0.2) do
+            if Assets:FindFirstChild(Config[ChangeMapname].Food) then
+                if CheckUI(true) then
+                    for i, v in ipairs(Assets[Config[ChangeMapname].Food].Food:GetDescendants()) do
+                        if v.Name == LocalPlayer.Name then
+                            for i = 1, 40 do
+                                fireclickdetector(v.ClickDetector)
+                            end
+                        end
+                    end
                 end
             end
         end
     end)
 
-    if MapName == "Movies" then
-        Farm:addToggle("Monster Godmode", false, function(Value)
-            ChangeMonsterGodmode = Value
-            while ChangeMonsterGodmode and task.wait() do
-                for i,v in pairs (Workspace.Monster:GetDescendants()) do
-                    if v.Name == "TouchInterest" then
-                        v:Destroy()
+    if ChangeMapname == "Camp" or ChangeMapname == "Expedition" then
+        Farm:addToggle("Win Spleef", false, function(Value)
+            ChangeWinSpleef = Value
+            while ChangeWinSpleef and task.wait() do
+                if Assets:FindFirstChild(Config[ChangeMapname].SpleefPath) then
+                    if Assets[Config[ChangeMapname].SpleefPath]:FindFirstChild("Part") then
+                        Assets[Config[ChangeMapname].SpleefPath].Part:Destroy()
+                    end
+                    TouchAll(true, Assets[Config[ChangeMapname].SpleefPath][Config[ChangeMapname].SpleefPath].SpleefBlocks, false)
+                end
+            end
+        end)
+    end
+
+    if ChangeMapname == "Expedition" then
+        Farm:addToggle("Go through all hoops", false, function(Value)
+            ChangeGothroughallhoops = Value
+            while ChangeGothroughallhoops and task.wait() do
+                TouchAll(false, "Maldives", false)
+            end
+        end)
+
+        Farm:addToggle("Dig all", false, function(Value)
+            ChangeDigall = Value
+            while ChangeDigall and task.wait() do
+                if Assets:FindFirstChild("Hawaii") then
+                    for i, v in ipairs(ReplicatedStorage.Seasons.Teams:GetChildren()) do
+                        if v.Value == ReplicatedStorage.Seasons.Players.LocalPlayer.team.Value then
+                            local Team = v.Name
+                            for i, v in ipairs(Assets.Hawaii.DiggingSpots[Team]:GetDescendants()) do
+                                if v.Name == "ClickDetector" then
+                                    for i = 1, 40 do
+                                        fireclickdetector(v)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+
+    if ChangeMapname == "Movies" then
+        Farm:addToggle("Open winning chest", false, function(Value)
+            ChangeOpenwinningchest = Value
+            while ChangeOpenwinningchest and task.wait() do
+                if Assets:FindFirstChild("Pirate") then
+                    if CheckUI(true) then
+                        for i,v in pairs (Assets.Pirate.Chests:GetChildren()) do
+                            if v.win.Value then
+                                local KeyNumber = v.Name
+                                local ChestPosition = v.Chest.Position
+                                for i,v in pairs (Assets.Pirate.Keys:GetChildren()) do
+                                    if v.num.Value == KeyNumber then
+                                        firetouchinterest(HumanoidRootPart, v.MainKey, 0)
+                                        task.wait()
+                                        firetouchinterest(HumanoidRootPart, v.MainKey, 1)
+                                        task.wait(1)
+                                        TeleportPlayer(CFrame.new(ChestPosition), CFrame.new(0,0,0))
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end 
+            end
+        end)
+
+        Farm:addButton("Make monster your pet", function()
+            if Assets:FindFirstChild("Monster") then
+                MoveUnanchored(true, Assets.Monster)
+                while true and task.wait() do
+                    MoveObject(HumanoidRootPart.CFrame:PointToWorldSpace(Vector3.new(0, 0, 0)))
+                    if not Assets:FindFirstChild("Monster") then
+                        MoveUnanchored(false)
+                        break
                     end
                 end
             end
         end)
 
-        Farm:addToggle("Collect Alien Egg", false, function(Value)
+        Farm:addButton("Monster kill all", function()
+            if Assets:FindFirstChild("Monster") then
+                MoveUnanchored(true, Assets.Monster)
+                while true and task.wait() do
+                    for _, player in pairs(Players:GetPlayers()) do
+                        if player ~= LocalPlayer then
+                            local character = player.Character
+                            if character then
+                                for i = 1, 20 do
+                                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                                    if humanoidRootPart then
+                                        MoveObject(humanoidRootPart.CFrame:PointToWorldSpace(Vector3.new(0, 0, 0)))
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    if not Assets:FindFirstChild("Monster") then
+                        MoveUnanchored(false)
+                        break
+                    end
+                end
+            end
+        end)
+
+        Farm:addToggle("Monster Godmode", false, function(Value)
+            ChangeMonsterGodmode = Value
+            while ChangeMonsterGodmode and task.wait() do
+                if Assets:FindFirstChild("Monster") then
+                    for i,v in pairs (Assets.Monster:GetDescendants()) do
+                        if v.Name == "TouchInterest" then
+                            v:Destroy()
+                        end
+                    end
+                end
+            end
+        end)
+
+        Farm:addToggle("Collect Alien Eggs", false, function(Value)
             ChangeAutoCollectAlienEgg = Value
             while ChangeAutoCollectAlienEgg and task.wait() do
-                for i,v in pairs (Workspace.Assets.Alien.Eggs:GetDescendants()) do
-                    if v == LocalPlayer then
-                        v.CanCollide = false
-                        v.Position = Character.Torso.Position
-                    end
+                if CheckUI(true) then
+                    TouchAll(false, "Alien", false)
                 end
             end
         end)
@@ -1936,64 +2442,46 @@ if MapName ~= "Lobby" then
         Farm:addToggle("Collect Guitars", false, function(Value)
             ChangeAutoCollectGuitars = Value
             while ChangeAutoCollectGuitars and task.wait() do
-                for i,v in pairs (Workspace:GetDescendants()) do
-                    if v.Name == "Coin" then
-                        v.CanCollide = false
-                        v.Position = Character.Torso.Position
-                    end
-                end
+                TouchAll(false, "Rock & Roll", false)
             end
         end)
 
         Farm:addToggle("Collect Pre-Historic Coins", false, function(Value)
             ChangeAutoCollectPreHistoricCoins = Value
             while ChangeAutoCollectPreHistoricCoins and task.wait() do
-                for i,v in pairs (Workspace:GetDescendants()) do
-                    if v.Name == "Coin" then
-                        v.CanCollide = false
-                        v.Position = Character.Torso.Position
-                    end
-                end
+                TouchAll(false, "Pre-Historic", false)
             end
         end)
     end
 
-    if MapName == "Camp" then
+    if ChangeMapname == "Camp" then
         Farm:addToggle("Collect All Coins", false, function(Value)
             ChangeAutoCollectAllCoins = Value
             while ChangeAutoCollectAllCoins and task.wait() do
-                for _, v in ipairs(Workspace:GetChildren()) do
-                    if v.Name == "Gem" or v.Name == "Coin" then
-                        v.Transparency = 1
-                        v.Position = Character.Torso.Position
-                    end
-                end
+                TouchAll(false, "Coin Hunt", false)
             end
         end)
     end
-
-    Farm:addToggle("Collect Safety Statue", false, function(Value)
-        ChangeAutoGetTrophy = Value
-        while ChangeAutoGetTrophy and task.wait() do
-            for _, v in ipairs(Workspace.Idols:GetChildren()) do
-                if v.Name == "Bag" or v.Name == "SafetyStatue" then
-                    v.hit.Transparency = 1
-                    v.hit.CanCollide = false
-                    v.hit.Position = Character.Torso.Position
-                    task.wait()
-                    if v.Name == "Bag" then
-                        v:Destroy()
-                    end
-                end
-            end
-        end
-    end)    
-else
-    Main:addButton("Load into a game mode so the scripts load.", function()
+    
+--------------------------------------------------------------------------------------INFORMATION----------------------------------------------------------------------------------------
+    Votes:addToggle("Notify Votes", false, function(Value)
+        ChangeNotifyVotes = Value
     end)
+
+    Votes:addToggle("Expose Votes", false, function(Value)
+        ChangeExposeVotes = Value
+    end)
+
+    Votes:addToggle("Stored Votes", false, function(Value)
+        ChangeStoredVotes = Value
+    end)
+
+    StoredVotes:addParagraph(nil, "Stored Votes are shown below, switch pages to refresh.")
 end
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
+Credits:addParagraph(nil, "Pethicial - R3TH PRIV\njack.newacc - Buy Character")
+
 Settings:addToggle("Anti Afk", true, function(Value)
     ChangeAntiAFK = Value
 end)
@@ -2022,9 +2510,6 @@ for theme, color in pairs(Themes) do
 		R3TH:setTheme(theme, color3)
 	end)
 end
-
-Credits:addButton("Pethicial", function()
-end)
 
 --------------------------------------------------------------------------------------TARGET----------------------------------------------------------------------------------------
 SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
@@ -2083,7 +2568,7 @@ Sniper:addToggle("Search", false, function(Value)
     
     if not sniperfound then
         SniperText.Text = "The user could not be found in the game."
-        sendnotification("The user could not be found in the game.", nil)
+        sendnotification("The user could not be found in the game.")
     end
 end)
 
@@ -2254,9 +2739,8 @@ end, function()
 end)
 
 --------------------------------------------------------------------------------------FINISHED----------------------------------------------------------------------------------------
-R3TH:SelectPage(R3TH.pages[1], true)
+R3TH:SelectPage(R3TH.pages[4], true)
 
 local TimeEnd = tick()
 local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
-sendnotification("Successfully loaded the script in " .. TotalTime .. "s.", nil)
-sendnotification("Massive update coming shortly with auto win for every game mode.", nil)
+sendnotification("Successfully loaded the script in " .. TotalTime .. "s.")
