@@ -8,7 +8,7 @@
 ]]
 
 -- My code is still messy, but I'm not going to clean it up because most of this script will be patched soon anyway.
--- dont use the source yet its not finished
+
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
@@ -192,7 +192,7 @@ local Config = {
         SwordMap = "Greece",
         SwordName = "Sword",
         SpleefPath = "Amazon",
-        Food = "dk"
+        Food = "China"
     }
 }
 
@@ -2232,7 +2232,7 @@ else
     end)
 
     Game0:addButton("Remove barriers", function()
-        BuyCharacter(ChangeCustomcharactername)
+
     end)
 
     Game0:addTextbox("Change Confession", "", function(Value, focusLost)
@@ -2329,6 +2329,13 @@ else
             ChangeGothroughallhoops = Value
             while ChangeGothroughallhoops and task.wait() do
                 TouchAll(false, "Maldives", false)
+            end
+        end)
+
+        Farm:addToggle("Collect Clovers", false, function(Value)
+            ChangeCollectClovers = Value
+            while ChangeCollectClovers and task.wait() do
+                TouchAll(false, "Ireland", false)
             end
         end)
 
@@ -2431,8 +2438,8 @@ else
         end)
 
         Farm:addToggle("Collect Alien Eggs", false, function(Value)
-            ChangeAutoCollectAlienEgg = Value
-            while ChangeAutoCollectAlienEgg and task.wait() do
+            ChangeCollectAlienEggs = Value
+            while ChangeCollectAlienEggs and task.wait() do
                 if CheckUI(true) then
                     TouchAll(false, "Alien", false)
                 end
@@ -2440,15 +2447,15 @@ else
         end)
 
         Farm:addToggle("Collect Guitars", false, function(Value)
-            ChangeAutoCollectGuitars = Value
-            while ChangeAutoCollectGuitars and task.wait() do
+            ChangeCollectGuitars = Value
+            while ChangeCollectGuitars and task.wait() do
                 TouchAll(false, "Rock & Roll", false)
             end
         end)
 
         Farm:addToggle("Collect Pre-Historic Coins", false, function(Value)
-            ChangeAutoCollectPreHistoricCoins = Value
-            while ChangeAutoCollectPreHistoricCoins and task.wait() do
+            ChangeCollectPreHistoricCoins = Value
+            while ChangeCollectPreHistoricCoins and task.wait() do
                 TouchAll(false, "Pre-Historic", false)
             end
         end)
@@ -2456,8 +2463,8 @@ else
 
     if ChangeMapname == "Camp" then
         Farm:addToggle("Collect All Coins", false, function(Value)
-            ChangeAutoCollectAllCoins = Value
-            while ChangeAutoCollectAllCoins and task.wait() do
+            ChangeCollectAllCoins = Value
+            while ChangeCollectAllCoins and task.wait() do
                 TouchAll(false, "Coin Hunt", false)
             end
         end)
