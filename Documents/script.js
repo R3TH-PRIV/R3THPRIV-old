@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Game%20Status.lua')
         .then(response => response.text())
         .then(data => {
-            // Extract game statuses from Lua-like text
             let gameStatuses = {};
             let lines = data.split('\n');
             lines.forEach(line => {
@@ -14,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Populate the table with game statuses
             let tableBody = document.getElementById('gameStatusBody');
             Object.keys(gameStatuses).forEach(game => {
                 let row = tableBody.insertRow();
