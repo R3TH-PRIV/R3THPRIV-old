@@ -10,6 +10,10 @@
 --------------------------------------------------------------------------------------R3THPRIV----------------------------------------------------------------------------------------
 repeat wait() until game:IsLoaded()
 
+if Key == nil then
+    Key = "R3TH PRIV"
+end
+
 print("[ " .. Key .. " ]: Murder Mystery 2 loading...")
 
 local TimeStart = tick()
@@ -65,8 +69,6 @@ local Traps = Toggles:addSection("Traps")
 
 local SprayPaint = R3TH:addPage("Spray Paint", 10709776050)
 local LoopTarget = SprayPaint:addSection("Loop Target")
-local FE = SprayPaint:addSection("FE")
-local Antijoin = SprayPaint:addSection("Anti Join")
 
 local Settings0 = R3TH:addPage("Settings", 10734950309)
 local Settings = Settings0:addSection("Settings")
@@ -110,8 +112,6 @@ local ReplicateToy = Remotes.Extras.ReplicateToy
 local knifetool = Backpack:FindFirstChild("Knife")
 local TrapSystem = ReplicatedStorage:WaitForChild("TrapSystem")
 local PlaceTrap = TrapSystem:WaitForChild("PlaceTrap")
-local DefaultChatSystemChatEvents = ReplicatedStorage.DefaultChatSystemChatEvents
-local SayMessageRequest = DefaultChatSystemChatEvents.SayMessageRequest
 local Trade = ReplicatedStorage.Trade
 
 local DefaultWalkSpeed = Humanoid.WalkSpeed
@@ -605,89 +605,6 @@ local IgnoreBackpack = {
     "GGSign", "SprayPaint", "EggToy2023", "BeachBall2023"
 }
 
-local BlockList = {
-    Stone = {
-        Top = 3162897225,
-        Bottom = 3162897225,
-        Back = 3162897225,
-        Front = 3162897225,
-        Right = 3162897225,
-        Left = 3162897225
-    },
-    Cobblestone = {
-        Top = 12616185407;
-        Bottom = 12616185407,
-        Back = 12616185407;
-        Front = 12616185407;
-        Right = 12616185407,
-        Left = 12616185407
-    };
-    OakPlanks = {
-        Top = 9359126658;
-        Bottom = 9359126658,
-        Back = 9359126658;
-        Front = 9359126658,
-        Right = 9359126658;
-        Left = 9359126658
-    },
-    Grass = {
-        Top = 9267183944,
-        Bottom = 9267089525;
-        Back = 9267155990,
-        Front = 9267155990,
-        Right = 9267155990,
-        Left = 9267155990
-    },
-    DiamondOre = {
-        Top = 11425623081,
-        Bottom = 11425623081,
-        Back = 11425623081;
-        Front = 11425623081,
-        Right = 11425623081;
-        Left = 11425623081
-    },
-    Diamond = {
-        Top = 4786858334,
-        Bottom = 4786858334,
-        Back = 4786858334;
-        Front = 4786858334;
-        Right = 4786858334;
-        Left = 4786858334
-    },
-    Lava = {
-        Top = 9886286740,
-        Bottom = 9886286740,
-        Back = 9886286740;
-        Front = 9886286740,
-        Right = 9886286740,
-        Left = 9886286740
-    };
-    Glowstone = {
-        Top = 17496781833,
-        Bottom = 17496781833;
-        Back = 17496781833,
-        Front = 17496781833;
-        Right = 17496781833,
-        Left = 17496781833
-    },
-    Obsidian = {
-        Top = 17496795465;
-        Bottom = 17496795465,
-        Back = 17496795465;
-        Front = 17496795465;
-        Right = 17496795465,
-        Left = 17496795465
-    },
-    Portal = {
-        Top = 17496992747,
-        Bottom = 17496992747;
-        Back = 17496992747;
-        Front = 17496992747,
-        Right = 17496992747;
-        Left = 17496992747
-    }
-}
-
 --------------------------------------------------------------------------------------CONNECTION----------------------------------------------------------------------------------------
 LocalPlayer.Idled:connect(function()
     if ChangeAntiAFK then
@@ -708,14 +625,12 @@ end
 
 Players.PlayerAdded:Connect(function(Value)
     table.insert(playerlist,Value.Name)
-    if antijoinloop then table.insert(antijoinlist,Value.Name) end
 end)
 
 Players.PlayerRemoving:Connect(function(Value)
     for i,v in pairs(playerlist)do
         if v == Value.Name then
             table.remove(playerlist,i)
-            if antijoinloop then table.remove(antijoinlist,i) end
         end
     end
 end)
@@ -2334,7 +2249,7 @@ LoopTarget:addToggle("Loop Reset", false, function(Value)
     ChangeLoopResetPlayer = Value
     while ChangeLoopResetPlayer and task.wait() do
         function ChangeLoopResetPlayerFix()
-            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
+            UseSpray(ChangeLoopTarget, 0, "Top", 5, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
         end
         pcall(ChangeLoopResetPlayerFix)
     end
@@ -2344,7 +2259,7 @@ LoopTarget:addToggle("Loop Void", false, function(Value)
     ChangeLoopVoidPlayer = Value
     while ChangeLoopVoidPlayer and task.wait() do
         function ChangeLoopVoidPlayerFix()
-            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, 8999999488, 8999999488), CFrame.Angles(-0, 0, -0), 1)
+            UseSpray(ChangeLoopTarget, 0, "Top", 5, "HumanoidRootPart", CFrame.new(8999999488, 8999999488, 8999999488), CFrame.Angles(-0, 0, -0), 1)
         end
         pcall(ChangeLoopVoidPlayerFix)
     end
@@ -2354,8 +2269,8 @@ LoopTarget:addToggle("Give Noclip", false, function(Value)
     ChangeGiveNoclip = Value
     while ChangeGiveNoclip do
         function ChangeGiveNoclipFix()
-            UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
-            UseSpray(ChangeLoopTarget, 1, "Front", 2048, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
+            UseSpray(ChangeLoopTarget, 1, "Front", 5, "HumanoidRootPart", CFrame.new(0, -25000, 0), CFrame.Angles(0, 0, 0), 1)
+            UseSpray(ChangeLoopTarget, 1, "Front", 5, "HumanoidRootPart", CFrame.new(0, 25000, 0), CFrame.Angles(0, 0, 0), 1)
             wait(12)
         end
         pcall(ChangeGiveNoclipFix)
@@ -2366,7 +2281,7 @@ LoopTarget:addToggle("Freeze Player", false, function(Value)
     ChangeFreeze = Value
     while ChangeFreeze do
         function ChangeFreezeFix()
-            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "RightUpperLeg", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 10), 30)
+            UseSpray(ChangeLoopTarget, 0, "Top", 5, "RightUpperLeg", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 10), 30)
             wait(12)
         end
         pcall(ChangeFreezeFix)
@@ -2377,7 +2292,7 @@ LoopTarget:addToggle("Lag Player", false, function(Value)
     ChangeLag = Value
     while ChangeLag do
         function ChangeLagFix()
-            UseSpray(ChangeLoopTarget, 0, "Top", 2048, "Head", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 500)
+            UseSpray(ChangeLoopTarget, 0, "Top", 5, "Head", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 500)
             wait(5)
         end
         pcall(ChangeLagFix)
@@ -2388,7 +2303,7 @@ LoopTarget:addToggle("Glitch Player", false, function(Value)
     ChangeGlitch = Value
     while ChangeGlitch do
         function ChangeGlitchFix()
-            UseSpray(ChangeLoopTarget, 0, "Right", 10, "HumanoidRootPart", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 1)
+            UseSpray(ChangeLoopTarget, 0, "Right", 5, "HumanoidRootPart", HumanoidRootPart.CFrame, CFrame.Angles(0, 0, 0), 1)
             wait(12)
         end
         pcall(ChangeGlitchFix)
@@ -2399,7 +2314,7 @@ LoopTarget:addToggle("Crab Player", false, function(Value)
     ChangeCrab = Value
     while ChangeCrab and task.wait() do
         function ChangeCrabFix()
-            UseSpray(ChangeLoopTarget, 1, "Back", 50, "RightLowerLeg", HumanoidRootPart.CFrame, CFrame.Angles(10, 5, -10), 10)
+            UseSpray(ChangeLoopTarget, 1, "Back", 5, "RightLowerLeg", HumanoidRootPart.CFrame, CFrame.Angles(10, 5, -10), 10)
             wait(5)
         end
         pcall(ChangeCrabFix)
@@ -2442,46 +2357,6 @@ LoopTarget:addToggle("Auto Equip Spray Paint", false, function(Value)
     end
 end)
 
-Antijoin:addToggle("Anti Join", false, function(Value)
-    ChangeAntiJoin = Value
-    while ChangeAntiJoin and task.wait() do
-        function ChangeAntiJoinFix()
-            for i,v in pairs(antijoinlist) do
-                local Target = Players:FindFirstChild(v.Name)
-                UseSpray(Target, 0, "Top", 2048, "HumanoidRootPart", CFrame.new(8999999488, -8999999488, 8999999488), CFrame.Angles(0, 0, 0), 1)
-            end
-        end
-        pcall(ChangeAntiJoinFix)
-    end
-end)
-
-Antijoin:addDropdown("Select Player", antijoinlist, function(Value)
-    ChangeAntijoinTarget = Value
-end)
-
-Antijoin:addButton("Let Player Join", function()
-    if ChangeAntijoinTarget == "All" then
-        for i = 1,12 do
-            for i,v in pairs(antijoinlist) do
-                table.remove(antijoinlist,i)
-            end
-        end
-    else
-        for i,v in pairs(antijoinlist)do
-            if v == ChangeAntijoinTarget then  
-                table.remove(antijoinlist,i)
-            end
-        end
-    end
-end)
-
-Antijoin:addButton("Clear List", function()
-    for i = 1,12 do
-        for i,v in pairs(antijoinlist) do
-            table.remove(antijoinlist,i)
-        end
-    end
-end)
 
 --------------------------------------------------------------------------------------SETTINGS----------------------------------------------------------------------------------------
 Settings:addToggle("Anti Afk", true, function(Value)
@@ -2749,7 +2624,6 @@ R3TH:SelectPage(R3TH.pages[1], true)
 local TimeEnd = tick()
 local TotalTime = string.format("%.2f", math.abs(TimeStart - TimeEnd))
 sendnotification("Successfully loaded the script in " .. TotalTime .. "s.", nil)
-sendnotification("This script is outdated due to the recent anti cheat mm2 has made, will be updated within a week.", nil)
 
 roleupdater = true
 while roleupdater do
