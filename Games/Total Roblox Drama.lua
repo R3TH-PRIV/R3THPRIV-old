@@ -45,7 +45,7 @@ local NotificationHolder = loadstring(game:HttpGet("https://raw.githubuserconten
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
 if R3TH_hookfunction == "Supported" then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/OtherScripts/Adonis%20Anti-Cheat%20Bypass.lua"))()
 else
     print("[ " .. Key .. " ]: You run the risk of being kicked because Adonis Anti-Cheat Bypass isn't supported on your executor.")
 end
