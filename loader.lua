@@ -372,8 +372,8 @@ sendnotification("Script loading, this may take a while depending on your device
 
 if games[game.PlaceId] then
     sendnotification("Game Supported!", false)
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/' .. games[game.PlaceId] .. '.lua'))()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/Games/' .. games[game.PlaceId] .. '.lua'))()
 else
     sendnotification("Game not Supported.", false)
-    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Games/Universal.lua'))()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/Games/Universal.lua'))()
 end
