@@ -25,7 +25,7 @@ end
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/Venyx%20UI%20Lib/Source.lua"))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/Venyx%20UI%20Lib/Source.lua"))()
 local R3TH = library.new(Key .. " | .gg/pethicial")
 
 local Themes = {
@@ -1296,7 +1296,7 @@ end)
 ESP:addToggle("Enable ESP", false, function(Value)
     if EnableESPFirst ~= true then -- Improves performance if you're not using ESP.
         EnableESPFirst = true
-        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/ESP.lua'))()
+        ESPP = loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/OtherScripts/ESP.lua'))()
         ESPP.BoxType = "Corner Box Esp"
     end
     ESPP.Enabled = Value
@@ -1699,7 +1699,7 @@ Server:addButton("Rejoin", function()
 end)
 
 Server:addButton("Serverhop", function()
-    loadstring(game:HttpGet(('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Serverhop.lua'),true))()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/OtherScripts/Serverhop.lua'),true))()
 end)
 
 --------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
@@ -1862,7 +1862,7 @@ Webhook:addToggle("Spam Webhook", false, function(Value) -- I am not liable for 
 end)
 
 --------------------------------------------------------------------------------------SCRIPTS----------------------------------------------------------------------------------------
-loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/OtherScripts/Game%20Status.lua'))()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV-old/main/OtherScripts/Game%20Status.lua'))()
 
 Container1, Text1 = R3THPRIVV1:addParagraph(nil, "Abyss World: " .. R3THPRIVV1_AbyssWorld)
 
