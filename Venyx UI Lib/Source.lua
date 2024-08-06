@@ -1,4 +1,4 @@
-local player = game.Players.LocalPlayer
+local player = game:FindFirstChildOfClass("Players").LocalPlayer
 local mouse = player:GetMouse()
 
 local input = game:GetService("UserInputService")
